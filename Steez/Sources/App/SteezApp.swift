@@ -1,0 +1,90 @@
+import SwiftUI
+import UserNotifications
+
+@main
+struct SteezApp: App {
+    @StateObject private var appState = AppState()
+    
+    init() {
+        // Request notification permission
+        requestNotificationPermission()
+    }
+    
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+                .environmentObject(appState)
+                .onAppear {
+                    // Check server when app appears
+                    appState.checkServerAvailability()
+                }
+        }
+    }
+    
+    private func requestNotificationPermission() {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
+            if granted {
+                print("Notification permission granted")
+            } else if let error = error {
+                print("Error requesting notification permission: \(error)")
+            }
+        }
+    }
+}
+
+class AppState: ObservableObject {
+    @Published var isProcessing: Bool = false
+    @Published var currentUser: User?
+    @Published var isServerAvailable: Bool = false
+    @Published var errorMessage: String? = nil
+    
+    // For Google Lens Analysis
+    @Published var lensProducts: [LensProduct] = []
+    @Published var isAnalyzingWithLens: Bool = false
+    
+    init() {
+        // Check server first
+        checkServerAvailability()
+    }
+    
+    func checkServerAvailability() {
+        errorMessage = nil
+        
+        NetworkService.shared.checkServerAvailability { [weak self] isAvailable in
+            DispatchQueue.main.async {
+                self?.isServerAvailable = isAvailable
+                
+                if isAvailable {
+                    print("Server is available.")
+                } else {
+                    self?.errorMessage = "Cannot connect to the server. Please make sure the backend is running and try again."
+                }
+            }
+        }
+    }
+    
+    // Methods for handling user authentication
+    func signIn(email: String, password: String, completion: @escaping (Bool) -> Void) {
+        // In a real app, this would use Firebase Auth or similar
+        // Mock implementation for now
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.currentUser = User(userId: UUID(), email: email, plan: .free)
+            completion(true)
+        }
+    }
+    
+    func signOut() {
+        currentUser = nil
+    }
+}
+
+struct User {
+    let userId: UUID
+    let email: String
+    let plan: Plan
+    
+    enum Plan: String {
+        case free, pro
+    }
+} 
+ 

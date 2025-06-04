@@ -1,0 +1,207 @@
+{
+  "product_one_liner": "Send any fashion video or image to Steez; it spots every garment, finds the cheapest legit sellers, drops each piece into your digital wardrobe, and gives you one\u2011tap buy links.",
+  "core_user_flows": [
+    {
+      "id": 1,
+      "name": "Smart Import",
+      "steps": [
+        "User hits Share on TikTok/IG Reels/YouTube and selects the Steez share\u2011extension.",
+        "iOS share\u2011extension forwards the URL to backend; backend downloads the video.",
+        "Frame sampling (\u22482\u202ffps). Computer\u2011vision model detects apparel items, brand logos, colors.",
+        "For each item, Product\u2011Match service queries merchant APIs to get lowest price and affiliate link.",
+        "Backend returns ImportResult JSON; iOS shows review screen so user can accept/decline detected items."
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Wardrobe Browse",
+      "steps": [
+        "User opens Wardrobe tab; items grouped under fixed categories (hats, accessories, tees, zip\u2011ups, hoodies, jackets, jeans, pants, shorts, shoes).",
+        "Tapping an item opens detail sheet with photos, sizes, seller price list, and Buy button."
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Price Refresh",
+      "steps": [
+        "Nightly scheduled job re\u2011queries merchants for each stored product link.",
+        "If a cheaper price is found, update the item and push a notification to the user."
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Manual Add (edge\u2011case)",
+      "steps": [
+        "User snaps or uploads a photo OR pastes a link into Steez.",
+        "The same video/image processing pipeline runs and imports the detected items."
+      ]
+    }
+  ],
+  "feature_list": [
+    "Share\u2011extension import from social apps and camera roll",
+    "Video & image parsing for clothing detection and brand recognition",
+    "Product match & price comparison across multiple retailers",
+    "Wardrobe database with fixed categories and searchable tags",
+    "Affiliate deep links back to sellers",
+    "Cloud sync and multi\u2011device support",
+    "Push alerts for price drops and out\u2011of\u2011stock items",
+    "Steez Pro subscription: unlimited imports, historical price tracking"
+  ],
+  "architecture": {
+    "ios_frontend": {
+      "language": "Swift 5.10+",
+      "ui": "SwiftUI",
+      "pattern": "MVVM\u2011C",
+      "local_store": "Realm or Core Data/SwiftData",
+      "networking": "URLSession + async/await",
+      "share_extension": "Separate target; passes URL to main app via openURL"
+    },
+    "backend": {
+      "runtime": "Node.js 18 / TypeScript",
+      "framework": "NestJS",
+      "api": "REST + JWT (GraphQL optional for wardrobe queries)",
+      "database": "Google Firestore or AWS DynamoDB",
+      "storage": "Amazon S3 (videos, thumbnails, model artifacts)",
+      "auth": "Firebase Auth or AWS Cognito + Sign in with Apple",
+      "background_jobs": "AWS Lambda or Cloud Run",
+      "ci_cd": "GitHub Actions \u2192 Test \u2192 Deploy (CDK/Terraform)",
+      "monitoring": "CloudWatch/Lambda Insights + Sentry"
+    },
+    "ai_ml_microservices": [
+      {
+        "stage": "Frame extraction",
+        "service_or_model": "ffmpeg in Lambda container",
+        "notes": "Sample every 0.5\u20131\u202fseconds"
+      },
+      {
+        "stage": "Clothing detection",
+        "service_or_model": "Google Vision Product Search (Apparel) OR Amazon Rekognition Video labels",
+        "notes": "Returns bounding boxes and labels like 'Hoodie', 'Jeans'"
+      },
+      {
+        "stage": "Brand / fine\u2011grained match",
+        "service_or_model": "FashionCLIP (HuggingFace)",
+        "notes": "Run on GPU Lambda if needed; outputs text embeddings to match brand names"
+      },
+      {
+        "stage": "Product match & pricing",
+        "service_or_model": [
+          "ShopStyle Collective Product API",
+          "RapidAPI Price Comparison (Amazon, Target, Walmart, etc.)"
+        ],
+        "notes": "Merge and normalize results"
+      },
+      {
+        "stage": "Cheapest\u2011seller logic",
+        "service_or_model": "Internal service",
+        "notes": "Pick lowest price_total = item_price + shipping"
+      },
+      {
+        "stage": "Re\u2011pricing cron",
+        "service_or_model": "Scheduled Lambda",
+        "notes": "Daily re\u2011query of sellers"
+      }
+    ]
+  },
+  "data_models": {
+    "User": {
+      "userId": "UUID",
+      "email": "String",
+      "plan": "enum(free, pro)"
+    },
+    "WardrobeItem": {
+      "itemId": "UUID",
+      "userId": "UUID",
+      "name": "String",
+      "category": "enum(hat, tee, hoodie, ...)",
+      "brand": "String?",
+      "color": "String?",
+      "images": "[URL]",
+      "productLinks": "[ProductLink]"
+    },
+    "ProductLink": {
+      "seller": "String",
+      "url": "URL",
+      "price": "Decimal",
+      "currency": "String",
+      "lastChecked": "Date"
+    },
+    "ImportJob": {
+      "jobId": "UUID",
+      "userId": "UUID",
+      "sourceUrl": "URL",
+      "status": "enum(queued, processing, done, failed)",
+      "detectedItems": "[WardrobeItem]"
+    }
+  },
+  "backend_workflows": [
+    {
+      "name": "ImportJob.Create",
+      "steps": [
+        "Receive sourceUrl; store job record with status 'queued'.",
+        "Invoke Lambda:Download+Process asynchronously."
+      ]
+    },
+    {
+      "name": "Lambda:Download+Process",
+      "steps": [
+        "Download media to S3.",
+        "Extract frames via ffmpeg.",
+        "Run clothing detection and brand recognition.",
+        "For each garment, call ProductMatch.",
+        "Store detected items."
+      ]
+    },
+    {
+      "name": "ProductMatch",
+      "steps": [
+        "Query ShopStyle API for candidate SKUs.",
+        "Query RapidAPI price\u2011compare endpoints.",
+        "Normalize and merge results.",
+        "Return lowest priced ProductLink array."
+      ]
+    },
+    {
+      "name": "ImportJob.Complete",
+      "steps": [
+        "Persist WardrobeItem docs.",
+        "Update ImportJob status to 'done'.",
+        "Send APNS push to user."
+      ]
+    },
+    {
+      "name": "NightlyPriceRefresh",
+      "steps": [
+        "Iterate over all ProductLinks.",
+        "Re\u2011query sellers; update price.",
+        "Push notification if cheaper price found."
+      ]
+    }
+  ],
+  "non_functional_requirements": {
+    "latency_avg_seconds": 10,
+    "accuracy_target_percentage": 80,
+    "cost_per_import_usd": 0.02,
+    "privacy": "Delete downloaded videos after processing; GDPR compliant",
+    "security": "HTTPS, JWT, minimum scopes, token refresh",
+    "scalability": "1M imports per day burst via Lambda concurrency"
+  },
+  "dev_ops_checklist": {
+    "testing": [
+      "Unit: Jest (backend) & XCTest (iOS)",
+      "Integration: Lambda test harness",
+      "UI: XCUITest"
+    ],
+    "lint_format": [
+      "ESLint + Prettier (backend)",
+      "SwiftLint + SwiftFormat (iOS)"
+    ],
+    "code_signing": "Fastlane match, automatic provisioning profiles",
+    "analytics": "Firebase Analytics (import success, retention)",
+    "crash_reporting": "Firebase Crashlytics",
+    "feature_flags": "Firebase Remote Config",
+    "design_system": "Figma source; SwiftGen for assets"
+  },
+  "kick_start_script": "npx create-nx-workspace@latest steez --preset nest && fastlane init swift && cdk init app --language typescript",
+  "created": "2025-05-15T12:11:22.908157Z"
+}
