@@ -1,0 +1,478 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 63;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		2D82ED7E8D696279367EF9F6 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = C04B9EEE00FB68806482BE0F /* Models.swift */; };
+		7149E4BA971C5AFB8A6692AB /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C66521C07E8FB02231DE665 /* ContentView.swift */; };
+		86F66E312CFF3746C1970380 /* SteezApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9D3506FA3A093B8734A6705 /* SteezApp.swift */; };
+		B3AB80AAE148409C9F480664 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A84D3588ED8F601142ED98D1 /* ImagePicker.swift */; };
+		F4D306FFF0E76C621175273C /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D401135D5E0D7A8DA3032C5F /* NetworkService.swift */; };
+		F9ADF4CBB51578E2BAAC743F /* Pods_Steez.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 367B0D4B22990A060A2A4CB4 /* Pods_Steez.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0C66521C07E8FB02231DE665 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		0EB163960C0743200BBFFBFC /* SteezShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SteezShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		183713091BBACE4EA8E81E7B /* Pods-Steez.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Steez.debug.xcconfig"; path = "Target Support Files/Pods-Steez/Pods-Steez.debug.xcconfig"; sourceTree = "<group>"; };
+		27EBE8D2823376576D8A6508 /* Pods-Steez.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Steez.release.xcconfig"; path = "Target Support Files/Pods-Steez/Pods-Steez.release.xcconfig"; sourceTree = "<group>"; };
+		367B0D4B22990A060A2A4CB4 /* Pods_Steez.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Steez.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		6E96BF9392EBBFE64226ACFF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		72E990E0B3B7A81DC126DBBE /* Steez.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Steez.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A84D3588ED8F601142ED98D1 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
+		C04B9EEE00FB68806482BE0F /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		D401135D5E0D7A8DA3032C5F /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
+		D9D3506FA3A093B8734A6705 /* SteezApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SteezApp.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		6EECB0C6B44A0B7BE1BE67C6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F9ADF4CBB51578E2BAAC743F /* Pods_Steez.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		228BE19DF033C7AA9D1BE85F /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				6558A0818D3DB15699E53585 /* App */,
+				A31495225D435C9D1D5D006A /* Core */,
+				3C009CF2A0E990ADA785595F /* UI */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		3C009CF2A0E990ADA785595F /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				0C66521C07E8FB02231DE665 /* ContentView.swift */,
+				A84D3588ED8F601142ED98D1 /* ImagePicker.swift */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		41A65657ED393E56E88E682C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				72E990E0B3B7A81DC126DBBE /* Steez.app */,
+				0EB163960C0743200BBFFBFC /* SteezShareExtension.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		6558A0818D3DB15699E53585 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				6E96BF9392EBBFE64226ACFF /* Info.plist */,
+				D9D3506FA3A093B8734A6705 /* SteezApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		A31495225D435C9D1D5D006A /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				C04B9EEE00FB68806482BE0F /* Models.swift */,
+				D401135D5E0D7A8DA3032C5F /* NetworkService.swift */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		B3964AC0857C43701DB1D99A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				367B0D4B22990A060A2A4CB4 /* Pods_Steez.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		C35D837FA04CD7F5C289230A /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				183713091BBACE4EA8E81E7B /* Pods-Steez.debug.xcconfig */,
+				27EBE8D2823376576D8A6508 /* Pods-Steez.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		C800F6A325A56C965CBF9608 = {
+			isa = PBXGroup;
+			children = (
+				228BE19DF033C7AA9D1BE85F /* Sources */,
+				41A65657ED393E56E88E682C /* Products */,
+				C35D837FA04CD7F5C289230A /* Pods */,
+				B3964AC0857C43701DB1D99A /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		044855CB596B67D9C3350938 /* SteezShareExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5F5C6D7DFA92AFFE75331461 /* Build configuration list for PBXNativeTarget "SteezShareExtension" */;
+			buildPhases = (
+				64DE263DD04E76BE1B290E54 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SteezShareExtension;
+			productName = SteezShareExtension;
+			productReference = 0EB163960C0743200BBFFBFC /* SteezShareExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		EBA394659AC2B64F0E3FA78D /* Steez */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9F621860A229FF49AC48BCF7 /* Build configuration list for PBXNativeTarget "Steez" */;
+			buildPhases = (
+				F0BB97A2AFE0F0E04D6E9A3A /* [CP] Check Pods Manifest.lock */,
+				5FB9009410984C2BBCB28C21 /* Sources */,
+				B37FCE133B458062F7D6FCA1 /* Resources */,
+				6EECB0C6B44A0B7BE1BE67C6 /* Frameworks */,
+				62E0E025276E65397E72BFAE /* [CP] Embed Pods Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Steez;
+			productName = Steez;
+			productReference = 72E990E0B3B7A81DC126DBBE /* Steez.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		2C7CF9C8C5795DE50E6B6100 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+			};
+			buildConfigurationList = 37FD20A83A7E0604F3A324E0 /* Build configuration list for PBXProject "Steez" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = C800F6A325A56C965CBF9608;
+			minimizedProjectReferenceProxies = 1;
+			productRefGroup = 41A65657ED393E56E88E682C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				EBA394659AC2B64F0E3FA78D /* Steez */,
+				044855CB596B67D9C3350938 /* SteezShareExtension */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		B37FCE133B458062F7D6FCA1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		62E0E025276E65397E72BFAE /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Steez/Pods-Steez-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Steez/Pods-Steez-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Steez/Pods-Steez-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		F0BB97A2AFE0F0E04D6E9A3A /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Steez-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		5FB9009410984C2BBCB28C21 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7149E4BA971C5AFB8A6692AB /* ContentView.swift in Sources */,
+				B3AB80AAE148409C9F480664 /* ImagePicker.swift in Sources */,
+				2D82ED7E8D696279367EF9F6 /* Models.swift in Sources */,
+				F4D306FFF0E76C621175273C /* NetworkService.swift in Sources */,
+				86F66E312CFF3746C1970380 /* SteezApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		64DE263DD04E76BE1B290E54 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		27BAC835FC53AFD94B2C05CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		4DDB3FDDAC125394F0A35FA2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		69708C9EE4145489DAE4540D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = Sources/ShareExtension/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.steez.app.share;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		9AA0EB141BB0301F598C0E4F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = Sources/ShareExtension/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.steez.app.share;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		B70DA960908D9D3BA70D56B5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 27EBE8D2823376576D8A6508 /* Pods-Steez.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = Sources/App/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.steez.app;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		BFE7EB8D6D21CD3214A8F3CC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 183713091BBACE4EA8E81E7B /* Pods-Steez.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = Sources/App/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.steez.app;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		37FD20A83A7E0604F3A324E0 /* Build configuration list for PBXProject "Steez" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				27BAC835FC53AFD94B2C05CD /* Debug */,
+				4DDB3FDDAC125394F0A35FA2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		5F5C6D7DFA92AFFE75331461 /* Build configuration list for PBXNativeTarget "SteezShareExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				69708C9EE4145489DAE4540D /* Debug */,
+				9AA0EB141BB0301F598C0E4F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		9F621860A229FF49AC48BCF7 /* Build configuration list for PBXNativeTarget "Steez" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BFE7EB8D6D21CD3214A8F3CC /* Debug */,
+				B70DA960908D9D3BA70D56B5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 2C7CF9C8C5795DE50E6B6100 /* Project object */;
+}

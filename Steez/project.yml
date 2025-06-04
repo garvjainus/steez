@@ -1,0 +1,26 @@
+name: Steez
+options:
+  bundleIdPrefix: com.steez
+  deploymentTarget:
+    iOS: 15.0
+
+targets:
+  Steez:
+    type: application
+    platform: iOS
+    sources:
+      - path: Sources
+    settings:
+      base:
+        INFOPLIST_FILE: Sources/App/Info.plist
+        PRODUCT_BUNDLE_IDENTIFIER: com.steez.app
+
+  SteezShareExtension:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: Sources/ShareExtension
+    settings:
+      base:
+        INFOPLIST_FILE: Sources/ShareExtension/Info.plist
+        PRODUCT_BUNDLE_IDENTIFIER: com.steez.app.share 

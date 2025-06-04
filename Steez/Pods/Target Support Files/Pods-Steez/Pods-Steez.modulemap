@@ -1,0 +1,6 @@
+framework module Pods_Steez {
+  umbrella header "Pods-Steez-umbrella.h"
+
+  export *
+  module * { export * }
+}
