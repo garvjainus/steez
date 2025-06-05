@@ -388,6 +388,8 @@ struct ImportButtonView: View {
 }
 
 struct ProfileView: View {
+    @EnvironmentObject var appState: AppState
+    
     var body: some View {
         NavigationView {
             List {
@@ -399,6 +401,15 @@ struct ProfileView: View {
                 Section(header: Text("Settings")) {
                     Toggle("Price Drop Notifications", isOn: .constant(true))
                     Toggle("Out of Stock Alerts", isOn: .constant(true))
+                }
+                
+                Section(header: Text("Debug")) {
+                    Button(action: {
+                        appState.resetOnboarding()
+                    }) {
+                        Text("Reset Onboarding")
+                            .foregroundColor(.red)
+                    }
                 }
             }
             .navigationTitle("Profile")
