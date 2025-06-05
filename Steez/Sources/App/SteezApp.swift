@@ -12,12 +12,19 @@ struct SteezApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environmentObject(appState)
-                .onAppear {
-                    // Check server when app appears
-                    appState.checkServerAvailability()
+            ZStack {
+                if appState.hasSeenOnboarding {
+                    ContentView()
+                        .environmentObject(appState)
+                        .onAppear {
+                            // Check server when app appears
+                            appState.checkServerAvailability()
+                        }
+                } else {
+                    LandingPageView()
+                        .environmentObject(appState)
                 }
+            }
         }
     }
     
@@ -37,14 +44,28 @@ class AppState: ObservableObject {
     @Published var currentUser: User?
     @Published var isServerAvailable: Bool = false
     @Published var errorMessage: String? = nil
+    @Published var hasSeenOnboarding: Bool = false
     
     // For Google Lens Analysis
     @Published var lensProducts: [LensProduct] = []
     @Published var isAnalyzingWithLens: Bool = false
     
     init() {
+        // Check if user has seen onboarding
+        self.hasSeenOnboarding = UserDefaults.standard.bool(forKey: "hasSeenOnboarding")
+        
         // Check server first
         checkServerAvailability()
+    }
+    
+    func completeOnboarding() {
+        hasSeenOnboarding = true
+        UserDefaults.standard.set(true, forKey: "hasSeenOnboarding")
+    }
+    
+    func resetOnboarding() {
+        hasSeenOnboarding = false
+        UserDefaults.standard.set(false, forKey: "hasSeenOnboarding")
     }
     
     func checkServerAvailability() {
