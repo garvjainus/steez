@@ -14,17 +14,17 @@ struct SteezApp: App {
         WindowGroup {
             ZStack {
                 if appState.hasSeenOnboarding {
-                    ContentView()
-                        .environmentObject(appState)
-                        .onAppear {
-                            // Check server when app appears
-                            appState.checkServerAvailability()
+            ContentView()
+                .environmentObject(appState)
+                .onAppear {
+                    // Check server when app appears
+                    appState.checkServerAvailability()
                         }
                 } else {
                     LandingPageView()
                         .environmentObject(appState)
                 }
-            }
+                }
         }
     }
     

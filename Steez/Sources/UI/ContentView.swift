@@ -84,26 +84,26 @@ struct ImportView: View {
     private var buttons: some View {
         VStack(spacing: 20){
             Button(action: { showingImagePicker = true}) {
-                ImportButtonView(title: "Import from Camera", systemImage: "camera")
-            }
+                    ImportButtonView(title: "Import from Camera", systemImage: "camera")
+                }
             Button(action: {showingShareSheet = true }) {
                 ImportButtonView(title:"Import from Social", systemImage: "square.and.arrow.down")
-            }
+                }
         }
     }
     
     private var inProgress: some View {
         Group {
-            if appState.isProcessing || isUploading {
-                VStack(spacing: 10) {
-                    if isUploading {
-                        ProgressView(value: uploadProgress)
+                if appState.isProcessing || isUploading {
+                    VStack(spacing: 10) {
+                        if isUploading {
+                            ProgressView(value: uploadProgress)
                             .padding()
                     }
                     if appState.isProcessing {
                         Text("Processing…")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
                     }
                 }
             }          // when the condition is false, Group implicitly
@@ -128,12 +128,12 @@ struct ImportView: View {
                                         .progressViewStyle(LinearProgressViewStyle())
                                         .padding()
                                     Text("\(Int(uploadProgress * 100))%")
-                                }
-                                .padding()
-                                .background(Color.secondary.opacity(0.1))
-                                .cornerRadius(10)
-                                .padding(.horizontal)
-                            }
+                    }
+                    .padding()
+                    .background(Color.secondary.opacity(0.1))
+                    .cornerRadius(10)
+                    .padding(.horizontal)
+                }
                         } else if let retryData = retryData, uploadedFilename == nil {
                             // The image was not successfully uploaded
                             VStack {
@@ -141,7 +141,7 @@ struct ImportView: View {
                                     .resizable()
                                     .scaledToFit()
                                     .frame(maxHeight: 300)
-                                    .cornerRadius(8)
+                        .cornerRadius(8)
                                     .padding()
                                 
                                 Button("Try Upload Again") {
@@ -151,7 +151,7 @@ struct ImportView: View {
                                 }
                                 .buttonStyle(.borderedProminent)
                                 .padding()
-                            }
+                        }
                         } else if let imageUrl = uploadedImageUrl {
                             uploadedImageView
                         } else {
@@ -160,25 +160,25 @@ struct ImportView: View {
                         
                         lensProgressIndicator
                         lensResultsDisplay
-                    }
+                }
                     .padding()
                 }
-                .sheet(isPresented: $showingImagePicker) {
-                    ImagePicker(selectedMedia: $selectedMedia)
-                }
-                .onChange(of: selectedMedia) { newValue in
-                    if let results = newValue, !results.isEmpty {
-                        processSelectedMedia(results)
-                    }
-                }
-                .alert(isPresented: $showingAlert) {
-                    Alert(
-                        title: Text(alertTitle),
-                        message: Text(alertMessage),
-                        dismissButton: .default(Text("OK"))
-                    )
+            .sheet(isPresented: $showingImagePicker) {
+                ImagePicker(selectedMedia: $selectedMedia)
+            }
+            .onChange(of: selectedMedia) { newValue in
+                if let results = newValue, !results.isEmpty {
+                    processSelectedMedia(results)
                 }
             }
+            .alert(isPresented: $showingAlert) {
+                Alert(
+                    title: Text(alertTitle),
+                    message: Text(alertMessage),
+                    dismissButton: .default(Text("OK"))
+                )
+            }
+        }
             .navigationTitle("Import Items")
         }
     }
@@ -302,7 +302,7 @@ struct ImportView: View {
                     
                     if self.retryAttempts < 3 && self.retryData != nil {
                         self.showError("Upload Issue", "\(userFriendlyMessage) You can retry processing this image.")
-                    } else {
+                        } else {
                         self.showError("Upload Failed", "\(userFriendlyMessage) Multiple attempts failed or retrying is not possible. Please check your internet connection and try again later.")
                         self.retryData = nil // Clear retry data if max attempts reached or not retryable
                     }
@@ -356,7 +356,7 @@ struct ImportView: View {
                 .padding(.horizontal)
                 
                 Text("Image uploaded successfully")
-                    .font(.caption)
+                .font(.caption)
                     .foregroundColor(.secondary)
                     .padding(.bottom, 5)
             }
@@ -562,3 +562,4 @@ struct OriginalImageView: View {
         }
     }
 } 
+ 
