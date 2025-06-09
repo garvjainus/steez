@@ -65,7 +65,7 @@ class NetworkService {
     #if targetEnvironment(simulator)
     // Use localhost for simulator
     private let baseURL = "http://localhost:3000"
-    #else   
+    #else
     // Use Mac's actual IP address when testing on a physical device
     private let baseURL = "http://10.10.11.201:3000"
     #endif
@@ -361,12 +361,12 @@ class NetworkService {
             completion(.failure(.invalidData))
             return
         }
-
+        
         guard let url = URL(string: "\(baseURL)/upload/image") else { // MODIFIED Endpoint
             completion(.failure(.invalidURL))
             return
         }
-
+        
         AF.upload(
             multipartFormData: { multipartFormData in
                 multipartFormData.append(imageData, withName: "image", fileName: "photo.jpg", mimeType: "image/jpeg")
@@ -375,9 +375,9 @@ class NetworkService {
             to: url,
             method: .post
         )
-        .uploadProgress { progress in
-            self.notifyUploadProgress(Float(progress.fractionCompleted))
-        }
+            .uploadProgress { progress in
+                self.notifyUploadProgress(Float(progress.fractionCompleted))
+            }
         .validate() // Basic validation for 2xx status codes
         .responseDecodable(of: ImageUploadResponse.self, decoder: createDecoder()) { response in
             DispatchQueue.main.async {
@@ -417,14 +417,14 @@ class NetworkService {
             print("❌ Failed to serialize request: \(error)")
             completion(Result<[LensProduct], NetworkError>.failure(.invalidData)); return
         }
-
+        
         AF.request(request)
             .validate() // Basic validation for 2xx status codes
             .responseData { response in
                 DispatchQueue.main.async {
-                    switch response.result {
-                    case .success(let data):
-                        do {
+                switch response.result {
+                case .success(let data):
+                    do {
                             // First try to print the raw JSON for debugging
                             if let jsonString = String(data: data, encoding: .utf8) {
                                 print("✅ Google Lens response JSON: \(jsonString)")
@@ -561,4 +561,5 @@ extension NetworkService {
             )
         }
     }
-}
+} 
+ 
