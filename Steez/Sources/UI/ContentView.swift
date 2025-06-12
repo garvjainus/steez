@@ -159,6 +159,7 @@ struct ImportView: View {
                         }
                         
                         lensProgressIndicator
+                        segmentedResultsDisplay
                         lensResultsDisplay
                 }
                     .padding()
@@ -183,11 +184,100 @@ struct ImportView: View {
         }
     }
     
-    // --- New Subeviews for Google Lens Section --- 
+    // --- Segmented Results Display ---
+    @ViewBuilder
+    private var segmentedResultsDisplay: some View {
+        if let segmentedResults = appState.segmentedResults, !segmentedResults.segments.isEmpty {
+            VStack(alignment: .leading, spacing: 15) {
+                Text("Detected Clothing Items")
+                    .font(.headline)
+                    .padding(.horizontal)
+                
+                // Tab selector for different clothing items
+                if segmentedResults.segments.count > 1 {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 10) {
+                            ForEach(Array(segmentedResults.segments.enumerated()), id: \.offset) { index, segment in
+                                Button(action: {
+                                    appState.selectedSegmentIndex = index
+                                }) {
+                                    VStack(spacing: 4) {
+                                        Text(segment.itemType.capitalized)
+                                            .font(.caption)
+                                            .fontWeight(.medium)
+                                        
+                                        Text(String(format: "%.0f%%", segment.confidence * 100))
+                                            .font(.caption2)
+                                            .foregroundColor(.secondary)
+                                    }
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 8)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 8)
+                                            .fill(appState.selectedSegmentIndex == index ? Color.blue : Color.gray.opacity(0.2))
+                                    )
+                                    .foregroundColor(appState.selectedSegmentIndex == index ? .white : .primary)
+                                }
+                                .buttonStyle(PlainButtonStyle())
+                                .accessibilityLabel("\(segment.itemType) with \(String(format: "%.0f", segment.confidence * 100))% confidence")
+                                .accessibilityHint("Tap to view eBay results for this item")
+                            }
+                        }
+                        .padding(.horizontal)
+                    }
+                }
+                
+                // Display results for selected segment
+                if appState.selectedSegmentIndex < segmentedResults.segments.count,
+                   appState.selectedSegmentIndex >= 0 {
+                    let selectedSegment = segmentedResults.segments[appState.selectedSegmentIndex]
+                    
+                    VStack(alignment: .leading, spacing: 10) {
+                        // Segment info
+                        HStack {
+                            Text(selectedSegment.phrase)
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                            
+                            Spacer()
+                            
+                            Text("\(String(format: "%.0f", selectedSegment.confidence * 100))% confident")
+                                .font(.caption)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(Color.green.opacity(0.2))
+                                .foregroundColor(.green)
+                                .cornerRadius(6)
+                        }
+                        .padding(.horizontal)
+                        
+                        // eBay results for this segment
+                        if selectedSegment.ebayResults.isEmpty {
+                            Text("No eBay results found for this item")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .padding(.horizontal)
+                                .padding(.vertical, 8)
+                                .background(Color.gray.opacity(0.1))
+                                .cornerRadius(8)
+                                .padding(.horizontal)
+                        } else {
+                            ForEach(selectedSegment.ebayResults) { ebayMatch in
+                                EbayMatchRow(ebayMatch: ebayMatch)
+                            }
+                        }
+                    }
+                }
+            }
+            .padding(.vertical)
+        }
+    }
+
+    // --- Original Lens Progress and Results (Backward Compatibility) ---
     @ViewBuilder
     private var lensProgressIndicator: some View {
         if appState.isProcessing {
-            ProgressView("Analyzing image with Google Lens...")
+            ProgressView("Analyzing image with AI...")
                 .padding()
                 .background(Color.secondary.opacity(0.1))
                 .cornerRadius(10)
@@ -210,14 +300,13 @@ struct ImportView: View {
             .padding(.vertical)
         }
     }
-    // --- End New Subviews for Google Lens Section ---
 
     // MARK: - Media Processing Logic (SHOULD BE INSIDE ImportView)
     func processSelectedMedia(_ results: [PHPickerResult]) {
         appState.isProcessing = true
         self.uploadedFilename = nil
         self.uploadedImageUrl = nil
-        appState.lensProducts = []
+        appState.clearResults() // Clear both old and new results
         self.currentUploadUserId = nil
         
         guard let result = results.first else {
@@ -269,7 +358,7 @@ struct ImportView: View {
         self.retryAttempts = 0 // Reset retry attempts for new processing
         self.uploadedFilename = nil
         self.uploadedImageUrl = nil
-        appState.lensProducts = []
+        appState.clearResults()
 
         NetworkService.shared.processImage(image, userId: userId) { result in
             DispatchQueue.main.async {
@@ -286,10 +375,17 @@ struct ImportView: View {
                     self.uploadedFilename = uploadResponse.data.filename
                     self.uploadedImageUrl = uploadResponse.data.imageUrl
                     
-                    // Automatically set lens products if they were returned from the backend
+                    // Handle new segmented results
+                    if let segmentedResults = uploadResponse.data.segmentedResults {
+                        appState.segmentedResults = segmentedResults
+                        appState.selectedSegmentIndex = 0
+                        print("✅ Loaded \(segmentedResults.totalItems) clothing segments from upload response")
+                    }
+                    
+                    // Backward compatibility: Automatically set lens products if they were returned from the backend
                     if let products = uploadResponse.data.products {
                         appState.lensProducts = products
-                        print("✅ Automatically loaded \(products.count) lens products from upload response")
+                        print("✅ Loaded \(products.count) lens products from upload response (backward compatibility)")
                     }
                     
                     self.showSuccess("Upload Complete", "Image uploaded and analyzed successfully!")
@@ -560,6 +656,68 @@ struct OriginalImageView: View {
                 }
             }
         }
+    }
+}
+
+// New View for displaying eBay matches in segmented results
+struct EbayMatchRow: View {
+    let ebayMatch: EbayMatch
+    
+    var body: some View {
+        Button(action: {
+            if UIApplication.shared.canOpenURL(ebayMatch.link) {
+                UIApplication.shared.open(ebayMatch.link)
+            } else {
+                print("⚠️ Cannot open URL: \(ebayMatch.link)")
+            }
+        }) {
+            HStack(spacing: 15) {
+                // eBay icon placeholder
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(Color.blue.opacity(0.2))
+                    .frame(width: 60, height: 60)
+                    .overlay(
+                        Text("eBay")
+                            .font(.caption)
+                            .fontWeight(.bold)
+                            .foregroundColor(.blue)
+                    )
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Search: \(ebayMatch.phrase)")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .lineLimit(2)
+                    
+                    Text("Available on eBay")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    
+                    HStack {
+                        Text("View on eBay")
+                            .font(.caption)
+                            .foregroundColor(.blue)
+                        
+                        Image(systemName: "arrow.up.right")
+                            .font(.caption2)
+                            .foregroundColor(.blue)
+                    }
+                }
+                
+                Spacer()
+                
+                Image(systemName: "chevron.right")
+                    .foregroundColor(.secondary)
+                    .font(.caption)
+            }
+            .padding()
+            .background(Color(.systemGray6))
+            .cornerRadius(10)
+        }
+        .buttonStyle(PlainButtonStyle())
+        .padding(.horizontal)
+        .accessibilityLabel("eBay result for \(ebayMatch.phrase)")
+        .accessibilityHint("Tap to open eBay listing in browser")
     }
 } 
  

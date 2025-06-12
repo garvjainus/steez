@@ -46,9 +46,15 @@ class AppState: ObservableObject {
     @Published var errorMessage: String? = nil
     @Published var hasSeenOnboarding: Bool = false
     
-    // For Google Lens Analysis
+    // For Google Lens Analysis (backward compatibility)
     @Published var lensProducts: [LensProduct] = []
     @Published var isAnalyzingWithLens: Bool = false
+    
+    // For new segmented results
+    @Published var segmentedResults: SegmentedResults?
+    @Published var selectedSegmentIndex: Int = 0
+    
+
     
     init() {
         // Check if user has seen onboarding
@@ -66,6 +72,12 @@ class AppState: ObservableObject {
     func resetOnboarding() {
         hasSeenOnboarding = false
         UserDefaults.standard.set(false, forKey: "hasSeenOnboarding")
+    }
+    
+    func clearResults() {
+        lensProducts = []
+        segmentedResults = nil
+        selectedSegmentIndex = 0
     }
     
     func checkServerAvailability() {

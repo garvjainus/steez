@@ -28,4 +28,4 @@ export interface SerpApiGoogleLensResponseDto {
   products?: SerpApiVisualMatch[]; // Structure seems similar to visual_matches
   // Add other top-level fields like related_content if you plan to use them
   error?: string; // SerpApi often includes an error message here on failure
-} 
+}
