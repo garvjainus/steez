@@ -36,6 +36,35 @@ struct UploadResponseData: Decodable {
     let size: Int?
     let imageUrl: URL?
     let products: [LensProduct]?
+    let segmentedResults: SegmentedResults?
+}
+
+// New data structures for segmented clothing analysis
+struct SegmentedResults: Decodable {
+    let segments: [ClothingSegment]
+    let totalItems: Int
+}
+
+struct ClothingSegment: Decodable, Identifiable {
+    let id = UUID()
+    let itemType: String
+    let phrase: String
+    let confidence: Double
+    let ebayResults: [EbayMatch]
+    
+    enum CodingKeys: String, CodingKey {
+        case itemType, phrase, confidence, ebayResults
+    }
+}
+
+struct EbayMatch: Decodable, Identifiable {
+    let id = UUID()
+    let phrase: String
+    let link: URL
+    
+    enum CodingKeys: String, CodingKey {
+        case phrase, link
+    }
 }
 
 // For results from your backend's /google-lens/analyze endpoint
@@ -394,8 +423,8 @@ class NetworkService {
                 case .failure(let afError):
                     let backendError = self.handleAfError(afError, from: response.data, response: response.response)
                     completion(.failure(backendError))
+                    }
                 }
-            }
         }
     }
     
@@ -435,8 +464,8 @@ class NetworkService {
                             completion(.success(products))
                         } catch let error {
                             print("❌ Error decoding lens products: \(error)")
-                            completion(.failure(.decodingFailed(error)))
-                        }
+                        completion(.failure(.decodingFailed(error)))
+                    }
                     case .failure(let afError):
                         print("❌ Google Lens API request failed: \(afError)")
                         if let data = response.data, let errorStr = String(data: data, encoding: .utf8) {

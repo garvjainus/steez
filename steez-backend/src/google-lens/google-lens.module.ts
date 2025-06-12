@@ -13,4 +13,4 @@ import { ConfigModule } from '@nestjs/config'; // ConfigModule is already global
   controllers: [GoogleLensController],
   exports: [GoogleLensService], // Export the service so it can be used in other modules
 })
-export class GoogleLensModule {} 
+export class GoogleLensModule {}

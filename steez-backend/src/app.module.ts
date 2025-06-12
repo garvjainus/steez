@@ -3,7 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { MulterModule } from '@nestjs/platform-express';
 import { UploadModule } from './upload/upload.module';
 import { HealthController } from './health.controller';
-import { GoogleLensModule } from './google-lens/google-lens.module';
+// import { GoogleLensModule } from './google-lens/google-lens.module'; // 🔒 TEMP-DISABLED (Google Lens)
 import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import * as path from 'path';
@@ -23,7 +23,7 @@ import * as path from 'path';
       }),
     }),
     UploadModule,
-    GoogleLensModule,
+    // GoogleLensModule, // 🔒 TEMP-DISABLED (Google Lens)
   ],
   controllers: [HealthController],
   providers: [],

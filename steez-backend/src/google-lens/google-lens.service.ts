@@ -32,13 +32,15 @@ export class GoogleLensService {
     }
 
     // Use configured BASE_URL or fall back to localhost
-    this.baseUrl = this.configService.get<string>('BASE_URL') || 'http://localhost:3000';
+    this.baseUrl =
+      this.configService.get<string>('BASE_URL') || 'http://localhost:3000';
   }
 
   /**
    * Analyse an uploaded image with a single SerpApi call
    */
   async analyzeUploadedImage(filename: string): Promise<ProductLinkDto[]> {
+    /* 🔒 TEMP-DISABLED (Google Lens)
     if (!this.serpApiKey) {
       throw new InternalServerErrorException('Google Lens API key is not configured.');
     }
@@ -52,7 +54,7 @@ export class GoogleLensService {
     this.logger.debug(`Image URL for Lens: ${imageUrl}`);
 
     try {
-      /* Single Google Lens request - visual_matches contains everything we need */
+      // Single Google Lens request - visual_matches contains everything we need
       const lensResponse = await this.makeRequestWithRetries('https://serpapi.com/search.json', {
         api_key: this.serpApiKey,
         engine: 'google_lens',
@@ -87,10 +89,19 @@ export class GoogleLensService {
     } catch (err) {
       this.handleApiError(err);
     }
+    */
+
+    // Temporary return empty array while Google Lens is disabled
+    this.logger.log('Google Lens is temporarily disabled');
+    return [];
   }
 
   /** GET with exponential back-off retry **only** on 5xx (SerpApi won't bill 429-retries now) */
-  private async makeRequestWithRetries(url: string, params: Record<string, any>, retry = 0): Promise<any> {
+  private async makeRequestWithRetries(
+    url: string,
+    params: Record<string, any>,
+    retry = 0,
+  ): Promise<any> {
     try {
       const res = await firstValueFrom(this.httpService.get(url, { params }));
       return res.data;
@@ -98,7 +109,9 @@ export class GoogleLensService {
       const status = err.response?.status;
       if (status && status >= 500 && status < 600 && retry < this.maxRetries) {
         const delay = this.retryDelay * 2 ** retry;
-        this.logger.warn(`SerpApi ${status}. Retrying in ${delay} ms (attempt ${retry + 1}/${this.maxRetries})`);
+        this.logger.warn(
+          `SerpApi ${status}. Retrying in ${delay} ms (attempt ${retry + 1}/${this.maxRetries})`,
+        );
         await new Promise((r) => setTimeout(r, delay));
         return this.makeRequestWithRetries(url, params, retry + 1);
       }
@@ -108,29 +121,38 @@ export class GoogleLensService {
 
   /** Clothing-ish heuristic */
   private isApparelLike(item: any): boolean {
-    const haystack = `${item.title || ''} ${item.category || ''} ${item.source || ''}`.toLowerCase();
-    
+    const haystack =
+      `${item.title || ''} ${item.category || ''} ${item.source || ''}`.toLowerCase();
+
     // More inclusive pattern for fashion items
-    const fashionKeywords = /(shirt|t[- ]?shirt|tee|jersey|jacket|hoodie|jeans|pants|skirt|dress|sweater|coat|blazer|suit|sock|hat|cap|shoe|sneaker|boot|sandal|shorts|scarf|glove|underwear|bra|lingerie|belt|apparel|clothing|fashion|wear|outfit|style|designer|luxury|brand|vuitton|gucci|prada|nike|adidas|supreme|vintage|streetwear)/;
-    
+    const fashionKeywords =
+      /(shirt|t[- ]?shirt|tee|jersey|jacket|hoodie|jeans|pants|skirt|dress|sweater|coat|blazer|suit|sock|hat|cap|shoe|sneaker|boot|sandal|shorts|scarf|glove|underwear|bra|lingerie|belt|apparel|clothing|fashion|wear|outfit|style|designer|luxury|brand|vuitton|gucci|prada|nike|adidas|supreme|vintage|streetwear)/;
+
     // Less restrictive - allow more items through
     const isLikelyFashion = fashionKeywords.test(haystack);
-    
+
     // If it's from a known fashion retailer, include it
-    const fashionSources = /(therealreal|stockx|grailed|vestiaire|poshmark|ebay|dhgate|alibaba|farfetch|ssense|end|mrporter|matchesfashion|net-a-porter|saks|nordstrom|barneys|bloomingdales)/i;
+    const fashionSources =
+      /(therealreal|stockx|grailed|vestiaire|poshmark|ebay|dhgate|alibaba|farfetch|ssense|end|mrporter|matchesfashion|net-a-porter|saks|nordstrom|barneys|bloomingdales)/i;
     const isFromFashionSource = fashionSources.test(item.source || '');
-    
+
     const shouldInclude = isLikelyFashion || isFromFashionSource;
-    
+
     if (!shouldInclude) {
-      this.logger.debug(`Filtered out: "${item.title}" from ${item.source} - not fashion-related`);
+      this.logger.debug(
+        `Filtered out: "${item.title}" from ${item.source} - not fashion-related`,
+      );
     }
-    
+
     return shouldInclude;
   }
 
   /** Map SerpApi item → DTO */
-  private mapToProductDto(item: any, filename: string, imageUrl: string): ProductLinkDto {
+  private mapToProductDto(
+    item: any,
+    filename: string,
+    imageUrl: string,
+  ): ProductLinkDto {
     // Handle price from visual_matches structure
     let priceText: string = '';
     let value: number | null = null;
@@ -151,7 +173,12 @@ export class GoogleLensService {
       }
     }
 
-    const symbolToCode: Record<string, string> = { '$': 'USD', '£': 'GBP', '€': 'EUR', '¥': 'JPY' };
+    const symbolToCode: Record<string, string> = {
+      $: 'USD',
+      '£': 'GBP',
+      '€': 'EUR',
+      '¥': 'JPY',
+    };
 
     return {
       title: item.title || 'Unknown Product',
@@ -175,6 +202,8 @@ export class GoogleLensService {
       throw new InternalServerErrorException(msg);
     }
     this.logger.error('Unhandled error in Google Lens flow', err.stack);
-    throw new InternalServerErrorException('Failed to analyse image with Google Lens.');
+    throw new InternalServerErrorException(
+      'Failed to analyse image with Google Lens.',
+    );
   }
 }

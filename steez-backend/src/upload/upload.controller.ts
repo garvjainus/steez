@@ -1,18 +1,19 @@
-import { 
-  Controller, 
-  Post, 
-  UseInterceptors, 
+import {
+  Controller,
+  Post,
+  UseInterceptors,
   UploadedFile,
   Body,
   HttpException,
   HttpStatus,
-  Logger
+  Logger,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
 import * as fs from 'fs';
 import { UploadService } from './upload.service';
 import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
+import { MatchResult } from '../services/geminiVision';
 
 @Controller('upload')
 export class UploadController {
@@ -25,9 +26,11 @@ export class UploadController {
   async uploadImage(
     @UploadedFile() file: Express.Multer.File,
     @Body('userId') userId: string,
+    @Body('userSize') userSize?: string,
+    @Body('userCountry') userCountry?: string,
   ) {
     this.logger.debug(`[uploadImage] File received: ${file ? 'Yes' : 'No'}`);
-    
+
     if (!file) {
       this.logger.error('[uploadImage] No file received in request');
       throw new HttpException('Image file is required', HttpStatus.BAD_REQUEST);
@@ -55,11 +58,24 @@ export class UploadController {
     }
 
     try {
-      const result = await this.uploadService.processUploadedImage(file, userId);
-      this.logger.debug(`[uploadImage] Image processed successfully: ${JSON.stringify(result)}`);
+      const user =
+        userSize || userCountry
+          ? { size: userSize || 'M', country: userCountry || 'US' }
+          : undefined;
+      const result = await this.uploadService.processUploadedImage(
+        file,
+        userId,
+        user,
+      );
+      this.logger.debug(
+        `[uploadImage] Image processed successfully: ${JSON.stringify(result)}`,
+      );
       return result;
     } catch (error) {
-      this.logger.error(`[uploadImage] Error processing upload: ${error.message}`, error.stack);
+      this.logger.error(
+        `[uploadImage] Error processing upload: ${error.message}`,
+        error.stack,
+      );
       throw new HttpException(
         error.message || 'Failed to upload image',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -73,7 +89,10 @@ export class UploadController {
     @Body('userId') userId: string,
   ) {
     if (!base64Image) {
-      throw new HttpException('Base64 image is required', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'Base64 image is required',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     if (!userId) {
@@ -90,7 +109,7 @@ export class UploadController {
           userId: userId,
           imageSize: base64Image.length,
           uploadedAt: new Date().toISOString(),
-        }
+        },
       };
     } catch (error) {
       throw new HttpException(
@@ -99,4 +118,4 @@ export class UploadController {
       );
     }
   }
-} 
+}
