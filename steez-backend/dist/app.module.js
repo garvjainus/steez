@@ -12,7 +12,6 @@ const config_1 = require("@nestjs/config");
 const platform_express_1 = require("@nestjs/platform-express");
 const upload_module_1 = require("./upload/upload.module");
 const health_controller_1 = require("./health.controller");
-const google_lens_module_1 = require("./google-lens/google-lens.module");
 const multer_1 = require("multer");
 const uuid_1 = require("uuid");
 const path = require("path");
@@ -35,7 +34,6 @@ exports.AppModule = AppModule = __decorate([
                 }),
             }),
             upload_module_1.UploadModule,
-            google_lens_module_1.GoogleLensModule,
         ],
         controllers: [health_controller_1.HealthController],
         providers: [],

@@ -23,7 +23,7 @@ let UploadController = UploadController_1 = class UploadController {
         this.uploadService = uploadService;
         this.logger = new common_1.Logger(UploadController_1.name);
     }
-    async uploadImage(file, userId) {
+    async uploadImage(file, userId, userSize, userCountry) {
         this.logger.debug(`[uploadImage] File received: ${file ? 'Yes' : 'No'}`);
         if (!file) {
             this.logger.error('[uploadImage] No file received in request');
@@ -49,7 +49,10 @@ let UploadController = UploadController_1 = class UploadController {
             throw new common_1.HttpException('User ID is required', common_1.HttpStatus.BAD_REQUEST);
         }
         try {
-            const result = await this.uploadService.processUploadedImage(file, userId);
+            const user = userSize || userCountry
+                ? { size: userSize || 'M', country: userCountry || 'US' }
+                : undefined;
+            const result = await this.uploadService.processUploadedImage(file, userId, user);
             this.logger.debug(`[uploadImage] Image processed successfully: ${JSON.stringify(result)}`);
             return result;
         }
@@ -73,7 +76,7 @@ let UploadController = UploadController_1 = class UploadController {
                     userId: userId,
                     imageSize: base64Image.length,
                     uploadedAt: new Date().toISOString(),
-                }
+                },
             };
         }
         catch (error) {
@@ -87,8 +90,10 @@ __decorate([
     (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('image')),
     __param(0, (0, common_1.UploadedFile)()),
     __param(1, (0, common_1.Body)('userId')),
+    __param(2, (0, common_1.Body)('userSize')),
+    __param(3, (0, common_1.Body)('userCountry')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:paramtypes", [Object, String, String, String]),
     __metadata("design:returntype", Promise)
 ], UploadController.prototype, "uploadImage", null);
 __decorate([
