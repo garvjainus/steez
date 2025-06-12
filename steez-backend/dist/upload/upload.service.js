@@ -12,14 +12,13 @@ var UploadService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UploadService = void 0;
 const common_1 = require("@nestjs/common");
-const google_lens_service_1 = require("../google-lens/google-lens.service");
+const geminiVision_1 = require("../services/geminiVision");
 const fs = require("fs");
 const path = require("path");
 const uuid_1 = require("uuid");
 const config_1 = require("@nestjs/config");
 let UploadService = UploadService_1 = class UploadService {
-    constructor(googleLensService, configService) {
-        this.googleLensService = googleLensService;
+    constructor(configService) {
         this.configService = configService;
         this.logger = new common_1.Logger(UploadService_1.name);
         this.uploadsDir = path.join(__dirname, '..', '..', 'uploads');
@@ -27,9 +26,10 @@ let UploadService = UploadService_1 = class UploadService {
             this.logger.log(`Creating uploads directory: ${this.uploadsDir}`);
             fs.mkdirSync(this.uploadsDir, { recursive: true });
         }
-        this.baseUrl = this.configService.get('BASE_URL') || 'http://localhost:3000';
+        this.baseUrl =
+            this.configService.get('BASE_URL') || 'http://localhost:3000';
     }
-    async processUploadedImage(file, userId) {
+    async processUploadedImage(file, userId, user) {
         this.logger.debug(`Processing uploaded image for user: ${userId}`);
         let savedFilename;
         let filePath;
@@ -59,8 +59,12 @@ let UploadService = UploadService_1 = class UploadService {
         const imageUrl = `${this.baseUrl}/uploads/${savedFilename}`;
         this.logger.debug(`Image URL: ${imageUrl}`);
         try {
-            const productLinks = await this.googleLensService.analyzeUploadedImage(savedFilename);
-            this.logger.log(`Successfully processed image. Found ${productLinks.length} products.`);
+            const imageBuffer = fs.readFileSync(filePath);
+            const base64Image = imageBuffer.toString('base64');
+            const userSize = user?.size || 'M';
+            const userCountry = user?.country || 'US';
+            const segmentedResults = await (0, geminiVision_1.extractAndMatch)(base64Image, userSize, userCountry);
+            this.logger.log(`Successfully processed image. Found ${segmentedResults.totalItems} clothing segments.`);
             return {
                 success: true,
                 message: 'Image processed successfully',
@@ -71,8 +75,8 @@ let UploadService = UploadService_1 = class UploadService {
                     userId: userId,
                     uploadedAt: new Date().toISOString(),
                     imageUrl: imageUrl,
-                    products: productLinks
-                }
+                    segmentedResults: segmentedResults,
+                },
             };
         }
         catch (error) {
@@ -88,7 +92,7 @@ let UploadService = UploadService_1 = class UploadService {
                     userId: userId,
                     uploadedAt: new Date().toISOString(),
                     imageUrl: imageUrl,
-                }
+                },
             };
         }
     }
@@ -96,7 +100,6 @@ let UploadService = UploadService_1 = class UploadService {
 exports.UploadService = UploadService;
 exports.UploadService = UploadService = UploadService_1 = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [google_lens_service_1.GoogleLensService,
-        config_1.ConfigService])
+    __metadata("design:paramtypes", [config_1.ConfigService])
 ], UploadService);
 //# sourceMappingURL=upload.service.js.map

@@ -15,7 +15,6 @@ const axios_1 = require("@nestjs/axios");
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const rxjs_1 = require("rxjs");
-const fs = require("fs");
 const path = require("path");
 let GoogleLensService = GoogleLensService_1 = class GoogleLensService {
     constructor(httpService, configService) {
@@ -32,46 +31,12 @@ let GoogleLensService = GoogleLensService_1 = class GoogleLensService {
         else {
             this.logger.log('GOOGLE_LENS_API key loaded successfully.');
         }
-        this.baseUrl = this.configService.get('BASE_URL') || 'http://localhost:3000';
+        this.baseUrl =
+            this.configService.get('BASE_URL') || 'http://localhost:3000';
     }
     async analyzeUploadedImage(filename) {
-        if (!this.serpApiKey) {
-            throw new common_1.InternalServerErrorException('Google Lens API key is not configured.');
-        }
-        const imagePath = path.join(this.uploadsDir, filename);
-        if (!fs.existsSync(imagePath)) {
-            throw new common_1.NotFoundException(`Image file not found: ${filename}`);
-        }
-        const imageUrl = `${this.baseUrl}/uploads/${filename}`;
-        this.logger.debug(`Image URL for Lens: ${imageUrl}`);
-        try {
-            const lensResponse = await this.makeRequestWithRetries('https://serpapi.com/search.json', {
-                api_key: this.serpApiKey,
-                engine: 'google_lens',
-                url: imageUrl,
-                gl: 'us',
-                hl: 'en',
-            });
-            this.logger.debug(`Response keys: ${Object.keys(lensResponse || {}).join(', ')}`);
-            if (lensResponse?.error) {
-                this.logger.error(`SerpAPI error: ${lensResponse.error}`);
-                return [];
-            }
-            const visualMatches = lensResponse.visual_matches ?? [];
-            this.logger.debug(`Found ${visualMatches.length} visual matches`);
-            if (!visualMatches.length) {
-                this.logger.debug(`No visual matches found. Full response: ${JSON.stringify(lensResponse, null, 2)}`);
-                return [];
-            }
-            const results = visualMatches
-                .filter((item) => this.isApparelLike(item))
-                .map((item) => this.mapToProductDto(item, filename, imageUrl));
-            this.logger.debug(`Returning ${results.length} fashion-related products`);
-            return results;
-        }
-        catch (err) {
-            this.handleApiError(err);
-        }
+        this.logger.log('Google Lens is temporarily disabled');
+        return [];
     }
     async makeRequestWithRetries(url, params, retry = 0) {
         try {
@@ -118,7 +83,12 @@ let GoogleLensService = GoogleLensService_1 = class GoogleLensService {
                 value = priceMatch ? parseFloat(priceMatch[2].replace(/,/g, '')) : null;
             }
         }
-        const symbolToCode = { '$': 'USD', '£': 'GBP', '€': 'EUR', '¥': 'JPY' };
+        const symbolToCode = {
+            $: 'USD',
+            '£': 'GBP',
+            '€': 'EUR',
+            '¥': 'JPY',
+        };
         return {
             title: item.title || 'Unknown Product',
             link: item.link,

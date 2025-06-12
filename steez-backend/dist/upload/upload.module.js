@@ -10,13 +10,12 @@ exports.UploadModule = void 0;
 const common_1 = require("@nestjs/common");
 const upload_controller_1 = require("./upload.controller");
 const upload_service_1 = require("./upload.service");
-const google_lens_module_1 = require("../google-lens/google-lens.module");
 let UploadModule = class UploadModule {
 };
 exports.UploadModule = UploadModule;
 exports.UploadModule = UploadModule = __decorate([
     (0, common_1.Module)({
-        imports: [google_lens_module_1.GoogleLensModule],
+        imports: [],
         controllers: [upload_controller_1.UploadController],
         providers: [upload_service_1.UploadService],
     })
