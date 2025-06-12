@@ -4,7 +4,8 @@
 .env.development.local
 .env.test.local
 .env.production.local
-
+.mdc
+.cursor
 # Dependencies
 node_modules/
 */node_modules/
