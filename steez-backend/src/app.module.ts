@@ -12,6 +12,7 @@ import * as path from 'path';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: '../.env', // Load from root directory
     }),
     MulterModule.register({
       storage: diskStorage({

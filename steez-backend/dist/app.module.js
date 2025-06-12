@@ -23,6 +23,7 @@ exports.AppModule = AppModule = __decorate([
         imports: [
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
+                envFilePath: '../.env',
             }),
             platform_express_1.MulterModule.register({
                 storage: (0, multer_1.diskStorage)({
