@@ -46,5 +46,7 @@
     <string>Steez needs access to your photo library to import fashion items.</string>
     <key>NSCameraUsageDescription</key>
     <string>Steez needs access to your camera to capture fashion items.</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Steez uses your location to automatically detect your country and provide region-specific clothing search results.</string>
 </dict>
 </plist> 
