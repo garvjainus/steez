@@ -29,6 +29,14 @@ interface EbaySearchResponse {
   offset: number;
 }
 
+export interface MatchResult {
+  phrase: string;
+  title: string;
+  link: string;
+  price?: string;
+  imageUrl?: string;
+}
+
 function getEbayRoot(): string {
   return process.env.EBAY_ENV === 'SANDBOX'
     ? 'https://api.sandbox.ebay.com'
@@ -80,38 +88,57 @@ export async function searchEbay(
   phrase: string,
   size: string,
   country: string,
-): Promise<string | null> {
+  maxResults = 5,
+): Promise<MatchResult[]> {
   if (!token || Date.now() >= tokenExpiry) {
     token = await getToken();
   }
 
   try {
-    const res: AxiosResponse<EbaySearchResponse> = await axios.get(
-      `${getEbayRoot()}/buy/browse/v1/item_summary/search`,
-      {
-        params: {
-          q: phrase,
-          limit: 10,
-          filter: [
-            // Optional size filter – remove if size is empty
-            size ? `attributeName:Size|attributeValue:${size}` : undefined,
-            // Ensure items ship to the specified country
-            `deliveryCountry:${country}`,
-            // Only fixed-price listings (no auctions)
-            'buyingOptions:{FIXED_PRICE}',
-          ]
-            // Remove undefined entries if size was blank
-            .filter(Boolean)
-            .join(','),
-        },
-        headers: { Authorization: `Bearer ${token}` },
-      },
-    );
+    const root = getEbayRoot();
 
-    // Return the first item's web URL if present, otherwise null
-    return res.data.itemSummaries?.[0]?.itemWebUrl || null;
+    // helper to execute search with optional sizeFilter
+    const doSearch = async (includeSize: boolean): Promise<EbaySearchResponse> => {
+      const filterParts = [
+        includeSize && size ? `attributeName:Size|attributeValue:${size}` : undefined,
+        `deliveryCountry:${country}`,
+        'buyingOptions:{FIXED_PRICE}',
+      ].filter(Boolean).join(',');
+
+      const res: AxiosResponse<EbaySearchResponse> = await axios.get(
+        `${root}/buy/browse/v1/item_summary/search`,
+        {
+          params: {
+            q: phrase,
+            limit: 20,
+            filter: filterParts,
+          },
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+      return res.data;
+    };
+
+    // First attempt with size filter
+    let data = await doSearch(true);
+    if (!data.itemSummaries || data.itemSummaries.length === 0) {
+      // Fallback: try without size filter
+      data = await doSearch(false);
+    }
+
+    const results: MatchResult[] = (data.itemSummaries || [])
+      .slice(0, maxResults)
+      .map((item) => ({
+        phrase,
+        title: item.title,
+        link: item.itemWebUrl,
+        price: item.price ? `${item.price.value} ${item.price.currency}` : undefined,
+        imageUrl: item.image?.imageUrl,
+      }));
+
+    return results;
   } catch (error) {
     console.error(`eBay search error for "${phrase}":`, error);
-    return null;
+    return [];
   }
 }

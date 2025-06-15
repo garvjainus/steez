@@ -385,7 +385,7 @@ class NetworkService {
     
     // MARK: - Backend Image Processing (Upload to Your Backend)
     // MODIFIED to use multipart form-data to get filename back
-    func processImage(_ image: UIImage, userId: String, completion: @escaping (Result<ImageUploadResponse, NetworkError>) -> Void) {
+    func processImage(_ image: UIImage, userId: String, userSize: String? = nil, userCountry: String? = nil, completion: @escaping (Result<ImageUploadResponse, NetworkError>) -> Void) {
         guard let imageData = image.jpegData(compressionQuality: 0.8) else {
             completion(.failure(.invalidData))
             return
@@ -400,6 +400,14 @@ class NetworkService {
             multipartFormData: { multipartFormData in
                 multipartFormData.append(imageData, withName: "image", fileName: "photo.jpg", mimeType: "image/jpeg")
                 multipartFormData.append(Data(userId.utf8), withName: "userId")
+                
+                // Add user size and country if provided
+                if let userSize = userSize {
+                    multipartFormData.append(Data(userSize.utf8), withName: "userSize")
+                }
+                if let userCountry = userCountry {
+                    multipartFormData.append(Data(userCountry.utf8), withName: "userCountry")
+                }
             },
             to: url,
             method: .post

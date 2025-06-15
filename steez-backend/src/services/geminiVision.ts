@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI, SchemaType, FunctionCallingMode } from '@google/generative-ai';
-import { searchEbay } from './ebay';
+import { searchEbay, MatchResult } from './ebay';
 
 // Helper to lazily initialize Gemini client after environment variables are loaded
 function getGenAI(): GoogleGenerativeAI {
@@ -20,11 +20,6 @@ interface ExtractedItem {
 
 interface ExtractionResult {
   items: ExtractedItem[];
-}
-
-export interface MatchResult {
-  phrase: string;
-  link: string;
 }
 
 export interface ClothingSegment {
@@ -149,10 +144,10 @@ export async function extractAndMatch(
       ];
       
       for (const searchTerm of searchVariations) {
-        const link = await searchEbay(searchTerm, userSize, country);
-        if (link) {
-          ebayResults.push({ phrase: searchTerm, link });
-          break; // Found a result, no need to try other variations
+        const results = await searchEbay(searchTerm, userSize, country);
+        if (results.length > 0) {
+          ebayResults.push(...results);
+          break; // Found results, stop trying other variations
         }
       }
     } catch (error) {
@@ -171,4 +166,6 @@ export async function extractAndMatch(
     segments,
     totalItems: segments.length
   };
-} 
+}
+
+export type { MatchResult }; 
