@@ -69,13 +69,25 @@ describe('UploadService', () => {
             itemType: 'jacket',
             phrase: 'black leather biker jacket',
             confidence: 0.85,
-            ebayResults: [{ phrase: 'black leather biker jacket', link: 'https://ebay.com/item1' }]
+            ebayResults: [{ 
+              phrase: 'black leather biker jacket', 
+              title: 'Black Leather Biker Jacket',
+              link: 'https://ebay.com/item1',
+              price: '$99.99',
+              imageUrl: 'https://ebay.com/image1.jpg'
+            }]
           },
           {
             itemType: 'jeans',
             phrase: 'blue skinny denim jeans',
             confidence: 0.90,
-            ebayResults: [{ phrase: 'blue skinny denim jeans', link: 'https://ebay.com/item2' }]
+            ebayResults: [{ 
+              phrase: 'blue skinny denim jeans', 
+              title: 'Blue Skinny Denim Jeans',
+              link: 'https://ebay.com/item2',
+              price: '$49.99',
+              imageUrl: 'https://ebay.com/image2.jpg'
+            }]
           }
         ],
         totalItems: 2
