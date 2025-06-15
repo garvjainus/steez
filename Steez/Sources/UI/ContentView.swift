@@ -2,10 +2,14 @@ import SwiftUI
 import PhotosUI
 import UserNotifications
 import UIKit
+import CoreLocation
+
+// MARK: - Main ContentView
 
 struct ContentView: View {
     @State private var selectedTab = 0
     @EnvironmentObject var appState: AppState
+    @State private var showingPreferences = false
     
     var body: some View {
         ZStack {
@@ -27,6 +31,18 @@ struct ContentView: View {
             if let errorMessage = appState.errorMessage {
                 serverErrorView(message: errorMessage)
             }
+        }
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: { showingPreferences = true }) {
+                    Image(systemName: "gearshape.fill")
+                        .foregroundColor(.blue)
+                }
+            }
+        }
+        .sheet(isPresented: $showingPreferences) {
+            UserPreferencesView()
+                .environmentObject(appState)
         }
     }
     
@@ -152,7 +168,7 @@ struct ImportView: View {
                                 .buttonStyle(.borderedProminent)
                                 .padding()
                         }
-                        } else if let imageUrl = uploadedImageUrl {
+                        } else if uploadedImageUrl != nil {
                             uploadedImageView
                         } else {
                             buttons
@@ -262,9 +278,7 @@ struct ImportView: View {
                                 .cornerRadius(8)
                                 .padding(.horizontal)
                         } else {
-                            ForEach(selectedSegment.ebayResults) { ebayMatch in
-                                EbayMatchRow(ebayMatch: ebayMatch)
-                            }
+                            EbayMatchesView(matches: selectedSegment.ebayResults)
                         }
                     }
                 }
@@ -360,7 +374,7 @@ struct ImportView: View {
         self.uploadedImageUrl = nil
         appState.clearResults()
 
-        NetworkService.shared.processImage(image, userId: userId) { result in
+        NetworkService.shared.processImage(image, userId: userId, userSize: appState.userSize, userCountry: appState.userCountry) { result in
             DispatchQueue.main.async {
                 // Remove the observer when done
                 NotificationCenter.default.removeObserver(observer)
@@ -660,64 +674,47 @@ struct OriginalImageView: View {
 }
 
 // New View for displaying eBay matches in segmented results
-struct EbayMatchRow: View {
-    let ebayMatch: EbayMatch
+struct EbayMatchesView: View {
+    let matches: [EbayMatch]
     
     var body: some View {
-        Button(action: {
-            if UIApplication.shared.canOpenURL(ebayMatch.link) {
-                UIApplication.shared.open(ebayMatch.link)
-            } else {
-                print("⚠️ Cannot open URL: \(ebayMatch.link)")
-            }
-        }) {
-            HStack(spacing: 15) {
-                // eBay icon placeholder
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.blue.opacity(0.2))
-                    .frame(width: 60, height: 60)
-                    .overlay(
-                        Text("eBay")
-                            .font(.caption)
-                            .fontWeight(.bold)
-                            .foregroundColor(.blue)
-                    )
-                
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Search: \(ebayMatch.phrase)")
-                        .font(.subheadline)
-                        .fontWeight(.medium)
-                        .lineLimit(2)
-                    
-                    Text("Available on eBay")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    
-                    HStack {
-                        Text("View on eBay")
-                            .font(.caption)
-                            .foregroundColor(.blue)
-                        
-                        Image(systemName: "arrow.up.right")
-                            .font(.caption2)
-                            .foregroundColor(.blue)
-                    }
-                }
-                
-                Spacer()
-                
-                Image(systemName: "chevron.right")
+        VStack(alignment: .leading, spacing: 8) {
+            if matches.isEmpty {
+                Text("No matches found")
                     .foregroundColor(.secondary)
-                    .font(.caption)
+                    .italic()
+                    .padding(.horizontal)
+            } else {
+                ForEach(matches) { match in
+                    Link(destination: match.link) {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(match.phrase)
+                                    .font(.subheadline)
+                                    .foregroundColor(.primary)
+                                    .lineLimit(2)
+                                
+                                Text(match.link.absoluteString)
+                                    .font(.caption)
+                                    .foregroundColor(.blue)
+                                    .lineLimit(1)
+                                    .truncationMode(.middle)
+                            }
+                            
+                            Spacer()
+                            
+                            Image(systemName: "arrow.up.right.square")
+                                .foregroundColor(.blue)
+                                .font(.title2)
+                        }
+                        .padding()
+                        .background(Color(.systemGray6))
+                        .cornerRadius(8)
+                    }
+                    .padding(.horizontal)
+                }
             }
-            .padding()
-            .background(Color(.systemGray6))
-            .cornerRadius(10)
         }
-        .buttonStyle(PlainButtonStyle())
-        .padding(.horizontal)
-        .accessibilityLabel("eBay result for \(ebayMatch.phrase)")
-        .accessibilityHint("Tap to open eBay listing in browser")
     }
 } 
  
