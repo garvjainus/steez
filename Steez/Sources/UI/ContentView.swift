@@ -527,10 +527,7 @@ struct ProfileView: View {
     }
 }
 
-// MARK: - Notification name for upload progress
-extension Notification.Name {
-    static let uploadProgressNotification = Notification.Name("uploadProgressNotification")
-}
+// MARK: - Notification name for upload progress (defined in NetworkService)
 
 // New View for displaying Lens Product Row
 struct LensProductRow: View {
@@ -688,30 +685,30 @@ struct EbayMatchesView: View {
                 ForEach(matches) { match in
                     Link(destination: match.link) {
                         HStack {
-                            VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: 4) {
                                 Text(match.phrase)
-                                    .font(.subheadline)
+                        .font(.subheadline)
                                     .foregroundColor(.primary)
-                                    .lineLimit(2)
-                                
+                        .lineLimit(2)
+                    
                                 Text(match.link.absoluteString)
-                                    .font(.caption)
-                                    .foregroundColor(.blue)
+                            .font(.caption)
+                            .foregroundColor(.blue)
                                     .lineLimit(1)
                                     .truncationMode(.middle)
-                            }
-                            
-                            Spacer()
-                            
+                }
+                
+                Spacer()
+                
                             Image(systemName: "arrow.up.right.square")
                                 .foregroundColor(.blue)
                                 .font(.title2)
-                        }
-                        .padding()
-                        .background(Color(.systemGray6))
+            }
+            .padding()
+            .background(Color(.systemGray6))
                         .cornerRadius(8)
-                    }
-                    .padding(.horizontal)
+        }
+        .padding(.horizontal)
                 }
             }
         }

@@ -166,6 +166,6 @@ export async function extractAndMatch(
     segments,
     totalItems: segments.length
   };
-}
+} 
 
 export type { MatchResult }; 

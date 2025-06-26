@@ -71,7 +71,7 @@ async function getToken(): Promise<string> {
     `${ebayRoot}/identity/v1/oauth2/token`,
     'grant_type=client_credentials&scope=' + encodeURIComponent(scope),
     {
-      headers: {  
+      headers: {
         Authorization: `Basic ${credentials}`,
         'Content-Type': 'application/x-www-form-urlencoded',
       },
@@ -105,17 +105,17 @@ export async function searchEbay(
         'buyingOptions:{FIXED_PRICE}',
       ].filter(Boolean).join(',');
 
-      const res: AxiosResponse<EbaySearchResponse> = await axios.get(
+    const res: AxiosResponse<EbaySearchResponse> = await axios.get(
         `${root}/buy/browse/v1/item_summary/search`,
-        {
-          params: {
-            q: phrase,
+      {
+        params: {
+          q: phrase,
             limit: 20,
             filter: filterParts,
-          },
-          headers: { Authorization: `Bearer ${token}` },
         },
-      );
+        headers: { Authorization: `Bearer ${token}` },
+      },
+    );
       return res.data;
     };
 

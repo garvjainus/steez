@@ -91,48 +91,57 @@ extension LocationService: CLLocationManagerDelegate {
 extension LocationService {
     static let clothingSizes = ["XS", "S", "M", "L", "XL", "XXL"]
     
+    struct Country {
+        let code: String
+        let name: String
+    }
+    
     static let supportedCountries = [
-        ("US", "United States"),
-        ("GB", "United Kingdom"),
-        ("CA", "Canada"),
-        ("AU", "Australia"),
-        ("DE", "Germany"),
-        ("FR", "France"),
-        ("IT", "Italy"),
-        ("ES", "Spain"),
-        ("JP", "Japan"),
-        ("KR", "South Korea"),
-        ("IN", "India"),
-        ("BR", "Brazil"),
-        ("MX", "Mexico"),
-        ("NL", "Netherlands"),
-        ("BE", "Belgium"),
-        ("AT", "Austria"),
-        ("CH", "Switzerland"),
-        ("SE", "Sweden"),
-        ("NO", "Norway"),
-        ("DK", "Denmark"),
-        ("FI", "Finland"),
-        ("PL", "Poland"),
-        ("CZ", "Czech Republic"),
-        ("HU", "Hungary"),
-        ("RO", "Romania"),
-        ("BG", "Bulgaria"),
-        ("HR", "Croatia"),
-        ("GR", "Greece"),
-        ("PT", "Portugal"),
-        ("IE", "Ireland"),
-        ("LU", "Luxembourg"),
-        ("MT", "Malta"),
-        ("CY", "Cyprus"),
-        ("LV", "Latvia"),
-        ("LT", "Lithuania"),
-        ("EE", "Estonia"),
-        ("SK", "Slovakia"),
-        ("SI", "Slovenia")
+        Country(code: "US", name: "United States"),
+        Country(code: "GB", name: "United Kingdom"),
+        Country(code: "CA", name: "Canada"),
+        Country(code: "AU", name: "Australia"),
+        Country(code: "DE", name: "Germany"),
+        Country(code: "FR", name: "France"),
+        Country(code: "IT", name: "Italy"),
+        Country(code: "ES", name: "Spain"),
+        Country(code: "JP", name: "Japan"),
+        Country(code: "KR", name: "South Korea"),
+        Country(code: "IN", name: "India"),
+        Country(code: "BR", name: "Brazil"),
+        Country(code: "MX", name: "Mexico"),
+        Country(code: "NL", name: "Netherlands"),
+        Country(code: "BE", name: "Belgium"),
+        Country(code: "AT", name: "Austria"),
+        Country(code: "CH", name: "Switzerland"),
+        Country(code: "SE", name: "Sweden"),
+        Country(code: "NO", name: "Norway"),
+        Country(code: "DK", name: "Denmark"),
+        Country(code: "FI", name: "Finland"),
+        Country(code: "PL", name: "Poland"),
+        Country(code: "CZ", name: "Czech Republic"),
+        Country(code: "HU", name: "Hungary"),
+        Country(code: "RO", name: "Romania"),
+        Country(code: "BG", name: "Bulgaria"),
+        Country(code: "HR", name: "Croatia"),
+        Country(code: "GR", name: "Greece"),
+        Country(code: "PT", name: "Portugal"),
+        Country(code: "IE", name: "Ireland"),
+        Country(code: "LU", name: "Luxembourg"),
+        Country(code: "MT", name: "Malta"),
+        Country(code: "CY", name: "Cyprus"),
+        Country(code: "LV", name: "Latvia"),
+        Country(code: "LT", name: "Lithuania"),
+        Country(code: "EE", name: "Estonia"),
+        Country(code: "SK", name: "Slovakia"),
+        Country(code: "SI", name: "Slovenia")
     ]
     
+    static func countryName(for code: String) -> String {
+        return supportedCountries.first { $0.code == code }?.name ?? code
+    }
+    
     static func getCountryName(for code: String) -> String {
-        return supportedCountries.first { $0.0 == code }?.1 ?? code
+        return countryName(for: code)
     }
 } 
