@@ -10,12 +10,16 @@
 		030626C62FCD23D47B862184 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD1AAB411055DDE3228ED69 /* LocationService.swift */; };
 		2D82ED7E8D696279367EF9F6 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = C04B9EEE00FB68806482BE0F /* Models.swift */; };
 		3208962B2E0DE31E0060126F /* Media.xcassets in Sources */ = {isa = PBXBuildFile; fileRef = 320896232E0DD6CB0060126F /* Media.xcassets */; };
+		320896322E0DEF4E0060126F /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D401135D5E0D7A8DA3032C5F /* NetworkService.swift */; };
+		320896342E0DF1FB0060126F /* IBMPlexMono-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3208961D2E0DD5FF0060126F /* IBMPlexMono-Medium.ttf */; };
+		320896352E0DF1FB0060126F /* IBMPlexMono-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3208961E2E0DD5FF0060126F /* IBMPlexMono-Regular.ttf */; };
+		320896362E0DF1FB0060126F /* IBMPlexSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3208962C2E0DEB670060126F /* IBMPlexSans-Regular.ttf */; };
+		320896372E0DF1FB0060126F /* IBMPlexSans-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3208962D2E0DEB6F0060126F /* IBMPlexSans-Medium.ttf */; };
 		5D5F959C2BA09CE80DE93589 /* LandingPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7321C953047B57AA32152B7 /* LandingPageView.swift */; };
 		7149E4BA971C5AFB8A6692AB /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C66521C07E8FB02231DE665 /* ContentView.swift */; };
 		86F66E312CFF3746C1970380 /* SteezApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9D3506FA3A093B8734A6705 /* SteezApp.swift */; };
 		B3AB80AAE148409C9F480664 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A84D3588ED8F601142ED98D1 /* ImagePicker.swift */; };
 		BD9EE75AD8471B259A3851D0 /* UserPreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 560CAA4BF95ECD8B6E2A0B8B /* UserPreferencesView.swift */; };
-		F4D306FFF0E76C621175273C /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D401135D5E0D7A8DA3032C5F /* NetworkService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,7 +28,8 @@
 		3208961D2E0DD5FF0060126F /* IBMPlexMono-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexMono-Medium.ttf"; sourceTree = "<group>"; };
 		3208961E2E0DD5FF0060126F /* IBMPlexMono-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexMono-Regular.ttf"; sourceTree = "<group>"; };
 		320896232E0DD6CB0060126F /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
-		320896252E0DE0500060126F /* IBMPlexSans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexSans-Regular.ttf"; sourceTree = "<group>"; };
+		3208962C2E0DEB670060126F /* IBMPlexSans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexSans-Regular.ttf"; sourceTree = "<group>"; };
+		3208962D2E0DEB6F0060126F /* IBMPlexSans-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexSans-Medium.ttf"; sourceTree = "<group>"; };
 		560CAA4BF95ECD8B6E2A0B8B /* UserPreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPreferencesView.swift; sourceTree = "<group>"; };
 		6E96BF9392EBBFE64226ACFF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		72E990E0B3B7A81DC126DBBE /* Steez.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Steez.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -53,7 +58,8 @@
 				3208961D2E0DD5FF0060126F /* IBMPlexMono-Medium.ttf */,
 				3208961E2E0DD5FF0060126F /* IBMPlexMono-Regular.ttf */,
 				3208961C2E0DD5CA0060126F /* steezlogo.png */,
-				320896252E0DE0500060126F /* IBMPlexSans-Regular.ttf */,
+				3208962C2E0DEB670060126F /* IBMPlexSans-Regular.ttf */,
+				3208962D2E0DEB6F0060126F /* IBMPlexSans-Medium.ttf */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -100,9 +106,9 @@
 			isa = PBXGroup;
 			children = (
 				320896232E0DD6CB0060126F /* Media.xcassets */,
-				320896212E0DD5FF0060126F /* Resources */,
 				228BE19DF033C7AA9D1BE85F /* Sources */,
 				41A65657ED393E56E88E682C /* Products */,
+				320896212E0DD5FF0060126F /* Resources */,
 			);
 			sourceTree = "<group>";
 		};
@@ -114,6 +120,7 @@
 			buildConfigurationList = 9F621860A229FF49AC48BCF7 /* Build configuration list for PBXNativeTarget "Steez" */;
 			buildPhases = (
 				5FB9009410984C2BBCB28C21 /* Sources */,
+				320896332E0DF1F10060126F /* Resources */,
 			);
 			buildRules = (
 			);
@@ -153,18 +160,32 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		320896332E0DF1F10060126F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				320896342E0DF1FB0060126F /* IBMPlexMono-Medium.ttf in Resources */,
+				320896352E0DF1FB0060126F /* IBMPlexMono-Regular.ttf in Resources */,
+				320896362E0DF1FB0060126F /* IBMPlexSans-Regular.ttf in Resources */,
+				320896372E0DF1FB0060126F /* IBMPlexSans-Medium.ttf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		5FB9009410984C2BBCB28C21 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				320896322E0DEF4E0060126F /* NetworkService.swift in Sources */,
 				3208962B2E0DE31E0060126F /* Media.xcassets in Sources */,
 				7149E4BA971C5AFB8A6692AB /* ContentView.swift in Sources */,
 				B3AB80AAE148409C9F480664 /* ImagePicker.swift in Sources */,
 				5D5F959C2BA09CE80DE93589 /* LandingPageView.swift in Sources */,
 				030626C62FCD23D47B862184 /* LocationService.swift in Sources */,
 				2D82ED7E8D696279367EF9F6 /* Models.swift in Sources */,
-				F4D306FFF0E76C621175273C /* NetworkService.swift in Sources */,
 				86F66E312CFF3746C1970380 /* SteezApp.swift in Sources */,
 				BD9EE75AD8471B259A3851D0 /* UserPreferencesView.swift in Sources */,
 			);
