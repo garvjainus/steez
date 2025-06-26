@@ -7,44 +7,34 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		030626C62FCD23D47B862184 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD1AAB411055DDE3228ED69 /* LocationService.swift */; };
 		2D82ED7E8D696279367EF9F6 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = C04B9EEE00FB68806482BE0F /* Models.swift */; };
-		3264680E2DF1F0F200AFCEB4 /* LandingPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3264680D2DF1F0F200AFCEB4 /* LandingPageView.swift */; };
-		32D5C4272DFF0519008A7AD2 /* UserPreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32D5C4262DFF0519008A7AD2 /* UserPreferencesView.swift */; };
-		32D5C4292DFF0528008A7AD2 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32D5C4282DFF0528008A7AD2 /* LocationService.swift */; };
+		3208962B2E0DE31E0060126F /* Media.xcassets in Sources */ = {isa = PBXBuildFile; fileRef = 320896232E0DD6CB0060126F /* Media.xcassets */; };
+		5D5F959C2BA09CE80DE93589 /* LandingPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7321C953047B57AA32152B7 /* LandingPageView.swift */; };
 		7149E4BA971C5AFB8A6692AB /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C66521C07E8FB02231DE665 /* ContentView.swift */; };
 		86F66E312CFF3746C1970380 /* SteezApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9D3506FA3A093B8734A6705 /* SteezApp.swift */; };
 		B3AB80AAE148409C9F480664 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A84D3588ED8F601142ED98D1 /* ImagePicker.swift */; };
+		BD9EE75AD8471B259A3851D0 /* UserPreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 560CAA4BF95ECD8B6E2A0B8B /* UserPreferencesView.swift */; };
 		F4D306FFF0E76C621175273C /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D401135D5E0D7A8DA3032C5F /* NetworkService.swift */; };
-		F9ADF4CBB51578E2BAAC743F /* Pods_Steez.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 367B0D4B22990A060A2A4CB4 /* Pods_Steez.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		0C66521C07E8FB02231DE665 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		0EB163960C0743200BBFFBFC /* SteezShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SteezShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		183713091BBACE4EA8E81E7B /* Pods-Steez.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Steez.debug.xcconfig"; path = "Target Support Files/Pods-Steez/Pods-Steez.debug.xcconfig"; sourceTree = "<group>"; };
-		27EBE8D2823376576D8A6508 /* Pods-Steez.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Steez.release.xcconfig"; path = "Target Support Files/Pods-Steez/Pods-Steez.release.xcconfig"; sourceTree = "<group>"; };
-		3264680D2DF1F0F200AFCEB4 /* LandingPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LandingPageView.swift; sourceTree = "<group>"; };
-		32D5C4262DFF0519008A7AD2 /* UserPreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPreferencesView.swift; sourceTree = "<group>"; };
-		32D5C4282DFF0528008A7AD2 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
-		367B0D4B22990A060A2A4CB4 /* Pods_Steez.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Steez.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3208961C2E0DD5CA0060126F /* steezlogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = steezlogo.png; sourceTree = "<group>"; };
+		3208961D2E0DD5FF0060126F /* IBMPlexMono-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexMono-Medium.ttf"; sourceTree = "<group>"; };
+		3208961E2E0DD5FF0060126F /* IBMPlexMono-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexMono-Regular.ttf"; sourceTree = "<group>"; };
+		320896232E0DD6CB0060126F /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
+		320896252E0DE0500060126F /* IBMPlexSans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexSans-Regular.ttf"; sourceTree = "<group>"; };
+		560CAA4BF95ECD8B6E2A0B8B /* UserPreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPreferencesView.swift; sourceTree = "<group>"; };
 		6E96BF9392EBBFE64226ACFF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		72E990E0B3B7A81DC126DBBE /* Steez.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Steez.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		72E990E0B3B7A81DC126DBBE /* Steez.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Steez.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A84D3588ED8F601142ED98D1 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		C04B9EEE00FB68806482BE0F /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		CFD1AAB411055DDE3228ED69 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		D401135D5E0D7A8DA3032C5F /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		D9D3506FA3A093B8734A6705 /* SteezApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SteezApp.swift; sourceTree = "<group>"; };
+		F7321C953047B57AA32152B7 /* LandingPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LandingPageView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
-
-/* Begin PBXFrameworksBuildPhase section */
-		6EECB0C6B44A0B7BE1BE67C6 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				F9ADF4CBB51578E2BAAC743F /* Pods_Steez.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		228BE19DF033C7AA9D1BE85F /* Sources */ = {
@@ -57,13 +47,24 @@
 			path = Sources;
 			sourceTree = "<group>";
 		};
+		320896212E0DD5FF0060126F /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				3208961D2E0DD5FF0060126F /* IBMPlexMono-Medium.ttf */,
+				3208961E2E0DD5FF0060126F /* IBMPlexMono-Regular.ttf */,
+				3208961C2E0DD5CA0060126F /* steezlogo.png */,
+				320896252E0DE0500060126F /* IBMPlexSans-Regular.ttf */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		3C009CF2A0E990ADA785595F /* UI */ = {
 			isa = PBXGroup;
 			children = (
-				32D5C4262DFF0519008A7AD2 /* UserPreferencesView.swift */,
-				3264680D2DF1F0F200AFCEB4 /* LandingPageView.swift */,
 				0C66521C07E8FB02231DE665 /* ContentView.swift */,
 				A84D3588ED8F601142ED98D1 /* ImagePicker.swift */,
+				F7321C953047B57AA32152B7 /* LandingPageView.swift */,
+				560CAA4BF95ECD8B6E2A0B8B /* UserPreferencesView.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -72,7 +73,6 @@
 			isa = PBXGroup;
 			children = (
 				72E990E0B3B7A81DC126DBBE /* Steez.app */,
-				0EB163960C0743200BBFFBFC /* SteezShareExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -89,73 +89,39 @@
 		A31495225D435C9D1D5D006A /* Core */ = {
 			isa = PBXGroup;
 			children = (
-				32D5C4282DFF0528008A7AD2 /* LocationService.swift */,
+				CFD1AAB411055DDE3228ED69 /* LocationService.swift */,
 				C04B9EEE00FB68806482BE0F /* Models.swift */,
 				D401135D5E0D7A8DA3032C5F /* NetworkService.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
 		};
-		B3964AC0857C43701DB1D99A /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				367B0D4B22990A060A2A4CB4 /* Pods_Steez.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		C35D837FA04CD7F5C289230A /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				183713091BBACE4EA8E81E7B /* Pods-Steez.debug.xcconfig */,
-				27EBE8D2823376576D8A6508 /* Pods-Steez.release.xcconfig */,
-			);
-			path = Pods;
-			sourceTree = "<group>";
-		};
 		C800F6A325A56C965CBF9608 = {
 			isa = PBXGroup;
 			children = (
+				320896232E0DD6CB0060126F /* Media.xcassets */,
+				320896212E0DD5FF0060126F /* Resources */,
 				228BE19DF033C7AA9D1BE85F /* Sources */,
 				41A65657ED393E56E88E682C /* Products */,
-				C35D837FA04CD7F5C289230A /* Pods */,
-				B3964AC0857C43701DB1D99A /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		044855CB596B67D9C3350938 /* SteezShareExtension */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 5F5C6D7DFA92AFFE75331461 /* Build configuration list for PBXNativeTarget "SteezShareExtension" */;
-			buildPhases = (
-				64DE263DD04E76BE1B290E54 /* Sources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = SteezShareExtension;
-			productName = SteezShareExtension;
-			productReference = 0EB163960C0743200BBFFBFC /* SteezShareExtension.appex */;
-			productType = "com.apple.product-type.app-extension";
-		};
 		EBA394659AC2B64F0E3FA78D /* Steez */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 9F621860A229FF49AC48BCF7 /* Build configuration list for PBXNativeTarget "Steez" */;
 			buildPhases = (
-				F0BB97A2AFE0F0E04D6E9A3A /* [CP] Check Pods Manifest.lock */,
 				5FB9009410984C2BBCB28C21 /* Sources */,
-				B37FCE133B458062F7D6FCA1 /* Resources */,
-				6EECB0C6B44A0B7BE1BE67C6 /* Frameworks */,
-				62E0E025276E65397E72BFAE /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = Steez;
+			packageProductDependencies = (
+			);
 			productName = Steez;
 			productReference = 72E990E0B3B7A81DC126DBBE /* Steez.app */;
 			productType = "com.apple.product-type.application";
@@ -179,92 +145,28 @@
 			);
 			mainGroup = C800F6A325A56C965CBF9608;
 			minimizedProjectReferenceProxies = 1;
-			productRefGroup = 41A65657ED393E56E88E682C /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				EBA394659AC2B64F0E3FA78D /* Steez */,
-				044855CB596B67D9C3350938 /* SteezShareExtension */,
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXResourcesBuildPhase section */
-		B37FCE133B458062F7D6FCA1 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		62E0E025276E65397E72BFAE /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Steez/Pods-Steez-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Steez/Pods-Steez-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Steez/Pods-Steez-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		F0BB97A2AFE0F0E04D6E9A3A /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Steez-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		5FB9009410984C2BBCB28C21 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3208962B2E0DE31E0060126F /* Media.xcassets in Sources */,
 				7149E4BA971C5AFB8A6692AB /* ContentView.swift in Sources */,
-				3264680E2DF1F0F200AFCEB4 /* LandingPageView.swift in Sources */,
-				32D5C4292DFF0528008A7AD2 /* LocationService.swift in Sources */,
 				B3AB80AAE148409C9F480664 /* ImagePicker.swift in Sources */,
+				5D5F959C2BA09CE80DE93589 /* LandingPageView.swift in Sources */,
+				030626C62FCD23D47B862184 /* LocationService.swift in Sources */,
 				2D82ED7E8D696279367EF9F6 /* Models.swift in Sources */,
 				F4D306FFF0E76C621175273C /* NetworkService.swift in Sources */,
-				32D5C4272DFF0519008A7AD2 /* UserPreferencesView.swift in Sources */,
 				86F66E312CFF3746C1970380 /* SteezApp.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		64DE263DD04E76BE1B290E54 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
+				BD9EE75AD8471B259A3851D0 /* UserPreferencesView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -390,39 +292,8 @@
 			};
 			name = Release;
 		};
-		69708C9EE4145489DAE4540D /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				INFOPLIST_FILE = Sources/ShareExtension/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.steez.app.share;
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		9AA0EB141BB0301F598C0E4F /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				INFOPLIST_FILE = Sources/ShareExtension/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.steez.app.share;
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Release;
-		};
 		B70DA960908D9D3BA70D56B5 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 27EBE8D2823376576D8A6508 /* Pods-Steez.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -439,7 +310,6 @@
 		};
 		BFE7EB8D6D21CD3214A8F3CC /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 183713091BBACE4EA8E81E7B /* Pods-Steez.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -462,15 +332,6 @@
 			buildConfigurations = (
 				27BAC835FC53AFD94B2C05CD /* Debug */,
 				4DDB3FDDAC125394F0A35FA2 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
-		};
-		5F5C6D7DFA92AFFE75331461 /* Build configuration list for PBXNativeTarget "SteezShareExtension" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				69708C9EE4145489DAE4540D /* Debug */,
-				9AA0EB141BB0301F598C0E4F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@nestjs/typeorm": "^11.0.0",
+    "@supabase/supabase-js": "^2.50.0",
+    "pg": "^8.16.0",
+    "typeorm": "^0.3.24"
+  }
+}

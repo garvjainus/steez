@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
-import Alamofire
-import Kingfisher
+// import Alamofire // Temporarily commented out
+// import Kingfisher // Temporarily commented out
 import CommonCrypto
 
 // MARK: - Error Handling Enum
@@ -124,10 +124,10 @@ class NetworkService {
         // Create cache directory if needed
         try? FileManager.default.createDirectory(at: diskCacheURL, withIntermediateDirectories: true)
         
-        // Set up Kingfisher cache for images
-        let cache = ImageCache.default
-        cache.memoryStorage.config.totalCostLimit = 100 * 1024 * 1024 // 100 MB memory cache
-        cache.diskStorage.config.sizeLimit = 500 * 1024 * 1024 // 500 MB disk cache
+        // Set up image cache (Kingfisher temporarily disabled)
+        // let cache = ImageCache.default
+        // cache.memoryStorage.config.totalCostLimit = 100 * 1024 * 1024 // 100 MB memory cache
+        // cache.diskStorage.config.sizeLimit = 500 * 1024 * 1024 // 500 MB disk cache
     }
     
     // MARK: - Server Availability
@@ -233,30 +233,16 @@ class NetworkService {
             return
         }
         
-        AF.request(urlRequest)
-            .validate(statusCode: 200..<300)
-            .responseData { response in
-                switch response.result {
-                case .success(let data):
-                    do {
-                        // Explicitly decode to type T
-                        let decodedData = try JSONDecoder().decode(T.self, from: data)
-                        // Cache successful response
-                        self.cacheResponse(decodedData, for: urlRequest)
-                        completion(.success(decodedData))
-                    } catch let decodingError {
-                        print("Decoding error: \(decodingError). JSON: \(String(data: data, encoding: .utf8) ?? "unknown")")
-                        completion(.failure(.decodingFailed(decodingError)))
-                    }
-                    
-                case .failure(let error):
+        URLSession.shared.dataTask(with: urlRequest) { data, response, error in
+            DispatchQueue.main.async {
+                if let error = error {
                     // Handle error with retry logic
                     if retryCount < self.maxRetries {
                         // Exponential backoff
                         let delay = self.retryDelay * pow(2.0, Double(retryCount))
                         
                         // Check if the error is retriable
-                        if self.isRetriableError(error, statusCode: response.response?.statusCode) {
+                        if self.isRetriableError(error, statusCode: (response as? HTTPURLResponse)?.statusCode) {
                             DispatchQueue.global().asyncAfter(deadline: .now() + delay) {
                                 self.performRequestWithRetry(
                                     urlRequest: urlRequest,
@@ -268,22 +254,49 @@ class NetworkService {
                         }
                     }
                     
-                    // Parse error type
-                    if let statusCode = response.response?.statusCode, statusCode >= 400 {
-                        let errorMessage = self.parseErrorMessage(from: response.data) ?? "Unknown server error"
-                        completion(.failure(.backendError(statusCode, errorMessage)))
-                    } else {
-                        completion(.failure(.requestFailed(error)))
-                    }
+                    completion(.failure(.requestFailed(error)))
+                    return
+                }
+                
+                guard let httpResponse = response as? HTTPURLResponse else {
+                    completion(.failure(.invalidData))
+                    return
+                }
+                
+                guard 200..<300 ~= httpResponse.statusCode else {
+                    let errorMessage = self.parseErrorMessage(from: data) ?? "Unknown server error"
+                    completion(.failure(.backendError(httpResponse.statusCode, errorMessage)))
+                    return
+                }
+                
+                guard let data = data else {
+                    completion(.failure(.invalidData))
+                    return
+                }
+                
+                do {
+                    // Explicitly decode to type T
+                    let decodedData = try JSONDecoder().decode(T.self, from: data)
+                    // Cache successful response
+                    self.cacheResponse(decodedData, for: urlRequest)
+                    completion(.success(decodedData))
+                } catch let decodingError {
+                    print("Decoding error: \(decodingError). JSON: \(String(data: data, encoding: .utf8) ?? "unknown")")
+                    completion(.failure(.decodingFailed(decodingError)))
                 }
             }
+        }.resume()
     }
     
-    private func isRetriableError(_ error: AFError, statusCode: Int?) -> Bool {
+    private func isRetriableError(_ error: Error, statusCode: Int?) -> Bool {
         // Network errors are generally retriable
-        if case .sessionTaskFailed = error {
-            // NSURLErrorTimedOut, NSURLErrorNetworkConnectionLost, etc.
-            return true
+        if let urlError = error as? URLError {
+            switch urlError.code {
+            case .timedOut, .networkConnectionLost, .notConnectedToInternet:
+                return true
+            default:
+                return false
+            }
         }
         
         // Server errors (5xx) are retriable
@@ -378,9 +391,9 @@ class NetworkService {
         try? FileManager.default.removeItem(at: diskCacheURL)
         try? FileManager.default.createDirectory(at: diskCacheURL, withIntermediateDirectories: true)
         
-        // Clear image cache
-        ImageCache.default.clearMemoryCache()
-        ImageCache.default.clearDiskCache()
+        // Clear image cache (Kingfisher temporarily disabled)
+        // ImageCache.default.clearMemoryCache()
+        // ImageCache.default.clearDiskCache()
     }
     
     // MARK: - Backend Image Processing (Upload to Your Backend)
@@ -391,49 +404,86 @@ class NetworkService {
             return
         }
         
-        guard let url = URL(string: "\(baseURL)/upload/image") else { // MODIFIED Endpoint
+        guard let url = URL(string: "\(baseURL)/upload/image") else {
             completion(.failure(.invalidURL))
             return
         }
         
-        AF.upload(
-            multipartFormData: { multipartFormData in
-                multipartFormData.append(imageData, withName: "image", fileName: "photo.jpg", mimeType: "image/jpeg")
-                multipartFormData.append(Data(userId.utf8), withName: "userId")
-                
-                // Add user size and country if provided
-                if let userSize = userSize {
-                    multipartFormData.append(Data(userSize.utf8), withName: "userSize")
-                }
-                if let userCountry = userCountry {
-                    multipartFormData.append(Data(userCountry.utf8), withName: "userCountry")
-                }
-            },
-            to: url,
-            method: .post
-        )
-            .uploadProgress { progress in
-                self.notifyUploadProgress(Float(progress.fractionCompleted))
-            }
-        .validate() // Basic validation for 2xx status codes
-        .responseDecodable(of: ImageUploadResponse.self, decoder: createDecoder()) { response in
+        // Create multipart form data manually
+        let boundary = UUID().uuidString
+        var body = Data()
+        
+        // Add image data
+        body.append("--\(boundary)\r\n".data(using: .utf8)!)
+        body.append("Content-Disposition: form-data; name=\"image\"; filename=\"photo.jpg\"\r\n".data(using: .utf8)!)
+        body.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
+        body.append(imageData)
+        body.append("\r\n".data(using: .utf8)!)
+        
+        // Add userId
+        body.append("--\(boundary)\r\n".data(using: .utf8)!)
+        body.append("Content-Disposition: form-data; name=\"userId\"\r\n\r\n".data(using: .utf8)!)
+        body.append(Data(userId.utf8))
+        body.append("\r\n".data(using: .utf8)!)
+        
+        // Add user size if provided
+        if let userSize = userSize {
+            body.append("--\(boundary)\r\n".data(using: .utf8)!)
+            body.append("Content-Disposition: form-data; name=\"userSize\"\r\n\r\n".data(using: .utf8)!)
+            body.append(Data(userSize.utf8))
+            body.append("\r\n".data(using: .utf8)!)
+        }
+        
+        // Add user country if provided
+        if let userCountry = userCountry {
+            body.append("--\(boundary)\r\n".data(using: .utf8)!)
+            body.append("Content-Disposition: form-data; name=\"userCountry\"\r\n\r\n".data(using: .utf8)!)
+            body.append(Data(userCountry.utf8))
+            body.append("\r\n".data(using: .utf8)!)
+        }
+        
+        body.append("--\(boundary)--\r\n".data(using: .utf8)!)
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        request.httpBody = body
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
             DispatchQueue.main.async {
-                print("ION عمليه Image submission response (multipart): \(response.debugDescription)")
-                switch response.result {
-                case .success(let uploadResponse):
+                if let error = error {
+                    completion(.failure(.requestFailed(error)))
+                    return
+                }
+                
+                guard let httpResponse = response as? HTTPURLResponse else {
+                    completion(.failure(.invalidData))
+                    return
+                }
+                
+                guard let data = data else {
+                    completion(.failure(.invalidData))
+                    return
+                }
+                
+                do {
+                    let uploadResponse = try self.createDecoder().decode(ImageUploadResponse.self, from: data)
                     if uploadResponse.success {
-                        print("✅ Image uploaded successfully (multipart). Message: \(uploadResponse.message)")
+                        print("✅ Image uploaded successfully. Message: \(uploadResponse.message)")
                         completion(.success(uploadResponse))
                     } else {
-                        print("❌ Image upload (multipart) reported as not successful by backend: \(uploadResponse.message)")
+                        print("❌ Image upload reported as not successful by backend: \(uploadResponse.message)")
                         completion(.failure(.responseError(uploadResponse.message)))
                     }
-                case .failure(let afError):
-                    let backendError = self.handleAfError(afError, from: response.data, response: response.response)
-                    completion(.failure(backendError))
+                } catch {
+                    print("❌ Error decoding upload response: \(error)")
+                    if let responseString = String(data: data, encoding: .utf8) {
+                        print("Response: \(responseString)")
                     }
+                    completion(.failure(.decodingFailed(error)))
                 }
-        }
+            }
+        }.resume()
     }
     
     // MARK: - Google Lens Image Analysis (via Your Backend)
@@ -455,35 +505,45 @@ class NetworkService {
             completion(Result<[LensProduct], NetworkError>.failure(.invalidData)); return
         }
         
-        AF.request(request)
-            .validate() // Basic validation for 2xx status codes
-            .responseData { response in
-                DispatchQueue.main.async {
-                switch response.result {
-                case .success(let data):
-                    do {
-                            // First try to print the raw JSON for debugging
-                            if let jsonString = String(data: data, encoding: .utf8) {
-                                print("✅ Google Lens response JSON: \(jsonString)")
-                            }
-                            
-                            let products = try self.createDecoder().decode([LensProduct].self, from: data)
-                            print("✅ Successfully fetched \(products.count) lens products from backend")
-                            completion(.success(products))
-                        } catch let error {
-                            print("❌ Error decoding lens products: \(error)")
-                        completion(.failure(.decodingFailed(error)))
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            DispatchQueue.main.async {
+                if let error = error {
+                    print("❌ Google Lens API request failed: \(error)")
+                    completion(.failure(.requestFailed(error)))
+                    return
+                }
+                
+                guard let httpResponse = response as? HTTPURLResponse else {
+                    completion(.failure(.invalidData))
+                    return
+                }
+                
+                guard 200..<300 ~= httpResponse.statusCode else {
+                    let errorMessage = self.parseErrorMessage(from: data) ?? "Unknown server error"
+                    completion(.failure(.backendError(httpResponse.statusCode, errorMessage)))
+                    return
+                }
+                
+                guard let data = data else {
+                    completion(.failure(.invalidData))
+                    return
+                }
+                
+                do {
+                    // First try to print the raw JSON for debugging
+                    if let jsonString = String(data: data, encoding: .utf8) {
+                        print("✅ Google Lens response JSON: \(jsonString)")
                     }
-                    case .failure(let afError):
-                        print("❌ Google Lens API request failed: \(afError)")
-                        if let data = response.data, let errorStr = String(data: data, encoding: .utf8) {
-                            print("❌ Error response: \(errorStr)")
-                        }
-                        let backendError = self.handleAfError(afError, from: response.data, response: response.response)
-                        completion(.failure(backendError))
-                    }
+                    
+                    let products = try self.createDecoder().decode([LensProduct].self, from: data)
+                    print("✅ Successfully fetched \(products.count) lens products from backend")
+                    completion(.success(products))
+                } catch let error {
+                    print("❌ Error decoding lens products: \(error)")
+                    completion(.failure(.decodingFailed(error)))
                 }
             }
+        }.resume()
     }
     
     // MARK: - Health Check
@@ -496,26 +556,9 @@ class NetworkService {
             return
         }
         
-        AF.request(url)
-            .validate()
-            .responseData { response in
-                switch response.result {
-                case .success(let data):
-                    if let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-                       let status = json["status"] as? String,
-                       status == "ok" {
-                        
-                        // Get additional info for debugging
-                        let timestamp = json["timestamp"] as? String ?? "unknown"
-                        let service = json["service"] as? String ?? "unknown"
-                        
-                        let message = "Connected successfully to \(service) at \(timestamp)"
-                        completion(true, message)
-                    } else {
-                        completion(false, "Server responded but with unexpected format")
-                    }
-                    
-                case .failure(let error):
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            DispatchQueue.main.async {
+                if let error = error {
                     let detailedError = """
                     Connection failed: \(error.localizedDescription)
                     - URL attempted: \(url)
@@ -524,8 +567,35 @@ class NetworkService {
                       2. You're using the simulator (localhost only works in simulator)
                     """
                     completion(false, detailedError)
+                    return
+                }
+                
+                guard let httpResponse = response as? HTTPURLResponse,
+                      200..<300 ~= httpResponse.statusCode else {
+                    completion(false, "Server responded with error status")
+                    return
+                }
+                
+                guard let data = data else {
+                    completion(false, "No data received from server")
+                    return
+                }
+                
+                if let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                   let status = json["status"] as? String,
+                   status == "ok" {
+                    
+                    // Get additional info for debugging
+                    let timestamp = json["timestamp"] as? String ?? "unknown"
+                    let service = json["service"] as? String ?? "unknown"
+                    
+                    let message = "Connected successfully to \(service) at \(timestamp)"
+                    completion(true, message)
+                } else {
+                    completion(false, "Server responded but with unexpected format")
                 }
             }
+        }.resume()
     }
     
     // MARK: - Network Diagnostics
@@ -543,16 +613,16 @@ class NetworkService {
         return diagnostics
     }
     
-    // Helper for AFError processing
-    private func handleAfError(_ afError: AFError, from data: Data?, response httpResponse: HTTPURLResponse?) -> NetworkError {
+    // Helper for error processing (replaced AFError handling)
+    private func handleNetworkError(_ error: Error, from data: Data?, response httpResponse: HTTPURLResponse?) -> NetworkError {
         if let data = data,
            let jsonError = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
            let message = jsonError["message"] as? String {
             return .responseError(message)
         } else if let statusCode = httpResponse?.statusCode {
-            return .backendError(statusCode, afError.localizedDescription)
+            return .backendError(statusCode, error.localizedDescription)
         } else {
-            return .requestFailed(afError)
+            return .requestFailed(error)
         }
     }
     
@@ -598,5 +668,9 @@ extension NetworkService {
             )
         }
     }
+}
+
+extension Notification.Name {
+    static let uploadProgressNotification = Notification.Name("uploadProgressNotification")
 } 
  

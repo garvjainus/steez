@@ -1,203 +1,184 @@
 import SwiftUI
 
+// Color extension defined in UserPreferencesView
+
 struct LandingPageView: View {
-    @State private var currentPage = 0
     @EnvironmentObject var appState: AppState
-    
-    private let features = [
-        OnboardingFeature(
-            icon: "camera.fill",
-            title: "Snap & Discover",
-            description: "Take a photo of any clothing item and discover where to buy it",
-            gradient: LinearGradient(colors: [.blue, .purple], startPoint: .topLeading, endPoint: .bottomTrailing)
-        ),
-        OnboardingFeature(
-            icon: "sparkles",
-            title: "AI-Powered Search",
-            description: "Our advanced Google Lens integration finds similar items instantly",
-            gradient: LinearGradient(colors: [.purple, .pink], startPoint: .topLeading, endPoint: .bottomTrailing)
-        ),
-        OnboardingFeature(
-            icon: "bag.fill",
-            title: "Shop Smart",
-            description: "Compare prices across multiple retailers and find the best deals",
-            gradient: LinearGradient(colors: [.pink, .orange], startPoint: .topLeading, endPoint: .bottomTrailing)
-        )
-    ]
+    @State private var titleAnimated = false
+    @State private var logoAnimated = false
+    @State private var textAnimated = false
+    @State private var buttonAnimated = false
+    @State private var backgroundAnimated = false
+    @State private var logoScale: CGFloat = 0.3
+    @State private var logoRotation: Double = 0
+    @State private var showSparkles = false
     
     var body: some View {
-        ZStack {
-            // Background gradient
-            LinearGradient(
-                colors: [.black, .gray.opacity(0.8)],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
-            
-            VStack(spacing: 0) {
-                // Logo and App Name
-                headerView
-                
-                // Feature Cards
-                TabView(selection: $currentPage) {
-                    ForEach(0..<features.count, id: \.self) { index in
-                        FeatureCardView(feature: features[index])
-                            .tag(index)
-                    }
-                }
-                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .automatic))
-                .frame(height: 400)
-                .padding(.horizontal)
-                
-                Spacer(minLength: 50)
-                
-                // Page indicators and buttons
-                bottomView
-            }
-            .padding(.vertical, 50)
-        }
-    }
-    
-    private var headerView: some View {
-        VStack(spacing: 20) {
-            // App Icon
+        GeometryReader { geometry in
             ZStack {
-                Circle()
-                    .fill(LinearGradient(
-                        colors: [.blue, .purple],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    ))
-                    .frame(width: 80, height: 80)
+                // Animated background
+                Color(hex: "FCFCFC")
+                    .ignoresSafeArea()
                 
-                Image(systemName: "camera.viewfinder")
-                    .font(.system(size: 40, weight: .medium))
-                    .foregroundColor(.white)
-            }
-            .shadow(color: .blue.opacity(0.3), radius: 10, x: 0, y: 5)
-            
-            // App Name
-            Text("Steez")
-                .font(.system(size: 36, weight: .bold, design: .rounded))
-                .foregroundStyle(
-                    LinearGradient(
-                        colors: [.white, .gray.opacity(0.8)],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                )
-            
-            Text("Find your style, anywhere")
-                .font(.system(size: 16, weight: .medium))
-                .foregroundColor(.gray)
-                .multilineTextAlignment(.center)
-        }
-        .padding(.top, 20)
-    }
-    
-    private var bottomView: some View {
-        VStack(spacing: 30) {
-            // Custom page indicator
-            HStack(spacing: 8) {
-                ForEach(0..<features.count, id: \.self) { index in
-                    Capsule()
-                        .fill(currentPage == index ? Color.white : Color.gray.opacity(0.4))
-                        .frame(width: currentPage == index ? 24 : 8, height: 8)
-                        .animation(.easeInOut(duration: 0.3), value: currentPage)
-                }
-            }
-            
-            // Action buttons
-            VStack(spacing: 16) {
-                // Get Started button
-                Button(action: {
-                    withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
-                        appState.completeOnboarding()
-                    }
-                }) {
-                    HStack {
-                        Text("Get Started")
-                            .font(.system(size: 18, weight: .semibold))
-                        
-                        Image(systemName: "arrow.right")
-                            .font(.system(size: 16, weight: .semibold))
-                    }
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 56)
-                    .background(
-                        LinearGradient(
-                            colors: [.blue, .purple],
-                            startPoint: .leading,
-                            endPoint: .trailing
+                /*Floating particles background
+                ForEach(0..<6, id: \.self) { i in
+                    Circle()
+                        .fill(Color(red: 0.54, green: 0.17, blue: 0.22).opacity(0.1))
+                        .frame(width: CGFloat.random(in: 20...60))
+                        .offset(
+                            x: CGFloat.random(in: -200...200),
+                            y: CGFloat.random(in: -300...300)
                         )
-                    )
-                    .cornerRadius(28)
-                    .shadow(color: .blue.opacity(0.3), radius: 10, x: 0, y: 5)
+                        .scaleEffect(backgroundAnimated ? 1.2 : 0.8)
+                        .animation(
+                            .easeInOut(duration: Double.random(in: 2...4))
+                            .repeatForever(autoreverses: true)
+                            .delay(Double(i) * 0.5),
+                            value: backgroundAnimated
+                        )
                 }
-                .scaleEffect(currentPage == features.count - 1 ? 1.0 : 0.95)
-                .animation(.easeInOut(duration: 0.3), value: currentPage)
+                 */
                 
-                // Skip button
-                Button(action: {
-                    withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
-                        appState.completeOnboarding()
+                VStack(spacing: 10) {
+                    // Top: Title
+                    HStack(spacing: 1) {
+                        ForEach(Array("Steez".enumerated()), id: \.offset) { index, character in
+                            Text(String(character))
+                                .font(.custom("IBMPlexMono-Medium", size: 72))
+                                .foregroundColor(.black)
+                                .opacity(titleAnimated ? 1.0 : 0.0)
+                                .offset(y: titleAnimated ? 0 : -50)
+                                .rotationEffect(.degrees(titleAnimated ? 0 : Double.random(in: -15...15)))
+                                .animation(
+                                    .spring(response: 0.8, dampingFraction: 0.6)
+                                    .delay(Double(index) * 0.1),
+                                    value: titleAnimated
+                                )
+                        }
                     }
-                }) {
-                    Text("Skip for now")
-                        .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(.gray)
+                    .padding(.top, 20) // Add some padding from the top edge
+
+                    
+                    // Center: Logo
+                    SteezLogo()
+                        .padding(.top, 10)
+                        .padding(.bottom, 20)
+                    
+                    // Bottom: Call to Action
+                    VStack(spacing: 16) {
+                        Text("Let's fix your wardrobe.")
+                            .font(.custom("IBMPlexSans-Medium", size: 28))
+                            .foregroundColor(.black)
+                            .opacity(textAnimated ? 1.0 : 0.0)
+                            .offset(y: textAnimated ? 0 : 30)
+                            .animation(.easeOut(duration: 0.8).delay(1.2), value: textAnimated)
+                        
+                        HStack {
+                            Text("1000s of fits identified!")
+                                .font(.custom("IBMPlexSans-Regular", size: 18))
+                                .foregroundColor(.gray)
+                            
+                            // Sparkle animation
+                            if showSparkles {
+                                Image(systemName: "sparkles")
+                                    .foregroundColor(Color(red: 0.54, green: 0.17, blue: 0.22))
+                                    .scaleEffect(showSparkles ? 1.2 : 0.8)
+                                    .animation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true), value: showSparkles)
+                            }
+                        }
+                        .opacity(textAnimated ? 1.0 : 0.0)
+                        .offset(y: textAnimated ? 0 : 30)
+                        .animation(.easeOut(duration: 0.8).delay(1.4), value: textAnimated)
+                    }
+                    .padding(.bottom, 32)
+                    
+                    // Enhanced Get Started button
+                    Button(action: {
+                        // Haptic feedback
+                        let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+                        impactFeedback.impactOccurred()
+                        
+                        // Navigate with animation
+                        withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
+                            appState.completeOnboarding()
+                        }
+                    }) {
+                        HStack(spacing: 12) {
+                            Text("Get Started")
+                                .font(.custom("IBMPlexSans-Medium", size: 18))
+                            
+                            Image(systemName: "arrow.right")
+                                .font(.system(size: 16, weight: .medium))
+                                .offset(x: buttonAnimated ? 5 : 0)
+                                .animation(.easeInOut(duration: 0.6).repeatForever(autoreverses: true), value: buttonAnimated)
+                        }
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 56)
+                        .background(
+                            LinearGradient(
+                                colors: [
+                                    Color(red: 0.54, green: 0.17, blue: 0.22),
+                                    Color(red: 0.64, green: 0.27, blue: 0.32)
+                                ],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .cornerRadius(28)
+                        .shadow(color: Color(red: 0.54, green: 0.17, blue: 0.22).opacity(0.3), radius: 10, x: 0, y: 5)
+                        .scaleEffect(buttonAnimated ? 1.0 : 0.9)
+                        .opacity(buttonAnimated ? 1.0 : 0.0)
+                        .animation(.spring(response: 0.8, dampingFraction: 0.6).delay(1.6), value: buttonAnimated)
+                    }
+                    .buttonStyle(PressableButtonStyle())
+                    .padding(.horizontal, 40)
+                    .padding(.bottom, geometry.safeAreaInsets.bottom > 0 ? 0 : 20) // Add bottom padding only if no safe area
                 }
             }
-            .padding(.horizontal, 32)
         }
-    }
-}
-
-struct FeatureCardView: View {
-    let feature: OnboardingFeature
-    
-    var body: some View {
-        VStack(spacing: 24) {
-            // Icon
-            ZStack {
-                Circle()
-                    .fill(feature.gradient)
-                    .frame(width: 100, height: 100)
-                    .shadow(color: .black.opacity(0.2), radius: 10, x: 0, y: 5)
-                
-                Image(systemName: feature.icon)
-                    .font(.system(size: 48, weight: .medium))
-                    .foregroundColor(.white)
+        .onAppear {
+            // Trigger animations sequentially
+            withAnimation {
+                titleAnimated = true
+                backgroundAnimated = true
             }
             
-            VStack(spacing: 16) {
-                Text(feature.title)
-                    .font(.system(size: 28, weight: .bold, design: .rounded))
-                    .foregroundColor(.white)
-                    .multilineTextAlignment(.center)
-                
-                Text(feature.description)
-                    .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(.gray)
-                    .multilineTextAlignment(.center)
-                    .lineLimit(3)
-                    .padding(.horizontal, 20)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                withAnimation {
+                    logoAnimated = true
+                    logoScale = 1.0
+                }
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
+                withAnimation {
+                    textAnimated = true
+                    showSparkles = true
+                }
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.6) {
+                withAnimation {
+                    buttonAnimated = true
+                }
             }
         }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 40)
     }
 }
 
-struct OnboardingFeature {
-    let icon: String
-    let title: String
-    let description: String
-    let gradient: LinearGradient
+// PressableButtonStyle defined in UserPreferencesView
+
+struct SteezLogo: View {
+    var body: some View {
+        Image("steezlogo")
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(maxWidth: 300) // Use maxWidth to allow flexibility
+    }
 }
 
 #Preview {
     LandingPageView()
+        .environmentObject(AppState())
 } 
