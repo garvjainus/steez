@@ -90,14 +90,7 @@ struct LensProduct: Decodable, Identifiable { // ENSURE THIS IS THE ONLY DEFINIT
 class NetworkService {
     static let shared = NetworkService()
     
-    // Backend server configuration
-    #if targetEnvironment(simulator)
-    // Use localhost for simulator
-    private let baseURL = "http://localhost:3000"
-    #else
-    // Use Mac's actual IP address when testing on a physical device
-    private let baseURL = "http://10.10.11.201:3000"
-    #endif
+    private let baseURL: String
     
     // Cache configuration
     private let cache = NSCache<NSString, NSData>()
@@ -109,6 +102,11 @@ class NetworkService {
     private let retryDelay: TimeInterval = 2.0 // Initial delay in seconds
     
     private init() {
+        guard let baseURLString = ProcessInfo.processInfo.environment["API_BASE_URL"] else {
+            fatalError("API_BASE_URL environment variable not set. Please set it in your Xcode scheme.")
+        }
+        self.baseURL = baseURLString
+        
         setupCache()
         
         // Print the base URL for debugging

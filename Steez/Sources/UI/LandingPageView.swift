@@ -71,7 +71,7 @@ struct LandingPageView: View {
                             .foregroundColor(.black)
                             .opacity(textAnimated ? 1.0 : 0.0)
                             .offset(y: textAnimated ? 0 : 30)
-                            .animation(.easeOut(duration: 0.8).delay(1.2), value: textAnimated)
+                            .animation(.easeOut(duration: 0.8).delay(0.3), value: textAnimated)
                         
                         HStack {
                             Text("1000s of fits identified!")
@@ -88,7 +88,7 @@ struct LandingPageView: View {
                         }
                         .opacity(textAnimated ? 1.0 : 0.0)
                         .offset(y: textAnimated ? 0 : 30)
-                        .animation(.easeOut(duration: 0.8).delay(1.4), value: textAnimated)
+                        .animation(.easeOut(duration: 0.8).delay(0.3), value: textAnimated)
                     }
                     .padding(.bottom, 32)
                     
@@ -100,7 +100,7 @@ struct LandingPageView: View {
                         
                         // Navigate with animation
                         withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
-                            appState.completeOnboarding()
+                            appState.completeLanding()
                         }
                     }) {
                         HStack(spacing: 12) {
@@ -129,7 +129,7 @@ struct LandingPageView: View {
                         .shadow(color: Color(red: 0.54, green: 0.17, blue: 0.22).opacity(0.3), radius: 10, x: 0, y: 5)
                         .scaleEffect(buttonAnimated ? 1.0 : 0.9)
                         .opacity(buttonAnimated ? 1.0 : 0.0)
-                        .animation(.spring(response: 0.8, dampingFraction: 0.6).delay(1.6), value: buttonAnimated)
+                        .animation(.spring(response: 0.8, dampingFraction: 0.6).delay(0.4), value: buttonAnimated)
                     }
                     .buttonStyle(PressableButtonStyle())
                     .padding(.horizontal, 40)

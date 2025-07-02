@@ -67,22 +67,6 @@ struct UserPreferencesView: View {
                 )
                 .ignoresSafeArea()
                 
-                // Floating background elements
-                ForEach(0..<4, id: \.self) { i in
-                    Circle()
-                        .fill(Color(red: 0.54, green: 0.17, blue: 0.22).opacity(0.05))
-                        .frame(width: CGFloat.random(in: 40...80))
-                        .offset(
-                            x: CGFloat.random(in: -150...150),
-                            y: CGFloat.random(in: -200...200)
-                        )
-                        .animation(
-                            .easeInOut(duration: Double.random(in: 3...5))
-                            .repeatForever(autoreverses: true)
-                            .delay(Double(i) * 0.8),
-                            value: headerAnimated
-                        )
-                }
                 
                 VStack(spacing: 0) {
                     // Header with progress

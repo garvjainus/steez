@@ -1,5 +1,7 @@
 import SwiftUI
 import UserNotifications
+import Foundation
+import Supabase
 
 @main
 struct SteezApp: App {
@@ -14,22 +16,25 @@ struct SteezApp: App {
         WindowGroup {
             ZStack {
                 if appState.hasCompletedOnboarding {
-                    // User has completed both feature overview and preferences setup
+                    // User has completed all steps
                     ContentView()
                         .environmentObject(appState)
-                        .onAppear {
-                            // Check server when app appears
-                            appState.checkServerAvailability()
-                        }
-                } else if appState.hasSeenOnboarding {
-                    // User has seen the feature overview, now show preferences setup
+                } else if appState.isAuthenticated {
+                    // User is authenticated, but needs to set preferences
                     UserPreferencesView()
                         .environmentObject(appState)
+                } else if appState.hasSeenOnboarding {
+                    // User has seen landing page, needs to sign in/up
+                    AuthView()
+                        .environmentObject(appState)
                 } else {
-                    // First time user, show feature overview
+                    // First time user
                     LandingPageView()
                         .environmentObject(appState)
                 }
+            }
+            .onOpenURL { url in
+                handleDeepLink(url: url)
             }
         }
     }
@@ -43,17 +48,35 @@ struct SteezApp: App {
             }
         }
     }
+    
+    private func handleDeepLink(url: URL) {
+        // Handle auth callback URLs
+        if url.scheme == "steez" && url.host == "auth-callback" {
+            // Parse the URL parameters
+            let components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+            if let queryItems = components?.queryItems {
+                // Handle the authentication result
+                print("Received auth callback: \(url)")
+                // The auth state listener in AppState will automatically handle the session
+            }
+        }
+    }
 }
 
 class AppState: ObservableObject {
     @Published var isProcessing: Bool = false
-    @Published var currentUser: User?
+    @Published var currentUser: LocalUser?
     @Published var isServerAvailable: Bool = false
     @Published var errorMessage: String? = nil
-    @Published var hasSeenOnboarding: Bool = false
-    @Published var hasUserPreferences: Bool = false
-    @Published var hasCompletedOnboarding: Bool = false
     
+    // Onboarding State
+    @Published var hasSeenOnboarding: Bool = false
+    @Published var isAuthenticated: Bool = false
+    @Published var hasSetPreferences: Bool = false
+    
+    // Combined state for main view logic
+    @Published var hasCompletedOnboarding: Bool = false
+
     // User preferences
     @Published var userSize: String = "M"
     @Published var userCountry: String = "US"
@@ -61,24 +84,23 @@ class AppState: ObservableObject {
     
     // For Google Lens Analysis (backward compatibility)
     @Published var lensProducts: [LensProduct] = []
-    @Published var isAnalyzingWithLens: Bool = false
     
     // For new segmented results
     @Published var segmentedResults: SegmentedResults?
     @Published var selectedSegmentIndex: Int = 0
     
+    private var authStateTask: Task<Void, Never>?
+
     init() {
-        // Check if user has seen onboarding
+        // Check user's progress through onboarding
         self.hasSeenOnboarding = UserDefaults.standard.bool(forKey: "hasSeenOnboarding")
+        self.hasSetPreferences = UserDefaults.standard.bool(forKey: "hasUserPreferences")
         
-        // Check if user has set preferences
-        self.hasUserPreferences = UserDefaults.standard.bool(forKey: "hasUserPreferences")
-        
-        // User has completed onboarding if they've seen it AND set preferences
-        self.hasCompletedOnboarding = hasSeenOnboarding && hasUserPreferences
-        
+        // Start listening for auth changes
+        listenToAuthChanges()
+
         // Load user preferences if they exist
-        if hasUserPreferences {
+        if hasSetPreferences {
             self.userSize = UserDefaults.standard.string(forKey: "userSize") ?? "M"
             self.userCountry = UserDefaults.standard.string(forKey: "userCountry") ?? "US"
             self.locationPermissionGranted = UserDefaults.standard.bool(forKey: "locationPermissionGranted")
@@ -88,35 +110,83 @@ class AppState: ObservableObject {
         checkServerAvailability()
     }
     
-    func completeOnboarding() {
+    deinit {
+        authStateTask?.cancel()
+    }
+
+    private func listenToAuthChanges() {
+        authStateTask = Task {
+            for await (event, session) in SupabaseService.shared.listenToAuthEvents() {
+                await MainActor.run {
+                    switch event {
+                    case .initialSession, .signedIn:
+                        if let supa = session?.user {
+                            self.currentUser = LocalUser(userId: supa.id, email: supa.email ?? "", plan: .free)
+                            self.isAuthenticated = true
+                        }
+                    case .signedOut:
+                        self.currentUser = nil
+                        self.isAuthenticated = false
+                    case .passwordRecovery, .tokenRefreshed, .userUpdated:
+                        break
+                    default:
+                        break
+                    }
+                    updateOnboardingCompletion()
+                }
+            }
+        }
+    }
+
+    func completeLanding() {
         hasSeenOnboarding = true
         UserDefaults.standard.set(true, forKey: "hasSeenOnboarding")
-        // Update completed onboarding status
-        hasCompletedOnboarding = hasSeenOnboarding && hasUserPreferences
-    }
-    
-    func resetOnboarding() {
-        hasSeenOnboarding = false
-        hasUserPreferences = false
-        hasCompletedOnboarding = false
-        UserDefaults.standard.set(false, forKey: "hasSeenOnboarding")
-        UserDefaults.standard.removeObject(forKey: "hasUserPreferences")
-        resetUserPreferences()
+        updateOnboardingCompletion()
     }
     
     func saveUserPreferences() {
-        hasUserPreferences = true
+        hasSetPreferences = true
         UserDefaults.standard.set(true, forKey: "hasUserPreferences")
         UserDefaults.standard.set(userSize, forKey: "userSize")
         UserDefaults.standard.set(userCountry, forKey: "userCountry")
         UserDefaults.standard.set(locationPermissionGranted, forKey: "locationPermissionGranted")
-        
-        // Update completed onboarding status
-        hasCompletedOnboarding = hasSeenOnboarding && hasUserPreferences
+        updateOnboardingCompletion()
     }
     
+    func resetOnboarding() {
+        hasSeenOnboarding = false
+        isAuthenticated = false
+        hasSetPreferences = false
+        
+        UserDefaults.standard.set(false, forKey: "hasSeenOnboarding")
+        UserDefaults.standard.set(false, forKey: "isAuthenticated")
+        UserDefaults.standard.removeObject(forKey: "hasUserPreferences")
+        
+        // Also sign out from Supabase
+        Task {
+            try? await SupabaseService.shared.signOut()
+        }
+
+        resetUserPreferences()
+        updateOnboardingCompletion()
+    }
+    
+    private func updateOnboardingCompletion() {
+        hasCompletedOnboarding = hasSeenOnboarding && isAuthenticated && hasSetPreferences
+        lensProducts = []
+        segmentedResults = nil
+        selectedSegmentIndex = 0
+    }
+
+    // MARK: - Helper used by UI to reset analysis results
+    func clearResults() {
+        lensProducts = []
+        segmentedResults = nil
+        selectedSegmentIndex = 0
+    }
+
     func resetUserPreferences() {
-        hasUserPreferences = false
+        hasSetPreferences = false
         UserDefaults.standard.removeObject(forKey: "hasUserPreferences")
         UserDefaults.standard.removeObject(forKey: "userSize")
         UserDefaults.standard.removeObject(forKey: "userCountry")
@@ -126,23 +196,15 @@ class AppState: ObservableObject {
         locationPermissionGranted = false
     }
     
-    func clearResults() {
-        lensProducts = []
-        segmentedResults = nil
-        selectedSegmentIndex = 0
-    }
-    
     func checkServerAvailability() {
-        errorMessage = nil
-        
-        NetworkService.shared.checkServerAvailability { [weak self] isAvailable in
+        NetworkService.shared.checkServerAvailability { isAvailable in
             DispatchQueue.main.async {
-                self?.isServerAvailable = isAvailable
+                self.isServerAvailable = isAvailable
                 
                 if isAvailable {
                     print("Server is available.")
                 } else {
-                    self?.errorMessage = "Cannot connect to the server. Please make sure the backend is running and try again."
+                    self.errorMessage = "Cannot connect to the server. Please make sure the backend is running and try again."
                 }
             }
         }
@@ -153,7 +215,7 @@ class AppState: ObservableObject {
         // In a real app, this would use Firebase Auth or similar
         // Mock implementation for now
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            self.currentUser = User(userId: UUID(), email: email, plan: .free)
+            self.currentUser = LocalUser(userId: UUID(), email: email, plan: .free)
             completion(true)
         }
     }
@@ -163,7 +225,7 @@ class AppState: ObservableObject {
     }
 }
 
-struct User {
+struct LocalUser {
     let userId: UUID
     let email: String
     let plan: Plan

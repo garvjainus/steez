@@ -24,9 +24,9 @@ async function bootstrap() {
     const logger = new common_1.Logger('Bootstrap');
     logger.log('Starting application with debug logging enabled');
     logger.log(`Serving static files from: ${uploadsPath}`);
-    await app.listen(port, '::');
-    logger.log(`Application is running on: http://[::]:${port} (IPv6)`);
-    logger.log(`Also accessible via: http://localhost:${port}`);
+    await app.listen(port, '0.0.0.0');
+    logger.log(`Application is running on: http://0.0.0.0:${port}`);
+    logger.log(`Find your local network IP (e.g., 192.168.1.X) and connect from your phone via http://<YOUR_IP>:${port}`);
 }
 bootstrap();
 //# sourceMappingURL=main.js.map
