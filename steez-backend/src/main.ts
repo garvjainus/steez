@@ -38,9 +38,9 @@ async function bootstrap() {
   logger.log('Starting application with debug logging enabled');
   logger.log(`Serving static files from: ${uploadsPath}`);
 
-  // Listen on all IPv6 interfaces, which includes IPv4 mapped addresses
-  await app.listen(port, '::');
-  logger.log(`Application is running on: http://[::]:${port} (IPv6)`);
-  logger.log(`Also accessible via: http://localhost:${port}`);
+  // Listen on all network interfaces
+  await app.listen(port, '0.0.0.0');
+  logger.log(`Application is running on: http://0.0.0.0:${port}`);
+  logger.log(`Find your local network IP (e.g., 192.168.1.X) and connect from your phone via http://<YOUR_IP>:${port}`);
 }
 bootstrap();

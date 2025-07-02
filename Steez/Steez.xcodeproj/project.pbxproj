@@ -8,65 +8,104 @@
 
 /* Begin PBXBuildFile section */
 		030626C62FCD23D47B862184 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD1AAB411055DDE3228ED69 /* LocationService.swift */; };
+		295BAB0072CC24686271318D /* IBMPlexSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 97C20BBD008C152BC14939A8 /* IBMPlexSans-Regular.ttf */; };
+		2BE581B6340316C08B5E6529 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 737B8497C51BCFEFBBA681B2 /* Media.xcassets */; };
 		2D82ED7E8D696279367EF9F6 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = C04B9EEE00FB68806482BE0F /* Models.swift */; };
-		3208962B2E0DE31E0060126F /* Media.xcassets in Sources */ = {isa = PBXBuildFile; fileRef = 320896232E0DD6CB0060126F /* Media.xcassets */; };
-		320896322E0DEF4E0060126F /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D401135D5E0D7A8DA3032C5F /* NetworkService.swift */; };
-		320896342E0DF1FB0060126F /* IBMPlexMono-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3208961D2E0DD5FF0060126F /* IBMPlexMono-Medium.ttf */; };
-		320896352E0DF1FB0060126F /* IBMPlexMono-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3208961E2E0DD5FF0060126F /* IBMPlexMono-Regular.ttf */; };
-		320896362E0DF1FB0060126F /* IBMPlexSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3208962C2E0DEB670060126F /* IBMPlexSans-Regular.ttf */; };
-		320896372E0DF1FB0060126F /* IBMPlexSans-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3208962D2E0DEB6F0060126F /* IBMPlexSans-Medium.ttf */; };
+		42E49683975DE74088410301 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9955329BE49A0D1B971D81A6 /* ShareViewController.swift */; };
+		465087D4811FC2528C1CEDCE /* IBMPlexMono-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 17A4D7E7FB055C7D76101876 /* IBMPlexMono-Medium.ttf */; };
+		5A1C47976ECF836654196F72 /* SupabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05FC55B4D50EFBA6A7849C38 /* SupabaseService.swift */; };
 		5D5F959C2BA09CE80DE93589 /* LandingPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7321C953047B57AA32152B7 /* LandingPageView.swift */; };
+		5EA647B0735AAEA22EFFB187 /* SteezShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0EB163960C0743200BBFFBFC /* SteezShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		7149E4BA971C5AFB8A6692AB /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C66521C07E8FB02231DE665 /* ContentView.swift */; };
+		74A1630523704B2697C04B1C /* AuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 108CB2F3B021E992C3185863 /* AuthView.swift */; };
 		86F66E312CFF3746C1970380 /* SteezApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9D3506FA3A093B8734A6705 /* SteezApp.swift */; };
+		8A0D776BB17922F6530E577E /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 62D3AF918545F7D4B4FEE280 /* Supabase */; };
+		908F4FC553E480CA52815F36 /* IBMPlexMono-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1D491AC83DF69E307D0EE2E0 /* IBMPlexMono-Regular.ttf */; };
+		AE169F9CBF7CD65EDF309400 /* IBMPlexSans-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9CC517481687A45A7CCC0E3F /* IBMPlexSans-Medium.ttf */; };
 		B3AB80AAE148409C9F480664 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A84D3588ED8F601142ED98D1 /* ImagePicker.swift */; };
 		BD9EE75AD8471B259A3851D0 /* UserPreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 560CAA4BF95ECD8B6E2A0B8B /* UserPreferencesView.swift */; };
+		D29C7A7A00D22E4C73E1068A /* steezlogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 59162FFFD5951FAD86F14652 /* steezlogo.png */; };
+		F2825687B8D93B95FA71DF22 /* logo.svg in Resources */ = {isa = PBXBuildFile; fileRef = F83025313F2138A7B910BB44 /* logo.svg */; };
+		F4D306FFF0E76C621175273C /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D401135D5E0D7A8DA3032C5F /* NetworkService.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		C11D57E06BFFD95A76B3AC7C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2C7CF9C8C5795DE50E6B6100 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 044855CB596B67D9C3350938;
+			remoteInfo = SteezShareExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		EF3B9A9B9CDAE802EA9F4738 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				5EA647B0735AAEA22EFFB187 /* SteezShareExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		05FC55B4D50EFBA6A7849C38 /* SupabaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseService.swift; sourceTree = "<group>"; };
 		0C66521C07E8FB02231DE665 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		3208961C2E0DD5CA0060126F /* steezlogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = steezlogo.png; sourceTree = "<group>"; };
-		3208961D2E0DD5FF0060126F /* IBMPlexMono-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexMono-Medium.ttf"; sourceTree = "<group>"; };
-		3208961E2E0DD5FF0060126F /* IBMPlexMono-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexMono-Regular.ttf"; sourceTree = "<group>"; };
-		320896232E0DD6CB0060126F /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
-		3208962C2E0DEB670060126F /* IBMPlexSans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexSans-Regular.ttf"; sourceTree = "<group>"; };
-		3208962D2E0DEB6F0060126F /* IBMPlexSans-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexSans-Medium.ttf"; sourceTree = "<group>"; };
+		0EB163960C0743200BBFFBFC /* SteezShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SteezShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		108CB2F3B021E992C3185863 /* AuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthView.swift; sourceTree = "<group>"; };
+		17A4D7E7FB055C7D76101876 /* IBMPlexMono-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexMono-Medium.ttf"; sourceTree = "<group>"; };
+		1D491AC83DF69E307D0EE2E0 /* IBMPlexMono-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexMono-Regular.ttf"; sourceTree = "<group>"; };
 		560CAA4BF95ECD8B6E2A0B8B /* UserPreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPreferencesView.swift; sourceTree = "<group>"; };
+		59162FFFD5951FAD86F14652 /* steezlogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = steezlogo.png; sourceTree = "<group>"; };
 		6E96BF9392EBBFE64226ACFF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		72E990E0B3B7A81DC126DBBE /* Steez.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Steez.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		72E990E0B3B7A81DC126DBBE /* Steez.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Steez.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		737B8497C51BCFEFBBA681B2 /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
+		97C20BBD008C152BC14939A8 /* IBMPlexSans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexSans-Regular.ttf"; sourceTree = "<group>"; };
+		9955329BE49A0D1B971D81A6 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
+		9CC517481687A45A7CCC0E3F /* IBMPlexSans-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexSans-Medium.ttf"; sourceTree = "<group>"; };
 		A84D3588ED8F601142ED98D1 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		C04B9EEE00FB68806482BE0F /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		CFD1AAB411055DDE3228ED69 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		D401135D5E0D7A8DA3032C5F /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		D9D3506FA3A093B8734A6705 /* SteezApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SteezApp.swift; sourceTree = "<group>"; };
 		F7321C953047B57AA32152B7 /* LandingPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LandingPageView.swift; sourceTree = "<group>"; };
+		F83025313F2138A7B910BB44 /* logo.svg */ = {isa = PBXFileReference; lastKnownFileType = text; path = logo.svg; sourceTree = "<group>"; };
+		FFC9254519F3E8C9271DF6A0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C3748C40D8A49CB6CE2AA4A4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8A0D776BB17922F6530E577E /* Supabase in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		228BE19DF033C7AA9D1BE85F /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				737B8497C51BCFEFBBA681B2 /* Media.xcassets */,
 				6558A0818D3DB15699E53585 /* App */,
 				A31495225D435C9D1D5D006A /* Core */,
+				548345D6AD9E990F95300A33 /* Resources */,
 				3C009CF2A0E990ADA785595F /* UI */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
 		};
-		320896212E0DD5FF0060126F /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				3208961D2E0DD5FF0060126F /* IBMPlexMono-Medium.ttf */,
-				3208961E2E0DD5FF0060126F /* IBMPlexMono-Regular.ttf */,
-				3208961C2E0DD5CA0060126F /* steezlogo.png */,
-				3208962C2E0DEB670060126F /* IBMPlexSans-Regular.ttf */,
-				3208962D2E0DEB6F0060126F /* IBMPlexSans-Medium.ttf */,
-			);
-			path = Resources;
-			sourceTree = "<group>";
-		};
 		3C009CF2A0E990ADA785595F /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				108CB2F3B021E992C3185863 /* AuthView.swift */,
 				0C66521C07E8FB02231DE665 /* ContentView.swift */,
 				A84D3588ED8F601142ED98D1 /* ImagePicker.swift */,
 				F7321C953047B57AA32152B7 /* LandingPageView.swift */,
@@ -79,8 +118,22 @@
 			isa = PBXGroup;
 			children = (
 				72E990E0B3B7A81DC126DBBE /* Steez.app */,
+				0EB163960C0743200BBFFBFC /* SteezShareExtension.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		548345D6AD9E990F95300A33 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				17A4D7E7FB055C7D76101876 /* IBMPlexMono-Medium.ttf */,
+				1D491AC83DF69E307D0EE2E0 /* IBMPlexMono-Regular.ttf */,
+				9CC517481687A45A7CCC0E3F /* IBMPlexSans-Medium.ttf */,
+				97C20BBD008C152BC14939A8 /* IBMPlexSans-Regular.ttf */,
+				F83025313F2138A7B910BB44 /* logo.svg */,
+				59162FFFD5951FAD86F14652 /* steezlogo.png */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		6558A0818D3DB15699E53585 /* App */ = {
@@ -92,12 +145,23 @@
 			path = App;
 			sourceTree = "<group>";
 		};
+		6DB1F47BE400B6B400B056E2 /* ShareExtension */ = {
+			isa = PBXGroup;
+			children = (
+				FFC9254519F3E8C9271DF6A0 /* Info.plist */,
+				9955329BE49A0D1B971D81A6 /* ShareViewController.swift */,
+			);
+			name = ShareExtension;
+			path = Sources/ShareExtension;
+			sourceTree = "<group>";
+		};
 		A31495225D435C9D1D5D006A /* Core */ = {
 			isa = PBXGroup;
 			children = (
 				CFD1AAB411055DDE3228ED69 /* LocationService.swift */,
 				C04B9EEE00FB68806482BE0F /* Models.swift */,
 				D401135D5E0D7A8DA3032C5F /* NetworkService.swift */,
+				05FC55B4D50EFBA6A7849C38 /* SupabaseService.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -105,29 +169,49 @@
 		C800F6A325A56C965CBF9608 = {
 			isa = PBXGroup;
 			children = (
-				320896232E0DD6CB0060126F /* Media.xcassets */,
+				6DB1F47BE400B6B400B056E2 /* ShareExtension */,
 				228BE19DF033C7AA9D1BE85F /* Sources */,
 				41A65657ED393E56E88E682C /* Products */,
-				320896212E0DD5FF0060126F /* Resources */,
 			);
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		EBA394659AC2B64F0E3FA78D /* Steez */ = {
+		044855CB596B67D9C3350938 /* SteezShareExtension */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 9F621860A229FF49AC48BCF7 /* Build configuration list for PBXNativeTarget "Steez" */;
+			buildConfigurationList = 5F5C6D7DFA92AFFE75331461 /* Build configuration list for PBXNativeTarget "SteezShareExtension" */;
 			buildPhases = (
-				5FB9009410984C2BBCB28C21 /* Sources */,
-				320896332E0DF1F10060126F /* Resources */,
+				64DE263DD04E76BE1B290E54 /* Sources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
+			name = SteezShareExtension;
+			packageProductDependencies = (
+			);
+			productName = SteezShareExtension;
+			productReference = 0EB163960C0743200BBFFBFC /* SteezShareExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		EBA394659AC2B64F0E3FA78D /* Steez */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9F621860A229FF49AC48BCF7 /* Build configuration list for PBXNativeTarget "Steez" */;
+			buildPhases = (
+				5FB9009410984C2BBCB28C21 /* Sources */,
+				B37FCE133B458062F7D6FCA1 /* Resources */,
+				C3748C40D8A49CB6CE2AA4A4 /* Frameworks */,
+				EF3B9A9B9CDAE802EA9F4738 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A6827A86C537BCB8E5E6F8E2 /* PBXTargetDependency */,
+			);
 			name = Steez;
 			packageProductDependencies = (
+				62D3AF918545F7D4B4FEE280 /* Supabase */,
 			);
 			productName = Steez;
 			productReference = 72E990E0B3B7A81DC126DBBE /* Steez.app */;
@@ -152,23 +236,30 @@
 			);
 			mainGroup = C800F6A325A56C965CBF9608;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				B19154DD7D52E6C1B324E067 /* XCRemoteSwiftPackageReference "supabase-swift" */,
+			);
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				EBA394659AC2B64F0E3FA78D /* Steez */,
+				044855CB596B67D9C3350938 /* SteezShareExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		320896332E0DF1F10060126F /* Resources */ = {
+		B37FCE133B458062F7D6FCA1 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				320896342E0DF1FB0060126F /* IBMPlexMono-Medium.ttf in Resources */,
-				320896352E0DF1FB0060126F /* IBMPlexMono-Regular.ttf in Resources */,
-				320896362E0DF1FB0060126F /* IBMPlexSans-Regular.ttf in Resources */,
-				320896372E0DF1FB0060126F /* IBMPlexSans-Medium.ttf in Resources */,
+				465087D4811FC2528C1CEDCE /* IBMPlexMono-Medium.ttf in Resources */,
+				908F4FC553E480CA52815F36 /* IBMPlexMono-Regular.ttf in Resources */,
+				AE169F9CBF7CD65EDF309400 /* IBMPlexSans-Medium.ttf in Resources */,
+				295BAB0072CC24686271318D /* IBMPlexSans-Regular.ttf in Resources */,
+				2BE581B6340316C08B5E6529 /* Media.xcassets in Resources */,
+				F2825687B8D93B95FA71DF22 /* logo.svg in Resources */,
+				D29C7A7A00D22E4C73E1068A /* steezlogo.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -179,19 +270,36 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				320896322E0DEF4E0060126F /* NetworkService.swift in Sources */,
-				3208962B2E0DE31E0060126F /* Media.xcassets in Sources */,
+				74A1630523704B2697C04B1C /* AuthView.swift in Sources */,
 				7149E4BA971C5AFB8A6692AB /* ContentView.swift in Sources */,
 				B3AB80AAE148409C9F480664 /* ImagePicker.swift in Sources */,
 				5D5F959C2BA09CE80DE93589 /* LandingPageView.swift in Sources */,
 				030626C62FCD23D47B862184 /* LocationService.swift in Sources */,
 				2D82ED7E8D696279367EF9F6 /* Models.swift in Sources */,
+				F4D306FFF0E76C621175273C /* NetworkService.swift in Sources */,
 				86F66E312CFF3746C1970380 /* SteezApp.swift in Sources */,
+				5A1C47976ECF836654196F72 /* SupabaseService.swift in Sources */,
 				BD9EE75AD8471B259A3851D0 /* UserPreferencesView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		64DE263DD04E76BE1B290E54 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				42E49683975DE74088410301 /* ShareViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A6827A86C537BCB8E5E6F8E2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 044855CB596B67D9C3350938 /* SteezShareExtension */;
+			targetProxy = C11D57E06BFFD95A76B3AC7C /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		27BAC835FC53AFD94B2C05CD /* Debug */ = {
@@ -313,11 +421,46 @@
 			};
 			name = Release;
 		};
+		69708C9EE4145489DAE4540D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEVELOPMENT_TEAM = PF4MU983T9;
+				INFOPLIST_FILE = Sources/ShareExtension/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.steez.app.share;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		9AA0EB141BB0301F598C0E4F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEVELOPMENT_TEAM = PF4MU983T9;
+				INFOPLIST_FILE = Sources/ShareExtension/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.steez.app.share;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		B70DA960908D9D3BA70D56B5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = PF4MU983T9;
 				INFOPLIST_FILE = Sources/App/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -334,6 +477,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = PF4MU983T9;
 				INFOPLIST_FILE = Sources/App/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -357,6 +501,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
+		5F5C6D7DFA92AFFE75331461 /* Build configuration list for PBXNativeTarget "SteezShareExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				69708C9EE4145489DAE4540D /* Debug */,
+				9AA0EB141BB0301F598C0E4F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		9F621860A229FF49AC48BCF7 /* Build configuration list for PBXNativeTarget "Steez" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -367,6 +520,25 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		B19154DD7D52E6C1B324E067 /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/supabase/supabase-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.8.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		62D3AF918545F7D4B4FEE280 /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B19154DD7D52E6C1B324E067 /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 2C7CF9C8C5795DE50E6B6100 /* Project object */;
 }

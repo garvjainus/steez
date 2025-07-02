@@ -7,12 +7,25 @@
 		<key>Steez.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>36</integer>
+			<integer>37</integer>
 		</dict>
 		<key>SteezShareExtension.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>36</integer>
+		</dict>
+	</dict>
+	<key>SuppressBuildableAutocreation</key>
+	<dict>
+		<key>044855CB596B67D9C3350938</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>EBA394659AC2B64F0E3FA78D</key>
+		<dict>
+			<key>primary</key>
+			<true/>
 		</dict>
 	</dict>
 </dict>

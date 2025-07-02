@@ -1,8 +1,16 @@
 name: Steez
+packages:
+  Supabase:
+    url: https://github.com/supabase/supabase-swift
+    from: "2.8.1"
 options:
   bundleIdPrefix: com.steez
   deploymentTarget:
     iOS: 15.0
+
+configs:
+  Debug: debug
+  Release: release
 
 targets:
   Steez:
@@ -10,11 +18,19 @@ targets:
     platform: iOS
     sources:
       - path: Sources
+        excludes:
+          - "ShareExtension/**"
+    dependencies:
+      - package: Supabase
+      - target: SteezShareExtension
+        embed: true
     settings:
       base:
         INFOPLIST_FILE: Sources/App/Info.plist
         PRODUCT_BUNDLE_IDENTIFIER: com.steez.app
-
+      configs:
+        Debug: Configuration/Secrets.xcconfig
+        Release: Configuration/Secrets.xcconfig
   SteezShareExtension:
     type: app-extension
     platform: iOS
@@ -23,4 +39,26 @@ targets:
     settings:
       base:
         INFOPLIST_FILE: Sources/ShareExtension/Info.plist
-        PRODUCT_BUNDLE_IDENTIFIER: com.steez.app.share 
+        PRODUCT_BUNDLE_IDENTIFIER: com.steez.app.share
+        SKIP_INSTALL: "YES"
+
+schemes:
+  Steez:
+    build:
+      targets:
+        Steez: all
+        SteezShareExtension: all
+    run:
+      environmentVariables:
+        API_BASE_URL: "http://141.23.179.179:3000"
+        SUPABASE_URL: "https://owbkldgydzokcdjhmvju.supabase.co"
+        SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93YmtsZGd5ZHpva2Nkamhtdmp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEyMzQ4NjgsImV4cCI6MjA2NjgxMDg2OH0.x6Q6R5QX3mtzMMGl42YKEXA8CD5VZ-lxARgHzDEjd90"
+      config: Debug
+    test:
+      config: Debug
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release
