@@ -31,6 +31,7 @@ def _download_video(url: str, dest_path: Path) -> None:
         "quiet": True,
         "no_warnings": True,
         "format": "bestvideo+bestaudio/best",
+        "cookies": str(Path(__file__).with_name("cookies.txt")),
     }
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         ydl.download([url])

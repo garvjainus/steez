@@ -15,8 +15,15 @@ mkdir package
 echo "📦 Installing ALL dependencies (no optimization)..."
 pip3 install --target package -r requirements.txt
 
-echo "📋 Adding Lambda function..."
+echo "📋 Adding Lambda function and cookies (if present)..."
 cp lambda_function.py package/
+# Copy Instagram cookies if the file exists
+if [ -f cookies.txt ]; then
+  cp cookies.txt package/
+  echo "🍪 Copied cookies.txt into package/"
+else
+  echo "⚠️  cookies.txt not found – Instagram reels may fail without auth"
+fi
 
 echo "🗜️ Creating complete zip..."
 cd package
