@@ -24,17 +24,26 @@ BUCKET_NAME = _get_env("FRAME_BUCKET", "steez-video-frames")
 FRAME_RATE = _get_env("FRAME_RATE", "1")  # frames per second
 
 
-def _download_video(url: str, dest_path: Path) -> None:
-    """Download a remote video to dest_path using yt-dlp."""
+def _download_video(url: str, tmp_dir: Path) -> Path:
+    """Download remote video with yt-dlp and return the actual file Path."""
+
+    # Save as video.<ext> inside tmp_dir, letting yt-dlp choose correct extension
+    outtmpl = str(tmp_dir / "video.%(ext)s")
+
     ydl_opts = {
-        "outtmpl": str(dest_path),
+        "outtmpl": outtmpl,
         "quiet": True,
         "no_warnings": True,
         "format": "bestvideo+bestaudio/best",
+        # optional cookies support
         "cookies": str(Path(__file__).with_name("cookies.txt")),
     }
+
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        ydl.download([url])
+        info = ydl.extract_info(url, download=True)
+        downloaded_path = Path(ydl.prepare_filename(info))
+
+    return downloaded_path
 
 
 def _extract_frames(video_path: Path, frames_dir: Path, fps: str) -> list[Path]:
@@ -94,11 +103,9 @@ def handler(event, context):
         # Use /tmp for Lambda ephemeral storage
         with tempfile.TemporaryDirectory() as tmpdir:
             tmpdir_path = Path(tmpdir)
-            video_path = tmpdir_path / "video.mp4"
+            # 1. Download video and get actual path (may be .mp4 / .webm etc.)
+            video_path = _download_video(url, tmpdir_path)
             frames_dir = tmpdir_path / "frames"
-
-            # 1. Download video
-            _download_video(url, video_path)
 
             # 2. Extract frames
             frames = _extract_frames(video_path, frames_dir, fps)
