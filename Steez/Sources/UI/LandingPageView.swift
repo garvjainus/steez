@@ -15,11 +15,11 @@ struct LandingPageView: View {
     
     var body: some View {
         GeometryReader { geometry in
-            ZStack {
+        ZStack {
                 // Animated background
                 Color(hex: "FCFCFC")
-                    .ignoresSafeArea()
-                
+            .ignoresSafeArea()
+            
                 /*Floating particles background
                 ForEach(0..<6, id: \.self) { i in
                     Circle()
@@ -55,7 +55,7 @@ struct LandingPageView: View {
                                     value: titleAnimated
                                 )
                         }
-                    }
+            }
                     .padding(.top, 20) // Add some padding from the top edge
 
                     
@@ -63,7 +63,7 @@ struct LandingPageView: View {
                     SteezLogo()
                         .padding(.top, 10)
                         .padding(.bottom, 20)
-                    
+            
                     // Bottom: Call to Action
                     VStack(spacing: 16) {
                         Text("Let's fix your wardrobe.")
@@ -76,7 +76,7 @@ struct LandingPageView: View {
                         HStack {
                             Text("1000s of fits identified!")
                                 .font(.custom("IBMPlexSans-Regular", size: 18))
-                                .foregroundColor(.gray)
+                .foregroundColor(.gray)
                             
                             // Sparkle animation
                             if showSparkles {
@@ -89,9 +89,9 @@ struct LandingPageView: View {
                         .opacity(textAnimated ? 1.0 : 0.0)
                         .offset(y: textAnimated ? 0 : 30)
                         .animation(.easeOut(duration: 0.8).delay(0.3), value: textAnimated)
-                    }
+                }
                     .padding(.bottom, 32)
-                    
+            
                     // Enhanced Get Started button
                     Button(action: {
                         // Haptic feedback
@@ -99,33 +99,33 @@ struct LandingPageView: View {
                         impactFeedback.impactOccurred()
                         
                         // Navigate with animation
-                        withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
+                    withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
                             appState.completeLanding()
-                        }
-                    }) {
+                    }
+                }) {
                         HStack(spacing: 12) {
-                            Text("Get Started")
+                        Text("Get Started")
                                 .font(.custom("IBMPlexSans-Medium", size: 18))
-                            
-                            Image(systemName: "arrow.right")
+                        
+                        Image(systemName: "arrow.right")
                                 .font(.system(size: 16, weight: .medium))
                                 .offset(x: buttonAnimated ? 5 : 0)
                                 .animation(.easeInOut(duration: 0.6).repeatForever(autoreverses: true), value: buttonAnimated)
-                        }
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 56)
-                        .background(
-                            LinearGradient(
+                    }
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 56)
+                    .background(
+                        LinearGradient(
                                 colors: [
                                     Color(red: 0.54, green: 0.17, blue: 0.22),
                                     Color(red: 0.64, green: 0.27, blue: 0.32)
                                 ],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
+                            startPoint: .leading,
+                            endPoint: .trailing
                         )
-                        .cornerRadius(28)
+                    )
+                    .cornerRadius(28)
                         .shadow(color: Color(red: 0.54, green: 0.17, blue: 0.22).opacity(0.3), radius: 10, x: 0, y: 5)
                         .scaleEffect(buttonAnimated ? 1.0 : 0.9)
                         .opacity(buttonAnimated ? 1.0 : 0.0)

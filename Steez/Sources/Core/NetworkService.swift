@@ -252,7 +252,7 @@ class NetworkService {
                         }
                     }
                     
-                    completion(.failure(.requestFailed(error)))
+                        completion(.failure(.requestFailed(error)))
                     return
                 }
                 
@@ -291,7 +291,7 @@ class NetworkService {
         if let urlError = error as? URLError {
             switch urlError.code {
             case .timedOut, .networkConnectionLost, .notConnectedToInternet:
-                return true
+            return true
             default:
                 return false
             }
@@ -479,8 +479,8 @@ class NetworkService {
                         print("Response: \(responseString)")
                     }
                     completion(.failure(.decodingFailed(error)))
+                    }
                 }
-            }
         }.resume()
     }
     
@@ -504,7 +504,7 @@ class NetworkService {
         }
         
         URLSession.shared.dataTask(with: request) { data, response, error in
-            DispatchQueue.main.async {
+                DispatchQueue.main.async {
                 if let error = error {
                     print("❌ Google Lens API request failed: \(error)")
                     completion(.failure(.requestFailed(error)))
@@ -527,19 +527,19 @@ class NetworkService {
                     return
                 }
                 
-                do {
-                    // First try to print the raw JSON for debugging
-                    if let jsonString = String(data: data, encoding: .utf8) {
-                        print("✅ Google Lens response JSON: \(jsonString)")
+                    do {
+                            // First try to print the raw JSON for debugging
+                            if let jsonString = String(data: data, encoding: .utf8) {
+                                print("✅ Google Lens response JSON: \(jsonString)")
+                            }
+                            
+                            let products = try self.createDecoder().decode([LensProduct].self, from: data)
+                            print("✅ Successfully fetched \(products.count) lens products from backend")
+                            completion(.success(products))
+                        } catch let error {
+                            print("❌ Error decoding lens products: \(error)")
+                        completion(.failure(.decodingFailed(error)))
                     }
-                    
-                    let products = try self.createDecoder().decode([LensProduct].self, from: data)
-                    print("✅ Successfully fetched \(products.count) lens products from backend")
-                    completion(.success(products))
-                } catch let error {
-                    print("❌ Error decoding lens products: \(error)")
-                    completion(.failure(.decodingFailed(error)))
-                }
             }
         }.resume()
     }
@@ -579,19 +579,19 @@ class NetworkService {
                     return
                 }
                 
-                if let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-                   let status = json["status"] as? String,
-                   status == "ok" {
-                    
-                    // Get additional info for debugging
-                    let timestamp = json["timestamp"] as? String ?? "unknown"
-                    let service = json["service"] as? String ?? "unknown"
-                    
-                    let message = "Connected successfully to \(service) at \(timestamp)"
-                    completion(true, message)
-                } else {
-                    completion(false, "Server responded but with unexpected format")
-                }
+                    if let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                       let status = json["status"] as? String,
+                       status == "ok" {
+                        
+                        // Get additional info for debugging
+                        let timestamp = json["timestamp"] as? String ?? "unknown"
+                        let service = json["service"] as? String ?? "unknown"
+                        
+                        let message = "Connected successfully to \(service) at \(timestamp)"
+                        completion(true, message)
+                    } else {
+                        completion(false, "Server responded but with unexpected format")
+                    }
             }
         }.resume()
     }
