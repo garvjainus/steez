@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: steez-backend
+    env: node
+    plan: free # Deploys on a free instance type
+    branch: main # Or whichever branch you want to deploy from
+    rootDir: ./steez-backend # Important: Specifies the subdirectory
+    
+    # How to build your app
+    buildCommand: "npm install && npm run build"
+    
+    # How to start your app
+    startCommand: "npm run start:prod"
+    
+    # Health check to ensure your app is live
+    healthCheckPath: "/health"
+    
+    # Environment variables from your .env file
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000 # Render provides the port, but this is a common setting
+      - key: SUPABASE_URL
+        fromSecret: true # Marks this as a secret
+      - key: SUPABASE_ANON_KEY
+        fromSecret: true # Marks this as a secret
+      - key: AWS_ACCESS_KEY_ID
+        fromSecret: true # Marks this as a secret
+      - key: AWS_SECRET_ACCESS_KEY
+        fromSecret: true # Marks this as a secret
+      - key: AWS_REGION
+        fromSecret: true # Marks this as a secret
+      - key: LAMBDA_FUNCTION_NAME
+        fromSecret: true # Marks this as a secret 

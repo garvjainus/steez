@@ -98,24 +98,30 @@ export async function searchEbay(
     const root = getEbayRoot();
 
     // helper to execute search with optional sizeFilter
-    const doSearch = async (includeSize: boolean): Promise<EbaySearchResponse> => {
+    const doSearch = async (
+      includeSize: boolean,
+    ): Promise<EbaySearchResponse> => {
       const filterParts = [
-        includeSize && size ? `attributeName:Size|attributeValue:${size}` : undefined,
+        includeSize && size
+          ? `attributeName:Size|attributeValue:${size}`
+          : undefined,
         `deliveryCountry:${country}`,
         'buyingOptions:{FIXED_PRICE}',
-      ].filter(Boolean).join(',');
+      ]
+        .filter(Boolean)
+        .join(',');
 
-    const res: AxiosResponse<EbaySearchResponse> = await axios.get(
+      const res: AxiosResponse<EbaySearchResponse> = await axios.get(
         `${root}/buy/browse/v1/item_summary/search`,
-      {
-        params: {
-          q: phrase,
+        {
+          params: {
+            q: phrase,
             limit: 20,
             filter: filterParts,
+          },
+          headers: { Authorization: `Bearer ${token}` },
         },
-        headers: { Authorization: `Bearer ${token}` },
-      },
-    );
+      );
       return res.data;
     };
 
@@ -132,7 +138,9 @@ export async function searchEbay(
         phrase,
         title: item.title,
         link: item.itemWebUrl,
-        price: item.price ? `${item.price.value} ${item.price.currency}` : undefined,
+        price: item.price
+          ? `${item.price.value} ${item.price.currency}`
+          : undefined,
         imageUrl: item.image?.imageUrl,
       }));
 

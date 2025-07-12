@@ -60,6 +60,8 @@
 		108CB2F3B021E992C3185863 /* AuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthView.swift; sourceTree = "<group>"; };
 		17A4D7E7FB055C7D76101876 /* IBMPlexMono-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexMono-Medium.ttf"; sourceTree = "<group>"; };
 		1D491AC83DF69E307D0EE2E0 /* IBMPlexMono-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexMono-Regular.ttf"; sourceTree = "<group>"; };
+		32848A062E22EFA30056582A /* Steez.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Steez.entitlements; path = Steez/Steez.entitlements; sourceTree = "<group>"; };
+		32848A072E22EFC50056582A /* SteezShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SteezShareExtension.entitlements; sourceTree = "<group>"; };
 		560CAA4BF95ECD8B6E2A0B8B /* UserPreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPreferencesView.swift; sourceTree = "<group>"; };
 		59162FFFD5951FAD86F14652 /* steezlogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = steezlogo.png; sourceTree = "<group>"; };
 		6E96BF9392EBBFE64226ACFF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -169,6 +171,8 @@
 		C800F6A325A56C965CBF9608 = {
 			isa = PBXGroup;
 			children = (
+				32848A072E22EFC50056582A /* SteezShareExtension.entitlements */,
+				32848A062E22EFA30056582A /* Steez.entitlements */,
 				6DB1F47BE400B6B400B056E2 /* ShareExtension */,
 				228BE19DF033C7AA9D1BE85F /* Sources */,
 				41A65657ED393E56E88E682C /* Products */,
@@ -424,6 +428,7 @@
 		69708C9EE4145489DAE4540D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = SteezShareExtension.entitlements;
 				DEVELOPMENT_TEAM = PF4MU983T9;
 				INFOPLIST_FILE = Sources/ShareExtension/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -441,6 +446,7 @@
 		9AA0EB141BB0301F598C0E4F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = SteezShareExtension.entitlements;
 				DEVELOPMENT_TEAM = PF4MU983T9;
 				INFOPLIST_FILE = Sources/ShareExtension/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -459,6 +465,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Steez/Steez.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = PF4MU983T9;
 				INFOPLIST_FILE = Sources/App/Info.plist;
@@ -476,6 +483,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Steez/Steez.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = PF4MU983T9;
 				INFOPLIST_FILE = Sources/App/Info.plist;

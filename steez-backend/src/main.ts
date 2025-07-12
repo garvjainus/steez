@@ -41,6 +41,8 @@ async function bootstrap() {
   // Listen on all network interfaces
   await app.listen(port, '0.0.0.0');
   logger.log(`Application is running on: http://0.0.0.0:${port}`);
-  logger.log(`Find your local network IP (e.g., 192.168.1.X) and connect from your phone via http://<YOUR_IP>:${port}`);
+  logger.log(
+    `Find your local network IP (e.g., 192.168.1.X) and connect from your phone via http://<YOUR_IP>:${port}`,
+  );
 }
 bootstrap();

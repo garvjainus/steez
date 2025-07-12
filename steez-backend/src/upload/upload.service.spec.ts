@@ -9,7 +9,9 @@ jest.mock('../services/geminiVision', () => ({
 }));
 
 import { extractAndMatch } from '../services/geminiVision';
-const mockExtractAndMatch = extractAndMatch as jest.MockedFunction<typeof extractAndMatch>;
+const mockExtractAndMatch = extractAndMatch as jest.MockedFunction<
+  typeof extractAndMatch
+>;
 
 describe('UploadService', () => {
   let service: UploadService;
@@ -55,7 +57,9 @@ describe('UploadService', () => {
       // Mock fs.existsSync to return true
       jest.spyOn(fs, 'existsSync').mockReturnValue(true);
       // Mock fs.readFileSync to return a buffer
-      jest.spyOn(fs, 'readFileSync').mockReturnValue(Buffer.from('fake-image-data'));
+      jest
+        .spyOn(fs, 'readFileSync')
+        .mockReturnValue(Buffer.from('fake-image-data'));
     });
 
     afterEach(() => {
@@ -69,47 +73,59 @@ describe('UploadService', () => {
             itemType: 'jacket',
             phrase: 'black leather biker jacket',
             confidence: 0.85,
-            ebayResults: [{ 
-              phrase: 'black leather biker jacket', 
-              title: 'Black Leather Biker Jacket',
-              link: 'https://ebay.com/item1',
-              price: '$99.99',
-              imageUrl: 'https://ebay.com/image1.jpg'
-            }]
+            ebayResults: [
+              {
+                phrase: 'black leather biker jacket',
+                title: 'Black Leather Biker Jacket',
+                link: 'https://ebay.com/item1',
+                price: '$99.99',
+                imageUrl: 'https://ebay.com/image1.jpg',
+              },
+            ],
           },
           {
             itemType: 'jeans',
             phrase: 'blue skinny denim jeans',
-            confidence: 0.90,
-            ebayResults: [{ 
-              phrase: 'blue skinny denim jeans', 
-              title: 'Blue Skinny Denim Jeans',
-              link: 'https://ebay.com/item2',
-              price: '$49.99',
-              imageUrl: 'https://ebay.com/image2.jpg'
-            }]
-          }
+            confidence: 0.9,
+            ebayResults: [
+              {
+                phrase: 'blue skinny denim jeans',
+                title: 'Blue Skinny Denim Jeans',
+                link: 'https://ebay.com/item2',
+                price: '$49.99',
+                imageUrl: 'https://ebay.com/image2.jpg',
+              },
+            ],
+          },
         ],
-        totalItems: 2
+        totalItems: 2,
       };
 
       mockExtractAndMatch.mockResolvedValue(expectedSegmentedResults);
 
-      const result = await service.processUploadedImage(mockFile, 'user-123', mockUser);
+      const result = await service.processUploadedImage(
+        mockFile,
+        'user-123',
+        mockUser,
+      );
 
       expect(result.success).toBe(true);
       expect(result.data.segmentedResults).toEqual(expectedSegmentedResults);
       expect(mockExtractAndMatch).toHaveBeenCalledWith(
         expect.any(String), // base64 image data
         'M',
-        'US'
+        'US',
       );
     });
 
     it('should handle Gemini Vision errors gracefully', async () => {
       mockExtractAndMatch.mockRejectedValue(new Error('Gemini API error'));
 
-      const result = await service.processUploadedImage(mockFile, 'user-123', mockUser);
+      const result = await service.processUploadedImage(
+        mockFile,
+        'user-123',
+        mockUser,
+      );
 
       expect(result.success).toBe(false);
       expect(result.error).toContain('Gemini API error');
@@ -118,12 +134,16 @@ describe('UploadService', () => {
     it('should return empty segments when no items are found', async () => {
       const emptyResults = {
         segments: [],
-        totalItems: 0
+        totalItems: 0,
       };
 
       mockExtractAndMatch.mockResolvedValue(emptyResults);
 
-      const result = await service.processUploadedImage(mockFile, 'user-123', mockUser);
+      const result = await service.processUploadedImage(
+        mockFile,
+        'user-123',
+        mockUser,
+      );
 
       expect(result.success).toBe(true);
       expect(result.data.segmentedResults).toEqual(emptyResults);

@@ -11,7 +11,10 @@ const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const platform_express_1 = require("@nestjs/platform-express");
 const upload_module_1 = require("./upload/upload.module");
+const jobs_module_1 = require("./jobs/jobs.module");
 const health_controller_1 = require("./health.controller");
+const video_processing_controller_1 = require("./services/video-processing.controller");
+const video_processing_service_1 = require("./services/video-processing.service");
 const multer_1 = require("multer");
 const uuid_1 = require("uuid");
 const path = require("path");
@@ -35,9 +38,10 @@ exports.AppModule = AppModule = __decorate([
                 }),
             }),
             upload_module_1.UploadModule,
+            jobs_module_1.JobsModule,
         ],
-        controllers: [health_controller_1.HealthController],
-        providers: [],
+        controllers: [health_controller_1.HealthController, video_processing_controller_1.VideoProcessingController],
+        providers: [video_processing_service_1.VideoProcessingService],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

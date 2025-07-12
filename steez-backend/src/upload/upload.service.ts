@@ -95,7 +95,11 @@ export class UploadService {
       const userSize = user?.size || 'M';
       const userCountry = user?.country || 'US';
 
-      const segmentedResults = await extractAndMatch(base64Image, userSize, userCountry);
+      const segmentedResults = await extractAndMatch(
+        base64Image,
+        userSize,
+        userCountry,
+      );
       this.logger.log(
         `Successfully processed image. Found ${segmentedResults.totalItems} clothing segments.`,
       );

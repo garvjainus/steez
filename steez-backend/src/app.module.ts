@@ -2,8 +2,10 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MulterModule } from '@nestjs/platform-express';
 import { UploadModule } from './upload/upload.module';
-import { VideoProcessingModule } from './video-processing/video-processing.module';
+import { JobsModule } from './jobs/jobs.module';
 import { HealthController } from './health.controller';
+import { VideoProcessingController } from './services/video-processing.controller';
+import { VideoProcessingService } from './services/video-processing.service';
 // import { GoogleLensModule } from './google-lens/google-lens.module'; // 🔒 TEMP-DISABLED (Google Lens)
 import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
@@ -25,10 +27,10 @@ import * as path from 'path';
       }),
     }),
     UploadModule,
-    VideoProcessingModule,
+    JobsModule,
     // GoogleLensModule, // 🔒 TEMP-DISABLED (Google Lens)
   ],
-  controllers: [HealthController],
-  providers: [],
+  controllers: [HealthController, VideoProcessingController],
+  providers: [VideoProcessingService],
 })
 export class AppModule {}
