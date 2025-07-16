@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { CreateJobDto } from './dto/create-job.dto';
+import { LambdaCallbackDto } from './dto/lambda-callback.dto';
 import { Job, JobStatus } from './entities/job.entity';
 
 @Injectable()
@@ -11,17 +12,15 @@ export class JobsService {
   constructor() {
     // Initialize Supabase client
     const supabaseUrl = process.env.SUPABASE_URL;
-    // Prefer the service role key for privileged server-side actions
-    const supabaseKey =
-      process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
     if (!supabaseUrl || !supabaseKey) {
       throw new Error(
-        'Supabase URL and SERVICE_ROLE_KEY (or ANON_KEY) must be set in environment variables',
+        'Supabase URL and SUPABASE_SERVICE_ROLE_KEY must be set in environment variables',
       );
     }
 
-    // Explicitly mark the client as a service role client when we have the key
+    // Explicitly mark the client as a service role client
     this.supabase = createClient(supabaseUrl, supabaseKey, {
       auth: {
         autoRefreshToken: false,
@@ -51,6 +50,54 @@ export class JobsService {
       return data as Job;
     } catch (error) {
       this.logger.error('Failed to create job:', error);
+      throw error;
+    }
+  }
+
+  async handleLambdaCallback(
+    jobId: string,
+    callbackData: LambdaCallbackDto,
+  ): Promise<Job> {
+    try {
+      const { status, error_message, frame_count, selected_frame_urls } =
+        callbackData;
+
+      const updateData: any = { status };
+
+      if (error_message) {
+        updateData.error_message = error_message;
+      }
+      if (frame_count !== undefined) {
+        updateData.frame_count = frame_count;
+      }
+      if (selected_frame_urls) {
+        updateData.selected_frame_urls = selected_frame_urls;
+      }
+
+      const { data, error } = await this.supabase
+        .from('jobs')
+        .update(updateData)
+        .eq('job_id', jobId)
+        .select()
+        .single();
+
+      if (error) {
+        this.logger.error(
+          `Error updating job ${jobId} from Lambda callback:`,
+          error,
+        );
+        throw new Error(`Failed to update job from callback: ${error.message}`);
+      }
+
+      this.logger.log(
+        `Job ${jobId} successfully updated from Lambda callback with status ${status}`,
+      );
+      return data as Job;
+    } catch (error) {
+      this.logger.error(
+        `Failed to process Lambda callback for job ${jobId}:`,
+        error,
+      );
       throw error;
     }
   }

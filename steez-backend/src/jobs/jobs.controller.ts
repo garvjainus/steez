@@ -7,9 +7,14 @@ import {
   HttpException,
   HttpStatus,
   Logger,
+  UseGuards,
+  HttpCode,
+  Patch,
 } from '@nestjs/common';
 import { JobsService } from './jobs.service';
 import { CreateJobDto } from './dto/create-job.dto';
+import { LambdaCallbackDto } from './dto/lambda-callback.dto';
+import { LambdaAuthGuard } from '../auth/guards/lambda-auth.guard';
 
 @Controller('jobs')
 export class JobsController {
@@ -36,6 +41,30 @@ export class JobsController {
         'Failed to create job',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
+    }
+  }
+
+  @Patch(':id/callback')
+  @UseGuards(LambdaAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async handleLambdaCallback(
+    @Param('id') id: string,
+    @Body() callbackData: LambdaCallbackDto,
+  ) {
+    try {
+      this.logger.log(
+        `Received Lambda callback for job ${id} with status ${callbackData.status}`,
+      );
+      await this.jobsService.handleLambdaCallback(id, callbackData);
+      return { success: true, message: 'Callback processed successfully' };
+    } catch (error) {
+      this.logger.error(
+        `Failed to process Lambda callback for job ${id}: ${error.message}`,
+        error.stack,
+      );
+      // We return a 200 so the Lambda doesn't retry, but log the error.
+      // The error is already logged in the service.
+      return { success: false, message: 'Failed to process callback' };
     }
   }
 

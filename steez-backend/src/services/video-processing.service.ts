@@ -33,7 +33,7 @@ export class VideoProcessingService {
   ) {
     // Initialize AWS Lambda client with enhanced configuration
     this.lambdaClient = new LambdaClient({
-      region: this.configService.get<string>('AWS_REGION', 'us-east-1'),
+      region: this.configService.get<string>('AWS_REGION', 'eu-north-1'),
       credentials: {
         accessKeyId: this.configService.get<string>('AWS_ACCESS_KEY_ID'),
         secretAccessKey: this.configService.get<string>('AWS_SECRET_ACCESS_KEY'),
@@ -107,12 +107,16 @@ export class VideoProcessingService {
 
       const job_id = job.job_id;
 
-      // Step 2: Prepare Lambda payload
+      // Step 2: Prepare Lambda payload with callback URL
+      const callbackUrl = `${this.configService.get<string>(
+        'BASE_URL',
+      )}/jobs/${job_id}/callback`;
+      
       const lambdaPayload = {
-        url: video_url,
         job_id,
+        video_url,
+        callback_url: callbackUrl,
         frame_rate: frame_rate || 1,
-        user_id, // Include user_id for context
       };
 
       // Step 3: Invoke Lambda function asynchronously
