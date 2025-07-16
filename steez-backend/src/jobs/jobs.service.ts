@@ -11,15 +11,23 @@ export class JobsService {
   constructor() {
     // Initialize Supabase client
     const supabaseUrl = process.env.SUPABASE_URL;
-    const supabaseKey = process.env.SUPABASE_ANON_KEY;
+    // Prefer the service role key for privileged server-side actions
+    const supabaseKey =
+      process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
 
     if (!supabaseUrl || !supabaseKey) {
       throw new Error(
-        'Supabase URL and ANON_KEY must be set in environment variables',
+        'Supabase URL and SERVICE_ROLE_KEY (or ANON_KEY) must be set in environment variables',
       );
     }
 
-    this.supabase = createClient(supabaseUrl, supabaseKey);
+    // Explicitly mark the client as a service role client when we have the key
+    this.supabase = createClient(supabaseUrl, supabaseKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    });
   }
 
   async create(createJobDto: CreateJobDto): Promise<Job> {

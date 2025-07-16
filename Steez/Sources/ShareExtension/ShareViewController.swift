@@ -8,38 +8,73 @@ class ShareViewController: UIViewController {
     private let appGroupId = "group.com.steez.app"
     private let latestJobIdKey = "latest_job_id"
 
+    // MARK: - UI Elements
+    private let activityIndicator = UIActivityIndicatorView(style: .large)
+    private let statusLabel = UILabel()
+
     // MARK: - View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemBackground
+        setupUI()
         handleSharedItem()
+    }
+
+    // MARK: - UI Setup
+    private func setupUI() {
+        view.backgroundColor = .systemBackground
+
+        // Configure activity indicator
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        activityIndicator.hidesWhenStopped = true
+        view.addSubview(activityIndicator)
+
+        // Configure status label
+        statusLabel.translatesAutoresizingMaskIntoConstraints = false
+        statusLabel.textAlignment = .center
+        statusLabel.font = .systemFont(ofSize: 16)
+        statusLabel.textColor = .label
+        statusLabel.text = "Processing Video..."
+        view.addSubview(statusLabel)
+
+        // Layout constraints
+        NSLayoutConstraint.activate([
+            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -20),
+
+            statusLabel.topAnchor.constraint(equalTo: activityIndicator.bottomAnchor, constant: 20),
+            statusLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            statusLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
+        ])
+
+        activityIndicator.startAnimating()
     }
 
     // MARK: - Core Logic
     private func handleSharedItem() {
         guard let extensionItem = extensionContext?.inputItems.first as? NSExtensionItem,
               let provider = extensionItem.attachments?.first else {
-            completeRequest(withError: "No item found.")
+            completeRequest(errorMessage: "No item found.")
             return
         }
 
         if provider.hasItemConformingToTypeIdentifier(UTType.url.identifier) {
             provider.loadItem(forTypeIdentifier: UTType.url.identifier, options: nil) { [weak self] item, _ in
                 guard let url = item as? URL else {
-                    self?.completeRequest(withError: "Invalid URL shared.")
+                    self?.completeRequest(errorMessage: "Invalid URL shared.")
                     return
                 }
+                // The network call should be on a background thread already, which is fine.
                 self?.processVideo(with: url)
             }
         } else {
-            completeRequest(withError: "Please share a video URL.")
+            completeRequest(errorMessage: "Please share a video URL.")
         }
     }
 
     private func processVideo(with url: URL) {
         // 1. Construct the correct URL for our backend endpoint.
         guard let requestURL = URL(string: "\(apiBaseURLString)/video-processing/process-video") else {
-            completeRequest(withError: "Invalid backend URL.")
+            completeRequest(errorMessage: "Invalid backend URL.")
             return
         }
 
@@ -58,7 +93,7 @@ class ShareViewController: UIViewController {
         do {
             request.httpBody = try JSONSerialization.data(withJSONObject: payload)
         } catch {
-            completeRequest(withError: "Failed to create request body.")
+            completeRequest(errorMessage: "Failed to create request body.")
             return
         }
 
@@ -68,17 +103,17 @@ class ShareViewController: UIViewController {
             guard let self = self else { return }
 
             if let error = error {
-                self.completeRequest(withError: "Network request failed: \(error.localizedDescription)")
+                self.completeRequest(errorMessage: "Network request failed: \(error.localizedDescription)")
                 return
             }
 
             guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
-                self.completeRequest(withError: "Backend returned an error.")
+                self.completeRequest(errorMessage: "Backend returned an error.")
                 return
             }
 
             guard let data = data else {
-                self.completeRequest(withError: "No data received from backend.")
+                self.completeRequest(errorMessage: "No data received from backend.")
                 return
             }
 
@@ -88,12 +123,12 @@ class ShareViewController: UIViewController {
                    let jobId = json["job_id"] as? String {
                     print("Successfully received job_id: \(jobId)")
                     self.saveJobIdForMainApp(jobId)
-                    self.completeRequest()
+                    self.completeRequest(successMessage: "Sent to Steez!")
                 } else {
-                    self.completeRequest(withError: "Invalid response format.")
+                    self.completeRequest(errorMessage: "Invalid response format.")
                 }
             } catch {
-                self.completeRequest(withError: "Failed to parse response.")
+                self.completeRequest(errorMessage: "Failed to parse response.")
             }
         }
         task.resume()
@@ -119,17 +154,32 @@ class ShareViewController: UIViewController {
         print("Saved job ID \(jobId) to shared UserDefaults.")
     }
 
-    /// Completes the share request and closes the extension.
-    private func completeRequest(withError errorMessage: String? = nil) {
-        if let errorMessage = errorMessage {
-            print("Share Extension Error: \(errorMessage)")
-            // Optionally, you can show an error to the user here.
-            // For now, we just cancel.
-            extensionContext?.cancelRequest(withError: NSError(domain: "com.steez.app.share", code: 1, userInfo: [NSLocalizedDescriptionKey: errorMessage]))
-            return
+    /// Completes the share request and closes the extension, showing a message first.
+    private func completeRequest(successMessage: String? = nil, errorMessage: String? = nil) {
+        DispatchQueue.main.async {
+            self.activityIndicator.stopAnimating()
+            
+            if let successMessage = successMessage {
+                self.statusLabel.text = successMessage
+                
+                // Dismiss after a short delay to allow user to see the message.
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                    self.extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
+                }
+            } else if let errorMessage = errorMessage {
+                print("Share Extension Error: \(errorMessage)")
+                self.statusLabel.text = "Error: Please try again." // User-friendly message
+                self.statusLabel.textColor = .systemRed
+
+                // Dismiss after a delay so the user can see the error.
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                    let error = NSError(domain: "com.steez.app.share", code: 1, userInfo: [NSLocalizedDescriptionKey: errorMessage])
+                    self.extensionContext?.cancelRequest(withError: error)
+                }
+            } else {
+                // Should not happen, but as a fallback, just dismiss.
+                self.extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
+            }
         }
-        
-        // Signal success and dismiss.
-        extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
     }
 } 
