@@ -11,7 +11,7 @@ on:
 
 env:
   AWS_REGION: eu-north-1
-  ECR_REPOSITORY: steez-video-frame-extractor
+  ECR_REPOSITORY:  steez-video-frame-extractor
   LAMBDA_FUNCTION_NAME: steez-video-frame-extractor
 
 jobs:
