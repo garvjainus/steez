@@ -1,41 +1,45 @@
 #!/bin/bash
 
-# Build complete Lambda package (keeps all necessary files)
+# This script prepares the Lambda function code for deployment,
+# assuming that large libraries like OpenCV are in a Lambda Layer.
 
 set -e
 
-echo "🔧 Building complete Lambda package..."
+# --- Configuration ---
+PACKAGE_NAME="steez-video-frame-extractor"
+REQUIREMENTS_FILE="requirements.txt"
+OUTPUT_DIR="build"
+OUTPUT_ZIP="${PACKAGE_NAME}.zip"
 
-# Clean up
-rm -rf package lambda_complete.zip
+# --- Script Start ---
+echo "Creating build directory..."
+rm -rf $OUTPUT_DIR
+mkdir -p $OUTPUT_DIR
 
-# Create package directory
-mkdir package
+echo "Copying function code and assets..."
+cp lambda_function.py $OUTPUT_DIR/
+cp cookies.txt $OUTPUT_DIR/
 
-echo "📦 Installing ALL dependencies (no optimization)..."
-pip3 install --target package -r requirements.txt
-
-echo "📋 Adding Lambda function and cookies (if present)..."
-cp lambda_function.py package/
-# Copy Instagram cookies if the file exists
-if [ -f cookies.txt ]; then
-  cp cookies.txt package/
-  echo "🍪 Copied cookies.txt into package/"
+echo "Installing remaining dependencies..."
+# This installs packages listed in requirements.txt into the build directory.
+# The dependencies should NOT include libraries provided by the layer.
+if [ -f "$REQUIREMENTS_FILE" ]; then
+    pip install -r $REQUIREMENTS_FILE -t $OUTPUT_DIR/
 else
-  echo "⚠️  cookies.txt not found – Instagram reels may fail without auth"
+    echo "No requirements.txt file found, skipping package installation."
 fi
 
-echo "🗜️ Creating complete zip..."
-cd package
-zip -r ../lambda_complete.zip .
-cd ..
+echo "Creating final zip package..."
+# Change to the build directory to create the zip with the correct structure
+(cd $OUTPUT_DIR && zip -r ../${OUTPUT_ZIP} .)
 
-echo "✅ Complete build done!"
-echo "📊 Package size:"
-ls -lh lambda_complete.zip
+# --- Cleanup ---
+echo "Cleaning up build directory..."
+rm -rf $OUTPUT_DIR
 
+# --- Finished ---
+echo "✅ Success! Lambda package created: ./${OUTPUT_ZIP}"
 echo ""
-echo "🚀 Next steps:"
-echo "1. Upload lambda_complete.zip to S3"
-echo "2. Deploy from S3 to Lambda"
-echo "3. This should work without import errors" 
+echo "Next Steps:"
+echo "1. Upload '${OUTPUT_ZIP}' to your Lambda function in the AWS Console."
+echo "2. Ensure you have created and attached the OpenCV Lambda Layer to your function." 
