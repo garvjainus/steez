@@ -1,7 +1,7 @@
 name: "Build & Push FIRST Lambda image"
 
 on:
-  workflow_dispatch: # adds a “Run workflow” button in Actions tab
+  workflow_dispatch:
 
 env:
   IMAGE_REPO: steez-video-frame-extractor
@@ -9,7 +9,7 @@ env:
 
 jobs:
   build-push:
-    runs-on: ubuntu-latest # runner already has Docker + AWS CLI
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -29,12 +29,14 @@ jobs:
         id: build-image
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: first # any tag you like
+          IMAGE_TAG: first
         working-directory: ./video_frame_lambda
         run: |
           docker build -t $REGISTRY/$IMAGE_REPO:$IMAGE_TAG .
           docker push $REGISTRY/$IMAGE_REPO:$IMAGE_TAG
-          echo "IMAGE_URI=$REGISTRY/$IMAGE_REPO:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          echo "image_uri=$REGISTRY/$IMAGE_REPO:$IMAGE_TAG" >> "$GITHUB_OUTPUT"
+        outputs:
+          image_uri: ${{ steps.build-image.outputs.image_uri }}
 
       - name: Print image URI
-        run: echo "Pushed image: ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_REPO }}:first"
+        run: echo "Image URI is ${{ steps.build-image.outputs.image_uri }}"
