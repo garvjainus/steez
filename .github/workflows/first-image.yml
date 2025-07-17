@@ -1,4 +1,4 @@
-name: Build & Push FIRST Lambda image
+name: "Build & Push FIRST Lambda image"
 
 on:
   workflow_dispatch: # adds a “Run workflow” button in Actions tab
