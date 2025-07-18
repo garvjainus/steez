@@ -50,321 +50,162 @@ struct UserPreferencesView: View {
     @State private var sizeAnimated = false
     @State private var locationAnimated = false
     @State private var buttonAnimated = false
-    @State private var currentStep = 0
-    @State private var progressValue: CGFloat = 0.5
     
     var body: some View {
-        GeometryReader { geometry in
-            ZStack {
-                // Background with subtle gradient
-                LinearGradient(
-                    colors: [
-                        Color(hex: "FCFCFC"),
-                        Color.white
-                    ],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
+        ZStack {
+            SteezColors.background
                 .ignoresSafeArea()
-                
-                
-                VStack(spacing: 0) {
-                    // Header with progress
-                    VStack(spacing: 24) {
-                        // Progress bar
-                        VStack(spacing: 8) {
-                            HStack {
-                                Text("Step 2 of 2")
-                                    .font(.custom("IBMPlexSans-Regular", size: 14))
-                                    .foregroundColor(.gray)
-                                Spacer()
-                                Text("Almost done!")
-                                    .font(.custom("IBMPlexSans-Medium", size: 14))
-                                    .foregroundColor(Color(red: 0.54, green: 0.17, blue: 0.22))
-                            }
-                            
-                            GeometryReader { progressGeometry in
-                                ZStack(alignment: .leading) {
-                                    RoundedRectangle(cornerRadius: 2)
-                                        .fill(Color.gray.opacity(0.2))
-                                        .frame(height: 4)
-                                    
-                                    RoundedRectangle(cornerRadius: 2)
-                                        .fill(
-                                            LinearGradient(
-                                                colors: [
-                                                    Color(red: 0.54, green: 0.17, blue: 0.22),
-                                                    Color(red: 0.64, green: 0.27, blue: 0.32)
-                                                ],
-                                                startPoint: .leading,
-                                                endPoint: .trailing
-                                            )
-                                        )
-                                        .frame(width: progressGeometry.size.width * progressValue, height: 4)
-                                        .animation(.easeInOut(duration: 0.8).delay(0.5), value: progressValue)
-                                }
-                            }
-                            .frame(height: 4)
-                        }
-                        .opacity(headerAnimated ? 1.0 : 0.0)
-                        .offset(y: headerAnimated ? 0 : -20)
-                        .animation(.easeOut(duration: 0.8).delay(0.2), value: headerAnimated)
-                        
-                        // Title section
-                        VStack(spacing: 16) {
-                            // Animated icon
-                            ZStack {
-                                Circle()
-                                    .fill(
-                                        LinearGradient(
-                                            colors: [
-                                                Color(red: 0.54, green: 0.17, blue: 0.22).opacity(0.1),
-                                                Color(red: 0.64, green: 0.27, blue: 0.32).opacity(0.05)
-                                            ],
-                                            startPoint: .topLeading,
-                                            endPoint: .bottomTrailing
-                                        )
-                                    )
-                                    .frame(width: 80, height: 80)
-                                
-                                Image(systemName: "person.crop.circle.fill")
-                                    .font(.system(size: 40))
-                                    .foregroundColor(Color(red: 0.54, green: 0.17, blue: 0.22))
-                                    .scaleEffect(headerAnimated ? 1.0 : 0.5)
-                                    .animation(.spring(response: 0.8, dampingFraction: 0.6).delay(0.4), value: headerAnimated)
-                            }
-                            
-                            VStack(spacing: 8) {
-                                Text("Tell us about yourself")
-                                    .font(.custom("IBMPlexSans-Medium", size: 32))
-                                    .foregroundColor(.black)
-                                    .multilineTextAlignment(.center)
-                                
-                                Text("We'll personalize your experience to find the perfect fits")
-                                    .font(.custom("IBMPlexSans-Regular", size: 16))
-                                    .foregroundColor(.gray)
-                                    .multilineTextAlignment(.center)
-                                    .padding(.horizontal, 20)
-                            }
-                            .opacity(headerAnimated ? 1.0 : 0.0)
-                            .offset(y: headerAnimated ? 0 : 30)
-                            .animation(.easeOut(duration: 0.8).delay(0.6), value: headerAnimated)
-                        }
-                    }
-                    .padding(.horizontal, 24)
-                    .padding(.top, 60)
+            
+            VStack(spacing: 32) {
+                // Header
+                VStack(spacing: 16) {
+                    Text("Tell us about yourself")
+                        .font(SteezFonts.medium(32))
+                        .foregroundColor(SteezColors.textPrimary)
                     
-                    Spacer()
-                    
-                    // Content cards
-                    VStack(spacing: 24) {
-                        // Size selection card
-                        PreferenceCard(
-                            icon: "tshirt.fill",
-                            title: "Your Size",
-                            subtitle: "What size do you usually wear?",
-                            isAnimated: sizeAnimated
-                        ) {
-                            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 4), spacing: 12) {
-                                ForEach(LocationService.clothingSizes, id: \.self) { size in
-                                    SizeButton(
-                                        size: size,
-                                        isSelected: selectedSize == size,
-                                        action: {
-                                            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                                                selectedSize = size
-                                            }
-                                            
-                                            // Haptic feedback
-                                            let impactFeedback = UIImpactFeedbackGenerator(style: .light)
-                                            impactFeedback.impactOccurred()
-                                        }
-                                    )
-                                }
-                            }
-                        }
-                        
-                        // Location card
-                        PreferenceCard(
-                            icon: "location.fill",
-                            title: "Your Region",
-                            subtitle: "Where should we search for items?",
-                            isAnimated: locationAnimated
-                        ) {
-                            VStack(spacing: 16) {
-                                // Location toggle with custom style
-                                HStack {
-                                    VStack(alignment: .leading, spacing: 4) {
-                                        Text("Use my location")
-                                            .font(.custom("IBMPlexSans-Medium", size: 16))
-                                            .foregroundColor(.black)
-                                        
-                                        Text("Automatically detect your country")
-                                            .font(.custom("IBMPlexSans-Regular", size: 14))
-                                            .foregroundColor(.gray)
-                                    }
-                                    
-                                    Spacer()
-                                    
-                                    Toggle("", isOn: $useLocation)
-                                                                                 .toggleStyle(CustomToggleStyle())
-                                         .onChange(of: useLocation) { newValue in
-                                             if newValue {
-                                                 handleLocationToggle()
-                                             } else {
-                                                 selectedCountryCode = "US"
-                                             }
-                                         }
-                                }
-                                
-                                if useLocation {
-                                    LocationStatusView(
-                                        locationService: locationService,
-                                        selectedCountryCode: $selectedCountryCode,
-                                        showLocationAlert: $showLocationAlert
-                                    )
-                                } else {
-                                    ManualCountrySelector(
-                                        selectedCountryCode: $selectedCountryCode,
-                                        showingCountryPicker: $showingCountryPicker
-                                    )
-                                }
-                            }
-                        }
-                    }
-                    .padding(.horizontal, 24)
-                    
-                    Spacer()
-                    
-                    // Bottom action area
-                    VStack(spacing: 16) {
-                        Button(action: savePreferences) {
-                            HStack(spacing: 12) {
-                                Text("Complete Setup")
-                                    .font(.custom("IBMPlexSans-Medium", size: 18))
-                                
-                                Image(systemName: "arrow.right")
-                                    .font(.system(size: 16, weight: .medium))
-                                    .offset(x: buttonAnimated ? 5 : 0)
-                                    .animation(.easeInOut(duration: 0.6).repeatForever(autoreverses: true), value: buttonAnimated)
-                            }
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 56)
-                            .background(
-                                LinearGradient(
-                                    colors: [
-                                        Color(red: 0.54, green: 0.17, blue: 0.22),
-                                        Color(red: 0.64, green: 0.27, blue: 0.32)
-                                    ],
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
-                            )
-                            .cornerRadius(28)
-                            .shadow(color: Color(red: 0.54, green: 0.17, blue: 0.22).opacity(0.3), radius: 10, x: 0, y: 5)
-                        }
-                        .buttonStyle(PressableButtonStyle())
-                        .scaleEffect(buttonAnimated ? 1.0 : 0.9)
-                        .opacity(buttonAnimated ? 1.0 : 0.0)
-                        .animation(.spring(response: 0.8, dampingFraction: 0.6).delay(1.8), value: buttonAnimated)
-                        
-                        Button("Skip for now") {
-                            savePreferences()
-                        }
-                        .font(.custom("IBMPlexSans-Regular", size: 16))
-                        .foregroundColor(.gray)
-                        .opacity(buttonAnimated ? 1.0 : 0.0)
-                        .animation(.easeOut(duration: 0.8).delay(2.0), value: buttonAnimated)
-                    }
-                    .padding(.horizontal, 24)
-                    .padding(.bottom, 40)
+                    Text("We'll personalize your experience to find the perfect fits")
+                        .font(SteezFonts.regular(16))
+                        .foregroundColor(SteezColors.textSecondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 24)
                 }
+                .padding(.top, 48)
+                .opacity(headerAnimated ? 1 : 0)
+                .offset(y: headerAnimated ? 0 : -20)
+                
+                // Content Cards
+                VStack(spacing: 24) {
+                    // Size Selection
+                    PreferenceCard(
+                        icon: "tshirt.fill",
+                        title: "Your Size",
+                        subtitle: "What size do you usually wear?",
+                        isAnimated: sizeAnimated
+                    ) {
+                        LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 4), spacing: 12) {
+                            ForEach(LocationService.clothingSizes, id: \.self) { size in
+                                SizeButton(
+                                    size: size,
+                                    isSelected: selectedSize == size,
+                                    action: {
+                                        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                                            selectedSize = size
+                                        }
+                                        
+                                        let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                                        impactFeedback.impactOccurred()
+                                    }
+                                )
+                            }
+                        }
+                    }
+                    
+                    // Location Selection
+                    PreferenceCard(
+                        icon: "location.fill",
+                        title: "Your Region",
+                        subtitle: "Where should we search for items?",
+                        isAnimated: locationAnimated
+                    ) {
+                        VStack(spacing: 16) {
+                            Toggle(isOn: $useLocation) {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("Use my current location")
+                                        .font(SteezFonts.medium(16))
+                                        .foregroundColor(SteezColors.textPrimary)
+                                    
+                                    Text("Automatically detect your country")
+                                        .font(SteezFonts.regular(14))
+                                        .foregroundColor(SteezColors.textSecondary)
+                                }
+                            }
+                            .toggleStyle(SwitchToggleStyle(tint: SteezColors.primary))
+                            .onChange(of: useLocation) { newValue in
+                                handleLocationToggle()
+                            }
+                            
+                            if useLocation {
+                                LocationStatusView(
+                                    locationService: locationService,
+                                    selectedCountryCode: $selectedCountryCode,
+                                    showLocationAlert: $showLocationAlert
+                                )
+                            } else {
+                                ManualCountrySelector(
+                                    selectedCountryCode: $selectedCountryCode,
+                                    showingCountryPicker: $showingCountryPicker
+                                )
+                            }
+                        }
+                    }
+                }
+                .padding(.horizontal, 24)
+                
+                Spacer()
+                
+                // Action Button
+                Button("Complete Setup", action: savePreferences)
+                    .buttonStyle(PrimaryButtonStyle())
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, 32)
+                    .opacity(buttonAnimated ? 1 : 0)
+                    .offset(y: buttonAnimated ? 0 : 30)
             }
         }
-        .onAppear {
-            setupInitialValues()
-            triggerAnimations()
-        }
-        .onChange(of: locationService.currentCountryCode) { newCountryCode in
-            if useLocation {
-                selectedCountryCode = newCountryCode
-            }
-        }
+        .onAppear(perform: animateViews)
         .sheet(isPresented: $showingCountryPicker) {
-            CountryPickerSheet(selectedCountryCode: $selectedCountryCode)
+            CountryPicker(selectedCountryCode: $selectedCountryCode)
         }
-        .alert("Location Access", isPresented: $showLocationAlert) {
-            Button("Settings") {
-                locationService.openLocationSettings()
-            }
-            Button("Not Now", role: .cancel) {
-                useLocation = false
-            }
-        } message: {
-            Text("To automatically detect your country, please enable location access in Settings.")
+        .alert(isPresented: $showLocationAlert) {
+            Alert(
+                title: Text("Location Permission"),
+                message: Text("Please enable location services in Settings to automatically detect your country."),
+                primaryButton: .default(Text("Settings"), action: {
+                    locationService.openLocationSettings()
+                }),
+                secondaryButton: .cancel()
+            )
         }
     }
     
-    private func setupInitialValues() {
-        selectedSize = appState.userSize
-        selectedCountryCode = appState.userCountry
-    }
-    
-    private func triggerAnimations() {
-        withAnimation {
+    private func animateViews() {
+        withAnimation(.easeOut(duration: 0.8)) {
             headerAnimated = true
-            progressValue = 1.0
         }
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
-            withAnimation {
-                sizeAnimated = true
-            }
+        withAnimation(.easeOut(duration: 0.8).delay(0.2)) {
+            sizeAnimated = true
         }
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
-            withAnimation {
-                locationAnimated = true
-            }
+        withAnimation(.easeOut(duration: 0.8).delay(0.4)) {
+            locationAnimated = true
         }
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.8) {
-            withAnimation {
-                buttonAnimated = true
-            }
+        withAnimation(.easeOut(duration: 0.8).delay(0.6)) {
+            buttonAnimated = true
         }
     }
     
     private func handleLocationToggle() {
-        withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
-            switch locationService.authorizationStatus {
-            case .notDetermined:
-                locationService.requestLocationPermission()
-            case .denied, .restricted:
+        if useLocation {
+            locationService.requestLocationPermission()
+            
+            if locationService.authorizationStatus == .denied || locationService.authorizationStatus == .restricted {
                 showLocationAlert = true
-            case .authorizedWhenInUse, .authorizedAlways:
+            } else {
                 locationService.getCurrentLocation()
-            @unknown default:
-                break
             }
+        } else {
+            selectedCountryCode = "US"
         }
     }
     
     private func savePreferences() {
-        // Haptic feedback
-        let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
-        impactFeedback.impactOccurred()
-        
         appState.userSize = selectedSize
         appState.userCountry = selectedCountryCode
-        appState.locationPermissionGranted = locationService.authorizationStatus == .authorizedWhenInUse || locationService.authorizationStatus == .authorizedAlways
+        appState.locationPermissionGranted = useLocation && (locationService.authorizationStatus == .authorizedWhenInUse || locationService.authorizationStatus == .authorizedAlways)
         appState.saveUserPreferences()
     }
 }
 
-// MARK: - Custom Components
-
+// MARK: - Preference Card
 struct PreferenceCard<Content: View>: View {
     let icon: String
     let title: String
@@ -549,36 +390,89 @@ struct ManualCountrySelector: View {
     }
 }
 
-struct CountryPickerSheet: View {
-    @Binding var selectedCountryCode: String
+// MARK: - Country Picker
+struct CountryPicker: View {
     @Environment(\.dismiss) private var dismiss
+    @Binding var selectedCountryCode: String
+    @State private var searchText = ""
+    
+    var filteredCountries: [LocationService.Country] {
+        if searchText.isEmpty {
+            return LocationService.supportedCountries
+        } else {
+            return LocationService.supportedCountries.filter {
+                $0.name.localizedCaseInsensitiveContains(searchText)
+            }
+        }
+    }
     
     var body: some View {
         NavigationView {
-            List(LocationService.supportedCountries, id: \.code) { country in
-                Button(action: {
-                    selectedCountryCode = country.code
-                    dismiss()
-                }) {
-                    HStack {
-                        Text(country.name)
-                            .foregroundColor(.primary)
-                        Spacer()
-                        if selectedCountryCode == country.code {
-                            Image(systemName: "checkmark")
-                                .foregroundColor(Color(red: 0.54, green: 0.17, blue: 0.22))
+            VStack {
+                SearchBar(searchText: $searchText)
+                    .padding(.horizontal)
+                
+                List(filteredCountries, id: \.code) { country in
+                    Button(action: {
+                        selectedCountryCode = country.code
+                        dismiss()
+                    }) {
+                        HStack {
+                            Text(country.name)
+                                .font(SteezFonts.regular(16))
+                                .foregroundColor(SteezColors.textPrimary)
+                            
+                            Spacer()
+                            
+                            if selectedCountryCode == country.code {
+                                Image(systemName: "checkmark")
+                                    .foregroundColor(SteezColors.primary)
+                            }
                         }
                     }
                 }
+                .listStyle(PlainListStyle())
             }
             .navigationTitle("Select Country")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") { dismiss() }
+                    Button("Done") {
+                        dismiss()
+                    }
                 }
             }
         }
+    }
+}
+
+// MARK: - Search Bar
+struct SearchBar: View {
+    @Binding var searchText: String
+    
+    var body: some View {
+        HStack {
+            Image(systemName: "magnifyingglass")
+                .foregroundColor(SteezColors.textSecondary)
+            
+            TextField("Search", text: $searchText)
+                .font(SteezFonts.regular(16))
+                .foregroundColor(SteezColors.textPrimary)
+            
+            if !searchText.isEmpty {
+                Button(action: {
+                    searchText = ""
+                }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundColor(SteezColors.textSecondary)
+                }
+            }
+        }
+        .padding(12)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(SteezColors.textSecondary.opacity(0.1))
+        )
     }
 }
 

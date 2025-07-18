@@ -19,99 +19,69 @@ struct AuthView: View {
 
     var body: some View {
         ZStack {
-            // Background
-            Color(hex: "FCFCFC").ignoresSafeArea()
-
-            VStack(spacing: 20) {
-                
-                // Header
-                VStack {
-                    Text("Welcome to Steez")
-                        .font(.custom("IBMPlexSans-Medium", size: 32))
-                    Text(authType == .signIn ? "Sign in to continue" : "Create an account")
-                        .font(.custom("IBMPlexSans-Regular", size: 18))
-                        .foregroundColor(.gray)
-                }
-                .padding(.bottom, 30)
-
-                // Auth type picker
-                Picker("Authentication", selection: $authType) {
-                    ForEach(AuthType.allCases, id: \.self) {
-                        Text($0.rawValue)
+            SteezColors.background
+                .ignoresSafeArea()
+            
+            ScrollView {
+                VStack(spacing: 32) {
+                    // Header
+                    VStack(spacing: 16) {
+                        Text("Welcome to Steez")
+                            .font(SteezFonts.medium(32))
+                            .foregroundColor(SteezColors.textPrimary)
+                        
+                        Text(authType == .signIn ? "Sign in to continue" : "Create an account")
+                            .font(SteezFonts.regular(16))
+                            .foregroundColor(SteezColors.textSecondary)
                     }
-                }
-                .pickerStyle(SegmentedPickerStyle())
-                .padding(.horizontal)
-                
-                // Form Fields
-                VStack(spacing: 15) {
-                    TextField("Email", text: $email)
-                        .padding()
-                        .background(Color.white)
-                        .cornerRadius(10)
-                        .shadow(color: .gray.opacity(0.1), radius: 5, x: 0, y: 2)
-                        .keyboardType(.emailAddress)
-                        .autocapitalization(.none)
-
-                    SecureField("Password", text: $password)
-                        .padding()
-                        .background(Color.white)
-                        .cornerRadius(10)
-                        .shadow(color: .gray.opacity(0.1), radius: 5, x: 0, y: 2)
-                }
-                .padding(.horizontal)
-                
-                // Error message
-                if let authError {
-                    Text(authError.localizedDescription)
-                        .foregroundColor(.red)
-                        .font(.caption)
-                        .padding(.horizontal)
-                }
-                
-                // Success message
-                if showingSuccessMessage {
-                    Text(successMessage)
-                        .foregroundColor(.green)
-                        .font(.caption)
-                        .padding(.horizontal)
-                        .multilineTextAlignment(.center)
-                }
-
-                // Action Button
-                Button(action: handleAuthAction) {
-                    HStack {
+                    .padding(.top, 48)
+                    
+                    // Auth Type Picker
+                    Picker("Authentication", selection: $authType) {
+                        ForEach(AuthType.allCases, id: \.self) {
+                            Text($0.rawValue)
+                        }
+                    }
+                    .pickerStyle(SegmentedPickerStyle())
+                    .padding(.horizontal, 24)
+                    
+                    // Form Fields
+                    VStack(spacing: 20) {
+                        TextField("Email", text: $email)
+                            .textFieldStyle(ModernTextFieldStyle())
+                            .keyboardType(.emailAddress)
+                            .autocapitalization(.none)
+                        
+                        SecureField("Password", text: $password)
+                            .textFieldStyle(ModernTextFieldStyle())
+                    }
+                    .padding(.horizontal, 24)
+                    
+                    // Messages
+                    if let authError {
+                        ErrorMessageView(message: authError.localizedDescription)
+                    }
+                    
+                    if showingSuccessMessage {
+                        SuccessMessageView(message: successMessage)
+                    }
+                    
+                    // Action Button
+                    Button(action: handleAuthAction) {
                         if isLoading {
                             ProgressView()
                                 .progressViewStyle(CircularProgressViewStyle(tint: .white))
                         } else {
                             Text(authType.rawValue)
-                                .font(.custom("IBMPlexSans-Medium", size: 18))
                         }
                     }
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 56)
-                    .background(
-                        LinearGradient(
-                            colors: [
-                                Color(red: 0.54, green: 0.17, blue: 0.22),
-                                Color(red: 0.64, green: 0.27, blue: 0.32)
-                            ],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                    )
-                    .cornerRadius(28)
-                    .shadow(color: Color(red: 0.54, green: 0.17, blue: 0.22).opacity(0.3), radius: 10, x: 0, y: 5)
+                    .buttonStyle(PrimaryButtonStyle())
+                    .padding(.horizontal, 24)
+                    .disabled(isLoading)
                 }
-                .padding()
-                .disabled(isLoading)
-                
-                Spacer()
             }
-            .padding(.top, 60)
         }
+        .animation(.easeInOut, value: authType)
     }
     
     private func handleAuthAction() {
@@ -145,6 +115,49 @@ struct AuthView: View {
                 isLoading = false
             }
         }
+    }
+}
+
+// MARK: - Message Views
+struct ErrorMessageView: View {
+    let message: String
+    
+    var body: some View {
+        HStack {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .foregroundColor(SteezColors.error)
+            Text(message)
+                .font(SteezFonts.regular(14))
+                .foregroundColor(SteezColors.textPrimary)
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(SteezColors.error.opacity(0.1))
+        )
+        .padding(.horizontal, 24)
+    }
+}
+
+struct SuccessMessageView: View {
+    let message: String
+    
+    var body: some View {
+        HStack {
+            Image(systemName: "checkmark.circle.fill")
+                .foregroundColor(SteezColors.success)
+            Text(message)
+                .font(SteezFonts.regular(14))
+                .foregroundColor(SteezColors.textPrimary)
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(SteezColors.success.opacity(0.1))
+        )
+        .padding(.horizontal, 24)
     }
 }
 
