@@ -57,6 +57,22 @@ struct ClothingSegment: Decodable, Identifiable {
     }
 }
 
+// For checking the status of a job from the /jobs/:id endpoint
+struct JobStatusResponse: Decodable {
+    let job_id: String
+    let status: JobStatus
+    let selected_frame_urls: [URL]?
+    let error_message: String?
+}
+
+enum JobStatus: String, Decodable {
+    case PENDING
+    case PROCESSING
+    case SELECTING_FRAMES
+    case COMPLETE
+    case FAILED
+}
+
 struct EbayMatch: Decodable, Identifiable {
     let id = UUID()
     let phrase: String
@@ -611,6 +627,51 @@ class NetworkService {
         return diagnostics
     }
     
+    // MARK: - Job Status Polling
+    
+    func getJobStatus(jobId: String, completion: @escaping (Result<JobStatusResponse, NetworkError>) -> Void) {
+        let urlString = "\(baseURL)/jobs/\(jobId)"
+        
+        guard let url = URL(string: urlString) else {
+            completion(.failure(.invalidURL))
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        // This task does not need retry logic, as it will be called repeatedly by the poller.
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            DispatchQueue.main.async {
+                if let error = error {
+                    completion(.failure(.requestFailed(error)))
+                    return
+                }
+                
+                guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
+                    let errorMessage = self.parseErrorMessage(from: data) ?? "Failed to get job status"
+                    completion(.failure(.backendError((response as? HTTPURLResponse)?.statusCode ?? 500, errorMessage)))
+                    return
+                }
+                
+                guard let data = data else {
+                    completion(.failure(.invalidData))
+                    return
+                }
+                
+                do {
+                    let jobStatus = try self.createDecoder().decode(JobStatusResponse.self, from: data)
+                    completion(.success(jobStatus))
+                } catch {
+                    completion(.failure(.decodingFailed(error)))
+                }
+            }
+        }.resume()
+    }
+    
+    // MARK: - Image & Video Processing
+
     // Helper for error processing (replaced AFError handling)
     private func handleNetworkError(_ error: Error, from data: Data?, response httpResponse: HTTPURLResponse?) -> NetworkError {
         if let data = data,

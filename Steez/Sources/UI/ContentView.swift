@@ -3,7 +3,7 @@ import PhotosUI
 import UserNotifications
 import UIKit
 import CoreLocation
-
+import Kingfisher
 // MARK: - Main ContentView
 
 struct ContentView: View {
@@ -174,6 +174,9 @@ struct ImportView: View {
                             buttons
                         }
                         
+                        jobPollingIndicator
+                        frameSelector
+                        
                         lensProgressIndicator
                         segmentedResultsDisplay
                         lensResultsDisplay
@@ -197,6 +200,67 @@ struct ImportView: View {
             }
         }
             .navigationTitle("Import Items")
+        }
+    }
+    
+    // --- Job Polling and Frame Selection ---
+    @ViewBuilder
+    private var jobPollingIndicator: some View {
+        if appState.isPollingForJob {
+            VStack {
+                ProgressView("Processing your video...")
+                Text("Job ID: \(appState.pollingJobId ?? "N/A")")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            .padding()
+            .background(Color.secondary.opacity(0.1))
+            .cornerRadius(10)
+            .padding(.horizontal)
+        } else if let errorMessage = appState.jobErrorMessage {
+            VStack {
+                Image(systemName: "xmark.octagon.fill")
+                    .foregroundColor(.red)
+                Text("Job Failed")
+                    .font(.headline)
+                Text(errorMessage)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            .padding()
+            .background(Color.red.opacity(0.1))
+            .cornerRadius(10)
+            .padding(.horizontal)
+        }
+    }
+    
+    @ViewBuilder
+    private var frameSelector: some View {
+        if !appState.jobFrames.isEmpty {
+            FrameSelectorView(frameUrls: appState.jobFrames) { selectedUrl in
+                // A frame has been selected by the user.
+                // Now, we download it and pass it to the existing workflow.
+                print("User selected frame URL: \(selectedUrl)")
+                appState.isProcessing = true // Show main progress indicator
+                
+                KingfisherManager.shared.retrieveImage(with: selectedUrl) { result in
+                        switch result {
+                        case .success(let value):
+                            print("Successfully downloaded selected frame as UIImage.")
+                            let image = value.image
+                            let userId = appState.currentUser?.userId.uuidString ?? "demo-user-swift"
+                            self.processImage(image, userId: userId)
+                            
+                            // Clear the job frames so the selector disappears
+                            appState.jobFrames = []
+                            
+                        case .failure(let error):
+                            print("Error downloading selected frame: \(error)")
+                            appState.isProcessing = false
+                            showError("Download Failed", "Could not download the selected frame. Please try again.")
+                        }
+                }
+            }
         }
     }
     

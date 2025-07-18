@@ -89,6 +89,16 @@ class AppState: ObservableObject {
     @Published var segmentedResults: SegmentedResults?
     @Published var selectedSegmentIndex: Int = 0
     
+    // For job polling from Share Extension
+    @Published var isPollingForJob: Bool = false
+    @Published var pollingJobId: String? = nil
+    @Published var jobErrorMessage: String? = nil
+    @Published var jobFrames: [URL] = []
+    
+    private let appGroupId = "group.com.steez.app"
+    private let latestJobIdKey = "latest_job_id"
+    private var pollingTimer: Timer?
+    
     private var authStateTask: Task<Void, Never>?
 
     init() {
@@ -108,12 +118,110 @@ class AppState: ObservableObject {
         
         // Check server first
         checkServerAvailability()
+        
+        // Listen for when the app becomes active to check for pending jobs
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(checkForPendingJob),
+            name: UIScene.didActivateNotification,
+            object: nil
+        )
     }
     
     deinit {
         authStateTask?.cancel()
+        pollingTimer?.invalidate()
+        NotificationCenter.default.removeObserver(self)
     }
 
+    // MARK: - Job Polling Logic
+    
+    @objc func checkForPendingJob() {
+        guard let userDefaults = UserDefaults(suiteName: appGroupId) else {
+            print("Could not access shared UserDefaults.")
+            return
+        }
+        
+        // Check if there is a job ID from the Share Extension
+        if let jobId = userDefaults.string(forKey: latestJobIdKey) {
+            print("Found pending job ID from Share Extension: \(jobId)")
+            // Remove the key so we don't process the same job again
+            userDefaults.removeObject(forKey: latestJobIdKey)
+            
+            // Start polling for this job's status
+            startPolling(for: jobId)
+        }
+    }
+    
+    private func startPolling(for jobId: String) {
+        // Reset state before starting
+        resetPollingState()
+        
+        self.pollingJobId = jobId
+        self.isPollingForJob = true
+        
+        // Invalidate any existing timer
+        pollingTimer?.invalidate()
+        
+        // Start a new timer that fires every 3 seconds
+        pollingTimer = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: true) { [weak self] _ in
+            self?.pollJobStatus(jobId: jobId)
+        }
+    }
+
+    private func pollJobStatus(jobId: String) {
+        NetworkService.shared.getJobStatus(jobId: jobId) { [weak self] result in
+            guard let self = self else { return }
+            
+            switch result {
+            case .success(let response):
+                print("Polled job \(jobId), status: \(response.status.rawValue)")
+                switch response.status {
+                case .SELECTING_FRAMES:
+                    // Success case! Frames are ready.
+                    if let frameUrls = response.selected_frame_urls, !frameUrls.isEmpty {
+                        self.jobFrames = frameUrls
+                        self.stopPolling()
+                    }
+                    // If URLs are missing, we keep polling, maybe they're not saved yet.
+                    
+                case .FAILED:
+                    // The job failed on the backend.
+                    self.jobErrorMessage = response.error_message ?? "The video processing job failed."
+                    self.stopPolling()
+                    
+                case .PENDING, .PROCESSING:
+                    // The job is still in progress, do nothing and let the timer fire again.
+                    break
+                    
+                case .COMPLETE:
+                    // This case shouldn't be hit if the flow is correct,
+                    // but we handle it just in case.
+                    self.jobErrorMessage = "Job was already completed."
+                    self.stopPolling()
+                }
+                
+            case .failure(let error):
+                // The network request itself failed.
+                self.jobErrorMessage = "Failed to get job status: \(error.localizedDescription)"
+                self.stopPolling()
+            }
+        }
+    }
+    
+    private func stopPolling() {
+        pollingTimer?.invalidate()
+        pollingTimer = nil
+        isPollingForJob = false
+    }
+
+    private func resetPollingState() {
+        stopPolling()
+        pollingJobId = nil
+        jobErrorMessage = nil
+        jobFrames = []
+    }
+    
     private func listenToAuthChanges() {
         authStateTask = Task {
             for await (event, session) in SupabaseService.shared.listenToAuthEvents() {
@@ -176,6 +284,7 @@ class AppState: ObservableObject {
         lensProducts = []
         segmentedResults = nil
         selectedSegmentIndex = 0
+        resetPollingState()
     }
 
     // MARK: - Helper used by UI to reset analysis results
@@ -183,6 +292,7 @@ class AppState: ObservableObject {
         lensProducts = []
         segmentedResults = nil
         selectedSegmentIndex = 0
+        resetPollingState()
     }
 
     func resetUserPreferences() {
