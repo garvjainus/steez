@@ -99,14 +99,18 @@ def _analyze_and_select_frames(frames: list[Path], top_n: int = 5) -> list[Path]
 
 
 def _upload_frames(frames: list[Path], job_id: str) -> list[str]:
-    """Upload each frame to s3://BUCKET_NAME/{job_id}/filename and return their URLs."""
+    """Upload each frame to s3://BUCKET_NAME/{job_id}/filename and return their presigned URLs."""
     uploaded_urls = []
     for frame_path in frames:
         key = f"{job_id}/{frame_path.name}"
         s3.upload_file(str(frame_path), BUCKET_NAME, key)
-        # Construct the S3 URL
-        url = f"https://{BUCKET_NAME}.s3.amazonaws.com/{key}"
-        uploaded_urls.append(url)
+        # Create a presigned URL
+        presigned_url = s3.generate_presigned_url(
+            "get_object",
+            Params={"Bucket": BUCKET_NAME, "Key": key},
+            ExpiresIn=3600,  # URL expires in 1 hour
+        )
+        uploaded_urls.append(presigned_url)
     return uploaded_urls
 
 
