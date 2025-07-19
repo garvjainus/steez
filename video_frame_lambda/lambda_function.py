@@ -26,9 +26,24 @@ def _get_env(name: str, default: str | None = None) -> str:
 BUCKET_NAME = _get_env("FRAME_BUCKET", "steez-video-frames")
 LAMBDA_SECRET = _get_env("LAMBDA_SECRET")
 
+# Restrict which domains videos can be downloaded from. Comma-separated list in env or default safe list.
+ALLOWED_VIDEO_DOMAINS = set(
+    (_get_env("ALLOWED_VIDEO_DOMAINS", "tiktok.com,instagram.com,instagramcdn.com,youtube.com,youtu.be").split(","))
+)
+
+# Maximum video file size yt-dlp may download (to avoid DoS / wallet burn). Example: "50M".
+MAX_FILESIZE = _get_env("MAX_VIDEO_FILESIZE", "100M")
+
 
 def _download_video(url: str, tmp_dir: Path) -> Path:
     """Download remote video with yt-dlp and return the actual file Path."""
+
+    # --- Security: Domain allow-list -------------------------------------------------
+    from urllib.parse import urlparse
+
+    hostname = urlparse(url).hostname or ""
+    if not any(hostname.endswith(d.strip()) for d in ALLOWED_VIDEO_DOMAINS):
+        raise RuntimeError(f"Domain '{hostname}' is not in ALLOWED_VIDEO_DOMAINS")
 
     # Save as video.<ext> inside tmp_dir, letting yt-dlp choose correct extension
     outtmpl = str(tmp_dir / "video.%(ext)s")
@@ -38,6 +53,8 @@ def _download_video(url: str, tmp_dir: Path) -> Path:
         "quiet": True,
         "no_warnings": True,
         "format": "bestvideo+bestaudio/best",
+        "max_filesize": MAX_FILESIZE,  # Abort downloads larger than this
+        "socket_timeout": 15,
         # optional cookies support
         "cookies": str(Path(__file__).with_name("cookies.txt")),
     }

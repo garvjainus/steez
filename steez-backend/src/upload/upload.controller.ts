@@ -7,6 +7,7 @@ import {
   HttpException,
   HttpStatus,
   Logger,
+  UseGuards,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
@@ -14,6 +15,7 @@ import * as fs from 'fs';
 import { UploadService } from './upload.service';
 import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
 import { MatchResult } from '../services/geminiVision';
+import { ApiKeyAuthGuard } from '../auth/guards/api-key-auth.guard';
 
 @Controller('upload')
 export class UploadController {
@@ -22,6 +24,7 @@ export class UploadController {
   constructor(private readonly uploadService: UploadService) {}
 
   @Post('image')
+  @UseGuards(ApiKeyAuthGuard)
   @UseInterceptors(FileInterceptor('image'))
   async uploadImage(
     @UploadedFile() file: Express.Multer.File,
@@ -84,6 +87,7 @@ export class UploadController {
   }
 
   @Post('image-base64')
+  @UseGuards(ApiKeyAuthGuard)
   async uploadBase64Image(
     @Body('image') base64Image: string,
     @Body('userId') userId: string,

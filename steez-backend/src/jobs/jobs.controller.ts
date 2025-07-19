@@ -15,6 +15,7 @@ import { JobsService } from './jobs.service';
 import { CreateJobDto } from './dto/create-job.dto';
 import { LambdaCallbackDto } from './dto/lambda-callback.dto';
 import { LambdaAuthGuard } from '../auth/guards/lambda-auth.guard';
+import { ApiKeyAuthGuard } from '../auth/guards/api-key-auth.guard';
 
 @Controller('jobs')
 export class JobsController {
@@ -23,6 +24,7 @@ export class JobsController {
   constructor(private readonly jobsService: JobsService) {}
 
   @Post()
+  @UseGuards(ApiKeyAuthGuard)
   async create(@Body() createJobDto: CreateJobDto) {
     try {
       this.logger.log(`Creating job for user: ${createJobDto.user_id}`);
@@ -69,6 +71,7 @@ export class JobsController {
   }
 
   @Get(':id')
+  @UseGuards(ApiKeyAuthGuard)
   async findOne(@Param('id') id: string) {
     try {
       const job = await this.jobsService.findOne(id);
@@ -101,6 +104,7 @@ export class JobsController {
   }
 
   @Get('user/:userId')
+  @UseGuards(ApiKeyAuthGuard)
   async findByUserId(@Param('userId') userId: string) {
     try {
       const jobs = await this.jobsService.findByUserId(userId);

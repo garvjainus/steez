@@ -7,9 +7,11 @@ import {
   Logger,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import { VideoProcessingService } from './video-processing.service';
 import { ProcessVideoDto } from './dto/process-video.dto';
+import { ApiKeyAuthGuard } from '../auth/guards/api-key-auth.guard';
 
 @Controller('video-processing')
 export class VideoProcessingController {
@@ -20,6 +22,7 @@ export class VideoProcessingController {
   ) {}
 
   @Post('process-video')
+  @UseGuards(ApiKeyAuthGuard)
   @HttpCode(HttpStatus.OK)
   async processVideo(@Body() processVideoDto: ProcessVideoDto) {
     this.logger.log(
@@ -40,6 +43,7 @@ export class VideoProcessingController {
   }
 
   @Get('job-status/:jobId')
+  @UseGuards(ApiKeyAuthGuard)
   async getJobStatus(@Param('jobId') jobId: string) {
     this.logger.log(`Getting job status for: ${jobId}`);
 
