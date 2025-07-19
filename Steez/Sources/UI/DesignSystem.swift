@@ -4,8 +4,10 @@ import SwiftUI
 struct SteezColors {
     static let primary = Color(red: 0.54, green: 0.17, blue: 0.22)
     static let primaryLight = Color(red: 0.64, green: 0.27, blue: 0.32)
+    static let accent = Color(red: 0.64, green: 0.27, blue: 0.32) // Using primaryLight as accent
     static let background = Color(hex: "FCFCFC")
     static let cardBackground = Color.white
+    static let surface = Color.white.opacity(0.8) // Light surface color for cards/inputs
     static let textPrimary = Color.black
     static let textSecondary = Color.gray
     static let success = Color.green

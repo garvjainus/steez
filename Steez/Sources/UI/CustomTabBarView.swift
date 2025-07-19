@@ -25,18 +25,21 @@ enum MainTab: String, CaseIterable {
 
 // MARK: - Custom Tab Bar
 struct CustomTabBar: View {
-    @Binding var selectedTab: MainTab
-    @State private var tabItemFrames: [MainTab: CGRect] = [:]
+    @Binding var selectedTab: Int // Changed to Int
+    @State private var tabItemFrames: [Int: CGRect] = [:] // Use Int as key
+    
+    private let tabs = MainTab.allCases
     
     var body: some View {
         HStack(spacing: 0) {
-            ForEach(MainTab.allCases, id: \.self) { tab in
+            ForEach(tabs.indices, id: \.self) { index in
+                let tab = tabs[index]
                 TabBarItem(
                     tab: tab,
-                    isSelected: selectedTab == tab,
+                    isSelected: selectedTab == index,
                     action: {
                         withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
-                            selectedTab = tab
+                            selectedTab = index
                         }
                         
                         let impactFeedback = UIImpactFeedbackGenerator(style: .light)
@@ -47,7 +50,7 @@ struct CustomTabBar: View {
                     GeometryReader { geometry in
                         Color.clear
                             .onAppear {
-                                tabItemFrames[tab] = geometry.frame(in: .named("TabBarContainer"))
+                                tabItemFrames[index] = geometry.frame(in: .named("TabBarContainer"))
                             }
                     }
                 )

@@ -8,7 +8,7 @@ import Kingfisher
 // MARK: - Main ContentView
 struct ContentView: View {
     @EnvironmentObject var appState: AppState
-    @State private var selectedTab: MainTab = .discover
+    @State private var selectedTab: Int = 0 // Changed to Int
     @State private var tabBarOffset: CGFloat = 0
     
     var body: some View {
@@ -19,29 +19,29 @@ struct ContentView: View {
                 
                 VStack(spacing: 0) {
                     // Main Content
-                    TabView(selection: $selectedTab) {
-                        DiscoverView()
-                            .tag(MainTab.discover)
+            TabView(selection: $selectedTab) { // Uses Int binding
+                        DiscoverView(selectedTab: $selectedTab) // Pass binding
+                            .tag(0)
                         
                         MainImportView()
-                            .tag(MainTab.importTab)
+                            .tag(1)
                 
                 ProfileView()
-                            .tag(MainTab.profile)
+                            .tag(2)
                     }
                     .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                     
                     // Custom Tab Bar
-                    CustomTabBar(selectedTab: $selectedTab)
+                    CustomTabBar(selectedTab: $selectedTab) // Pass Int binding
                         .offset(y: tabBarOffset)
                         .animation(.spring(response: 0.3, dampingFraction: 0.8), value: tabBarOffset)
-                }
-                
+            }
+            
                 // Overlay for server errors
             if let errorMessage = appState.errorMessage {
                     serverErrorOverlay(message: errorMessage)
-                }
             }
+        }
         }
     }
     
@@ -57,7 +57,7 @@ struct ContentView: View {
                 Image(systemName: "wifi.exclamationmark")
                     .font(.system(size: 50, weight: .light))
                     .foregroundColor(SteezColors.error)
-                
+            
                 Text("Connection Issue")
                     .font(SteezFonts.medium(22))
                     .foregroundColor(SteezColors.textPrimary)
@@ -78,8 +78,8 @@ struct ContentView: View {
                 appState.checkServerAvailability()
                     }
                     .buttonStyle(PrimaryButtonStyle())
-                }
             }
+        }
             .padding(32)
         .background(
                 RoundedRectangle(cornerRadius: 24)
@@ -171,7 +171,7 @@ struct MainImportView: View {
                             SegmentedResultsDisplay()
                             LensResultsDisplay()
                         }
-                    }
+                }
                     .padding(.horizontal, 24)
                     .opacity(animateContent ? 1 : 0)
                     .offset(y: animateContent ? 0 : 30)
@@ -191,7 +191,7 @@ struct MainImportView: View {
         .sheet(isPresented: $showingLinkInput) {
             LinkInputView()
                 .environmentObject(appState)
-        }
+            }
             .onChange(of: selectedMedia) { newValue in
                 if let results = newValue, !results.isEmpty {
                     processSelectedMedia(results)
@@ -203,7 +203,7 @@ struct MainImportView: View {
                     message: Text(alertMessage),
                     dismissButton: .default(Text("OK"))
                 )
-        }
+            }
     }
     
     // MARK: - Processing Methods
@@ -229,10 +229,10 @@ struct MainImportView: View {
                     self.processImage(image, userId: userId)
                 } else {
                     self.showError("Authentication Error", "Please sign in to upload images.")
-                }
             }
         }
-        
+    }
+    
         self.selectedMedia = nil
     }
     

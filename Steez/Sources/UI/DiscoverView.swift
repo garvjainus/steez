@@ -3,6 +3,8 @@ import SwiftUI
 // MARK: - Discover View (Main Hub)
 struct DiscoverView: View {
     @EnvironmentObject var appState: AppState
+    @Binding var selectedTab: Int // Add binding for tab selection
+    
     @State private var animateHeader = false
     @State private var animateCards = false
     @State private var showingPreferences = false
@@ -48,8 +50,10 @@ struct DiscoverView: View {
                             title: "Scan Outfit",
                             subtitle: "Take a photo",
                             color: SteezColors.primary,
-                            action: { 
-                                // TODO: Switch to import tab and trigger camera
+                            action: {
+                                withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                                    selectedTab = 1 // Switch to the second tab (Import)
+                                }
                             }
                         )
                         
@@ -58,8 +62,10 @@ struct DiscoverView: View {
                             title: "From Link",
                             subtitle: "TikTok, Instagram",
                             color: SteezColors.primaryLight,
-                            action: { 
-                                // TODO: Switch to import tab and show link input
+                            action: {
+                                withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                                    selectedTab = 1 // Switch to the second tab (Import)
+                                }
                             }
                         )
                     }
@@ -173,6 +179,6 @@ struct SegmentPreviewCard: View {
 }
 
 #Preview {
-    DiscoverView()
+    DiscoverView(selectedTab: .constant(0))
         .environmentObject(AppState())
 } 
