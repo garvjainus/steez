@@ -1,0 +1,11 @@
+# Ignore development and local environment files
+.git
+.gitignore
+.env
+node_modules
+dist
+npm-debug.log
+
+# Ignore IDE and OS-specific files
+.DS_Store
+.vscode/ 
