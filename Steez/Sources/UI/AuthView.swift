@@ -69,9 +69,9 @@ struct AuthView: View {
                 ScrollView {
                     VStack(spacing: 0) {
                         // Header Section
-                        VStack(spacing: 24) {
+                        VStack(spacing: 20) {
                             // Logo/Brand
-                            VStack(spacing: 16) {
+                            VStack(spacing: 12) {
                                 Circle()
                                     .fill(
                                         LinearGradient(
@@ -80,26 +80,26 @@ struct AuthView: View {
                                             endPoint: .bottomTrailing
                                         )
                                     )
-                                    .frame(width: 80, height: 80)
+                                    .frame(width: 72, height: 72)
                                     .overlay(
                                         Text("S")
-                                            .font(SteezFonts.medium(36))
+                                            .font(SteezFonts.medium(32))
                                             .foregroundColor(.white)
                                     )
-                                    .shadow(color: SteezColors.primary.opacity(0.3), radius: 20, x: 0, y: 10)
+                                    .shadow(color: SteezColors.primary.opacity(0.3), radius: 15, x: 0, y: 8)
                                 
-                                VStack(spacing: 8) {
+                                VStack(spacing: 6) {
                                     Text(authType.title)
-                                        .font(SteezFonts.medium(32))
+                                        .font(SteezFonts.medium(28))
                                         .foregroundColor(SteezColors.textPrimary)
                                     
                                     Text(authType.subtitle)
-                                        .font(SteezFonts.regular(16))
+                                        .font(SteezFonts.regular(15))
                                         .foregroundColor(SteezColors.textSecondary)
                                         .multilineTextAlignment(.center)
                                 }
                             }
-                            .padding(.top, 60)
+                            .padding(.top, 50)
                         }
                         
                         // Auth Type Switcher
@@ -110,10 +110,10 @@ struct AuthView: View {
                         }
                         .pickerStyle(.segmented)
                         .padding(.horizontal, 32)
-                        .padding(.top, 40)
+                        .padding(.top, 32)
                         
                         // Form Section
-                        VStack(spacing: 24) {
+                        VStack(spacing: 20) {
                             // Email Field
                             FloatingLabelTextField(
                                 text: $email,
@@ -137,13 +137,13 @@ struct AuthView: View {
                             }
                         }
                         .padding(.horizontal, 32)
-                        .padding(.top, 40)
+                        .padding(.top, 32)
                         
                         // Messages
                         if let authError {
                             ModernErrorMessage(message: authError.localizedDescription)
                                 .padding(.horizontal, 32)
-                                .padding(.top, 16)
+                                .padding(.top, 12)
                                 .transition(.asymmetric(
                                     insertion: .scale.combined(with: .opacity),
                                     removal: .opacity
@@ -153,7 +153,7 @@ struct AuthView: View {
                         if showingSuccessMessage {
                             ModernSuccessMessage(message: successMessage)
                                 .padding(.horizontal, 32)
-                                .padding(.top, 16)
+                                .padding(.top, 12)
                                 .transition(.asymmetric(
                                     insertion: .scale.combined(with: .opacity),
                                     removal: .opacity
@@ -169,15 +169,15 @@ struct AuthView: View {
                                         .scaleEffect(0.8)
                                 } else {
                                     Image(systemName: authType == .signIn ? "arrow.right.circle" : "person.badge.plus")
-                                        .font(.system(size: 18, weight: .medium))
+                                        .font(.system(size: 16, weight: .medium))
                                     
                                     Text(authType.buttonText)
-                                        .font(SteezFonts.medium(18))
+                                        .font(SteezFonts.medium(16))
                                 }
                             }
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
-                            .frame(height: 56)
+                            .frame(height: 48)
                             .background(
                                 Group {
                                     if isFormValid {
@@ -191,22 +191,22 @@ struct AuthView: View {
                                     }
                                 }
                             )
-                            .clipShape(RoundedRectangle(cornerRadius: 28))
+                            .clipShape(RoundedRectangle(cornerRadius: 24))
                             .shadow(
-                                color: isFormValid ? SteezColors.primary.opacity(0.4) : Color.clear,
-                                radius: 15,
+                                color: isFormValid ? SteezColors.primary.opacity(0.3) : Color.clear,
+                                radius: 10,
                                 x: 0,
-                                y: 8
+                                y: 6
                             )
                             .scaleEffect(isLoading ? 0.95 : 1.0)
                             .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isLoading)
                         }
                         .disabled(!isFormValid || isLoading)
                         .padding(.horizontal, 32)
-                        .padding(.top, 32)
+                        .padding(.top, 24)
                         
                         // Social Logins
-                        VStack(spacing: 16) {
+                        VStack(spacing: 12) {
                             HStack {
                                 VStack { Divider().background(SteezColors.textSecondary) }
                                 Text("OR")
@@ -228,13 +228,13 @@ struct AuthView: View {
                                 onCompletion: handleAppleSignInResult
                             )
                             .signInWithAppleButtonStyle(.black)
-                            .frame(height: 56)
-                            .clipShape(RoundedRectangle(cornerRadius: 28))
+                            .frame(height: 48)
+                            .clipShape(RoundedRectangle(cornerRadius: 24))
                             
                             googleSignInButton
                         }
                         .padding(.horizontal, 32)
-                        .padding(.top, 24)
+                        .padding(.top, 20)
                         
                         Spacer(minLength: 40)
                     }
@@ -272,24 +272,34 @@ struct AuthView: View {
             handleGoogleSignIn()
         }) {
             HStack(spacing: 12) {
-                // Using a globe as a placeholder for the Google logo, styled to fit the theme
-                Image(systemName: "globe")
-                    .font(.system(size: 20, weight: .semibold))
-                    .foregroundColor(Color.black.opacity(0.8))
+                // Custom Google "G" icon using SF Symbols and styling
+                ZStack {
+                    Circle()
+                        .fill(Color.white)
+                        .frame(width: 20, height: 20)
+                        .overlay(
+                            Circle()
+                                .stroke(Color.gray.opacity(0.3), lineWidth: 0.5)
+                        )
+                    
+                    Text("G")
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                        .foregroundColor(.blue)
+                }
 
                 Text("Continue with Google")
-                    .font(SteezFonts.medium(17))
+                    .font(SteezFonts.medium(16))
                     .foregroundColor(Color.black.opacity(0.8))
             }
             .frame(maxWidth: .infinity)
-            .frame(height: 56)
+            .frame(height: 48)
             .background(Color.white)
-            .clipShape(RoundedRectangle(cornerRadius: 28))
+            .clipShape(RoundedRectangle(cornerRadius: 24))
             .overlay(
-                RoundedRectangle(cornerRadius: 28)
+                RoundedRectangle(cornerRadius: 24)
                     .stroke(Color.gray.opacity(0.2), lineWidth: 1)
             )
-            .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
+            .shadow(color: Color.black.opacity(0.08), radius: 4, x: 0, y: 2)
         }
     }
     
@@ -587,7 +597,7 @@ struct FloatingLabelTextField: View {
             }
             .padding(.horizontal, 16)
         }
-        .frame(height: 56)
+        .frame(height: 52)
         .animation(.spring(response: 0.2, dampingFraction: 0.8), value: isFocused)
         .animation(.spring(response: 0.2, dampingFraction: 0.8), value: !text.isEmpty)
     }
@@ -663,7 +673,7 @@ struct FloatingLabelSecureField: View {
             }
             .padding(.horizontal, 16)
         }
-        .frame(height: 56)
+        .frame(height: 52)
         .animation(.spring(response: 0.2, dampingFraction: 0.8), value: isFocused)
         .animation(.spring(response: 0.2, dampingFraction: 0.8), value: !text.isEmpty)
         .animation(.spring(response: 0.2, dampingFraction: 0.8), value: showPassword)
