@@ -141,13 +141,12 @@ struct UserPreferencesView: View {
                 }
                 .padding(.horizontal, 24)
                 
-                Spacer()
                 
                 // Action Button
                 Button("Complete Setup", action: savePreferences)
                     .buttonStyle(PrimaryButtonStyle())
                     .padding(.horizontal, 24)
-                    .padding(.bottom, 32)
+                    .padding(.bottom, 50)
                     .opacity(buttonAnimated ? 1 : 0)
                     .offset(y: buttonAnimated ? 0 : 30)
             }

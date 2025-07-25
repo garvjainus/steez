@@ -272,20 +272,11 @@ struct AuthView: View {
             handleGoogleSignIn()
         }) {
             HStack(spacing: 12) {
-                // Custom Google "G" icon using SF Symbols and styling
-                ZStack {
-                    Circle()
-                        .fill(Color.white)
-                        .frame(width: 20, height: 20)
-                        .overlay(
-                            Circle()
-                                .stroke(Color.gray.opacity(0.3), lineWidth: 0.5)
-                        )
-                    
-                    Text("G")
-                        .font(.system(size: 12, weight: .bold, design: .rounded))
-                        .foregroundColor(.blue)
-                }
+                // Google logo from resources
+                Image("images")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 20, height: 20)
 
                 Text("Continue with Google")
                     .font(SteezFonts.medium(16))

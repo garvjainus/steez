@@ -26,11 +26,11 @@ target 'Steez' do
   pod 'GTMAppAuth', '~> 4.1'
 end
 
-target 'SteezShareExtension' do
-  use_frameworks!
+  target 'SteezShareExtension' do
+    use_frameworks!
   # Only include extension-safe dependencies
-  pod 'Alamofire', '~> 5.6'
-  pod 'Kingfisher', '~> 7.0'
+    pod 'Alamofire', '~> 5.6'
+    pod 'Kingfisher', '~> 7.0'
   pod 'RealmSwift', '~> 10.0'
   pod 'SnapKit', '~> 5.6'
   # Exclude: AppAuth, GTMAppAuth, GoogleSignIn, Firebase (not App Extension safe)

@@ -3,6 +3,8 @@ import SwiftUI
 struct ProfileView: View {
     @EnvironmentObject var appState: AppState
     @State private var animateContent = false
+    @State private var showingDeleteSheet = false
+    @State private var deleteConfirmationInput = ""
     
     var body: some View {
         NavigationView {
@@ -67,20 +69,6 @@ struct ProfileView: View {
                             )
                         }
                         
-                        ProfileSection(title: "Notifications") {
-                            ProfileToggleRow(
-                                icon: "bell",
-                                title: "Price Drop Alerts",
-                                isOn: .constant(true)
-                            )
-                            
-                            ProfileToggleRow(
-                                icon: "exclamationmark.triangle",
-                                title: "Out of Stock Alerts",
-                                isOn: .constant(true)
-                            )
-                        }
-                        
                         ProfileSection(title: "Support") {
                             ProfileActionRow(
                                 icon: "questionmark.circle",
@@ -101,6 +89,28 @@ struct ProfileView: View {
                             )
                         }
                         
+                        ProfileSection(title: "Legal") {
+                            NavigationLink(destination: PrivacyPolicyView()) {
+                                ProfileActionRow(icon: "lock.shield", title: "Privacy Policy", showChevron: false, action: {})
+                            }
+                            
+                            NavigationLink(destination: TermsOfServiceView()) {
+                                ProfileActionRow(icon: "doc.text", title: "Terms of Service", showChevron: false, action: {})
+                            }
+                        }
+
+                        ProfileSection(title: "Account") {
+                            ProfileActionRow(
+                                icon: "trash",
+                                title: "Delete Account",
+                                destructive: true,
+                                action: {
+                                    deleteConfirmationInput = ""
+                                    showingDeleteSheet = true
+                                }
+                            )
+                        }
+
                         // Always show the debug section
                         ProfileSection(title: "Debug") {
                             ProfileActionRow(
@@ -131,6 +141,17 @@ struct ProfileView: View {
             }
             .navigationTitle("Profile")
             .navigationBarTitleDisplayMode(.large)
+            .sheet(isPresented: $showingDeleteSheet) {
+                DeleteAccountConfirmationView(isPresented: $showingDeleteSheet, userEmail: appState.currentUser?.email ?? "", input: $deleteConfirmationInput) {
+                    Task {
+                        do {
+                            try await SupabaseService.shared.deleteUser()
+                        } catch {
+                            print("Error deleting user: \(error)")
+                        }
+                    }
+                }
+            }
         }
         .onAppear {
             withAnimation(.easeOut(duration: 0.8)) {
@@ -226,12 +247,14 @@ struct ProfileActionRow: View {
     let icon: String
     let title: String
     let destructive: Bool
+    let showChevron: Bool
     let action: () -> Void
     
-    init(icon: String, title: String, destructive: Bool = false, action: @escaping () -> Void) {
+    init(icon: String, title: String, destructive: Bool = false, showChevron: Bool = true, action: @escaping () -> Void) {
         self.icon = icon
         self.title = title
         self.destructive = destructive
+        self.showChevron = showChevron
         self.action = action
     }
     
@@ -249,9 +272,11 @@ struct ProfileActionRow: View {
                 
                 Spacer()
                 
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(SteezColors.textSecondary)
+                if showChevron {
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(SteezColors.textSecondary)
+                }
             }
             .padding(16)
         }

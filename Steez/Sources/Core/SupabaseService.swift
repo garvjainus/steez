@@ -70,5 +70,19 @@ class SupabaseService {
             redirectTo: URL(string: "steez://auth-callback?type=recovery")
         )
     }
+    
+    func deleteUser() async throws {
+        // Ensure we have a current session (throws if none)
+        let _ = try await client.auth.session // force evaluation; we don't actually need the object here
+
+        let supabaseURLString = ProcessInfo.processInfo.environment["SUPABASE_URL"] ?? "https://owbkldgydzokcdjhmvju.supabase.co"
+        print("🔍 About to call: \(supabaseURLString)/functions/v1/delete-account")
+        
+        // Call Supabase Edge Function named "delete-account" to remove all user data server-side
+        _ = try await client.functions.invoke("delete-account")
+
+        // After backend deletion, sign out locally.
+        try await client.auth.signOut()
+    }
 } 
  

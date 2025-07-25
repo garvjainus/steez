@@ -19,6 +19,10 @@
 		3267D71C2E2AC6D5007A7CEC /* CustomTabBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3267D7122E2AC6D5007A7CEC /* CustomTabBarView.swift */; };
 		3267D71D2E2AC6D5007A7CEC /* ImportComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3267D7152E2AC6D5007A7CEC /* ImportComponents.swift */; };
 		32848A092E28898C0056582A /* FrameSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32848A082E28898C0056582A /* FrameSelectorView.swift */; };
+		32AE66A02E33FDF200AED93E /* images.png in Resources */ = {isa = PBXBuildFile; fileRef = 32AE669F2E33FDF200AED93E /* images.png */; };
+		32AE66A42E3401C300AED93E /* TermsOfServiceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32AE66A32E3401C300AED93E /* TermsOfServiceView.swift */; };
+		32AE66A52E3401C300AED93E /* DeleteAccountConfirmationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32AE66A12E3401C300AED93E /* DeleteAccountConfirmationView.swift */; };
+		32AE66A62E3401C300AED93E /* PrivacyPolicyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32AE66A22E3401C300AED93E /* PrivacyPolicyView.swift */; };
 		42E49683975DE74088410301 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9955329BE49A0D1B971D81A6 /* ShareViewController.swift */; };
 		465087D4811FC2528C1CEDCE /* IBMPlexMono-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 17A4D7E7FB055C7D76101876 /* IBMPlexMono-Medium.ttf */; };
 		5A1C47976ECF836654196F72 /* SupabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05FC55B4D50EFBA6A7849C38 /* SupabaseService.swift */; };
@@ -83,6 +87,10 @@
 		32848A062E22EFA30056582A /* Steez.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Steez.entitlements; path = Steez/Steez.entitlements; sourceTree = "<group>"; };
 		32848A072E22EFC50056582A /* SteezShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SteezShareExtension.entitlements; sourceTree = "<group>"; };
 		32848A082E28898C0056582A /* FrameSelectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameSelectorView.swift; sourceTree = "<group>"; };
+		32AE669F2E33FDF200AED93E /* images.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = images.png; sourceTree = "<group>"; };
+		32AE66A12E3401C300AED93E /* DeleteAccountConfirmationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteAccountConfirmationView.swift; sourceTree = "<group>"; };
+		32AE66A22E3401C300AED93E /* PrivacyPolicyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyPolicyView.swift; sourceTree = "<group>"; };
+		32AE66A32E3401C300AED93E /* TermsOfServiceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsOfServiceView.swift; sourceTree = "<group>"; };
 		560CAA4BF95ECD8B6E2A0B8B /* UserPreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPreferencesView.swift; sourceTree = "<group>"; };
 		562EC0E0092BE16AA5AD32DD /* Pods-SteezShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SteezShareExtension.debug.xcconfig"; path = "../../Pods/Target Support Files/Pods-SteezShareExtension/Pods-SteezShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		59162FFFD5951FAD86F14652 /* steezlogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = steezlogo.png; sourceTree = "<group>"; };
@@ -155,6 +163,9 @@
 		3C009CF2A0E990ADA785595F /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				32AE66A12E3401C300AED93E /* DeleteAccountConfirmationView.swift */,
+				32AE66A22E3401C300AED93E /* PrivacyPolicyView.swift */,
+				32AE66A32E3401C300AED93E /* TermsOfServiceView.swift */,
 				3267D7122E2AC6D5007A7CEC /* CustomTabBarView.swift */,
 				3267D7132E2AC6D5007A7CEC /* DesignSystem.swift */,
 				3267D7142E2AC6D5007A7CEC /* DiscoverView.swift */,
@@ -189,6 +200,7 @@
 				97C20BBD008C152BC14939A8 /* IBMPlexSans-Regular.ttf */,
 				F83025313F2138A7B910BB44 /* logo.svg */,
 				59162FFFD5951FAD86F14652 /* steezlogo.png */,
+				32AE669F2E33FDF200AED93E /* images.png */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -327,6 +339,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				32AE66A02E33FDF200AED93E /* images.png in Resources */,
 				465087D4811FC2528C1CEDCE /* IBMPlexMono-Medium.ttf in Resources */,
 				3254B5B72E2DB003003A1EAA /* GoogleService-Info.plist in Resources */,
 				908F4FC553E480CA52815F36 /* IBMPlexMono-Regular.ttf in Resources */,
@@ -425,6 +438,9 @@
 				3267D71C2E2AC6D5007A7CEC /* CustomTabBarView.swift in Sources */,
 				3267D71D2E2AC6D5007A7CEC /* ImportComponents.swift in Sources */,
 				030626C62FCD23D47B862184 /* LocationService.swift in Sources */,
+				32AE66A42E3401C300AED93E /* TermsOfServiceView.swift in Sources */,
+				32AE66A52E3401C300AED93E /* DeleteAccountConfirmationView.swift in Sources */,
+				32AE66A62E3401C300AED93E /* PrivacyPolicyView.swift in Sources */,
 				2D82ED7E8D696279367EF9F6 /* Models.swift in Sources */,
 				F4D306FFF0E76C621175273C /* NetworkService.swift in Sources */,
 				86F66E312CFF3746C1970380 /* SteezApp.swift in Sources */,
