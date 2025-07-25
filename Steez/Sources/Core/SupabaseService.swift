@@ -40,5 +40,35 @@ class SupabaseService {
         return client.auth.authStateChanges
     }
 
+    // MARK: - Social Logins
+    
+    func signInWithApple(idToken: String, nonce: String) async throws {
+        try await client.auth.signInWithIdToken(
+            credentials: .init(
+                provider: .apple,
+                idToken: idToken,
+                nonce: nonce
+            )
+        )
+    }
+    
+    func signInWithGoogle(idToken: String) async throws {
+        try await client.auth.signInWithIdToken(
+            credentials: .init(
+                provider: .google,
+                idToken: idToken,
+                nonce: nil // Nonce is not typically required for Google Sign-In with Supabase
+            )
+        )
+    }
+
+    // MARK: - Password Recovery
+    
+    func sendPasswordReset(for email: String) async throws {
+        try await client.auth.resetPasswordForEmail(
+            email,
+            redirectTo: URL(string: "steez://auth-callback?type=recovery")
+        )
+    }
 } 
  

@@ -1,5 +1,8 @@
 import SwiftUI
 import Supabase
+import AuthenticationServices
+import CryptoKit
+import GoogleSignIn
 
 struct AuthView: View {
     @State private var email = ""
@@ -12,6 +15,9 @@ struct AuthView: View {
     @State private var isEmailFocused = false
     @State private var isPasswordFocused = false
     @State private var showPassword = false
+    @State private var showingForgotPasswordAlert = false
+    @State private var forgotPasswordEmail = ""
+    @State private var currentNonce: String?
     
     @EnvironmentObject var appState: AppState
     
@@ -39,6 +45,10 @@ struct AuthView: View {
             case .signUp: return "Create Account"
             }
         }
+    }
+    
+    private var isFormValid: Bool {
+        !email.isEmpty && !password.isEmpty && email.contains("@")
     }
 
     var body: some View {
@@ -121,6 +131,10 @@ struct AuthView: View {
                                 showPassword: $showPassword,
                                 systemImage: "lock"
                             )
+                            
+                            if authType == .signIn {
+                                forgotPasswordButton
+                            }
                         }
                         .padding(.horizontal, 32)
                         .padding(.top, 40)
@@ -191,27 +205,95 @@ struct AuthView: View {
                         .padding(.horizontal, 32)
                         .padding(.top, 32)
                         
+                        // Social Logins
+                        VStack(spacing: 16) {
+                            HStack {
+                                VStack { Divider().background(SteezColors.textSecondary) }
+                                Text("OR")
+                                    .font(SteezFonts.regular(14))
+                                    .foregroundColor(SteezColors.textSecondary)
+                                VStack { Divider().background(SteezColors.textSecondary) }
+                            }
+                            
+                            SignInWithAppleButton(
+                                .signIn,
+                                onRequest: { request in
+                                    let nonce = randomNonceString()
+                                    DispatchQueue.main.async {
+                                        currentNonce = nonce
+                                    }
+                                    request.requestedScopes = [.fullName, .email]
+                                    request.nonce = sha256(nonce)
+                                },
+                                onCompletion: handleAppleSignInResult
+                            )
+                            .signInWithAppleButtonStyle(.black)
+                            .frame(height: 56)
+                            .clipShape(RoundedRectangle(cornerRadius: 28))
+                            
+                            googleSignInButton
+                        }
+                        .padding(.horizontal, 32)
+                        .padding(.top, 24)
+                        
                         Spacer(minLength: 40)
                     }
                 }
-                .apply { view in
-                    if #available(iOS 16.0, *) {
-                        view.scrollIndicators(.hidden)
-                    } else {
-                        view
-                    }
-                }
+                .modifier(ScrollIndicatorModifier())
             }
         }
-        // Removed global animations to improve performance; relying on explicit animations where necessary
+        .sheet(isPresented: $showingForgotPasswordAlert) {
+            ForgotPasswordView(
+                isPresented: $showingForgotPasswordAlert,
+                email: $forgotPasswordEmail
+            )
+        }
     }
     
-    // Removed unused namespace after replacing custom switcher with Picker.
-    
-    private var isFormValid: Bool {
-        !email.isEmpty && !password.isEmpty && email.contains("@")
+    // MARK: - Subviews
+    private var forgotPasswordButton: some View {
+        Button(action: {
+            forgotPasswordEmail = email // Pre-fill with current email
+            showingForgotPasswordAlert = true
+        }) {
+            Text("Forgot Password?")
+                .font(SteezFonts.regular(14))
+                .foregroundColor(SteezColors.primary)
+        }
+        .frame(maxWidth: .infinity, alignment: .trailing)
+        .padding(.top, 8)
     }
     
+    private var googleSignInButton: some View {
+        Button(action: {
+            // Haptic feedback for tap
+            let impact = UIImpactFeedbackGenerator(style: .medium)
+            impact.impactOccurred()
+            handleGoogleSignIn()
+        }) {
+            HStack(spacing: 12) {
+                // Using a globe as a placeholder for the Google logo, styled to fit the theme
+                Image(systemName: "globe")
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundColor(Color.black.opacity(0.8))
+
+                Text("Continue with Google")
+                    .font(SteezFonts.medium(17))
+                    .foregroundColor(Color.black.opacity(0.8))
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 56)
+            .background(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: 28))
+            .overlay(
+                RoundedRectangle(cornerRadius: 28)
+                    .stroke(Color.gray.opacity(0.2), lineWidth: 1)
+            )
+            .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
+        }
+    }
+    
+    // MARK: - Auth Handlers
     private func handleAuthAction() {
         // Haptic feedback
         let impact = UIImpactFeedbackGenerator(style: .medium)
@@ -254,6 +336,196 @@ struct AuthView: View {
             
             await MainActor.run {
                 isLoading = false
+            }
+        }
+    }
+    
+    private func handleAppleSignInResult(_ result: Result<ASAuthorization, Error>) {
+        switch result {
+        case .success(let authorization):
+            // Haptic feedback for success
+            let impact = UIImpactFeedbackGenerator(style: .medium)
+            impact.impactOccurred()
+            
+            guard let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential,
+                  let idTokenData = appleIDCredential.identityToken,
+                  let idToken = String(data: idTokenData, encoding: .utf8),
+                  let nonce = currentNonce else {
+                self.authError = NSError(domain: "AuthError", code: 1, userInfo: [NSLocalizedDescriptionKey: "Could not retrieve Apple ID token or nonce."])
+                return
+            }
+            
+            Task {
+                do {
+                    try await SupabaseService.shared.signInWithApple(idToken: idToken, nonce: nonce)
+                    await MainActor.run {
+                        successMessage = "Successfully signed in with Apple!"
+                        showingSuccessMessage = true
+                    }
+                } catch {
+                    await MainActor.run {
+                        self.authError = error
+                    }
+                }
+            }
+            
+        case .failure(let error):
+            self.authError = error
+        }
+    }
+    
+    private func handleGoogleSignIn() {
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let rootViewController = windowScene.windows.first?.rootViewController else {
+            self.authError = NSError(domain: "AuthError", code: 2, userInfo: [NSLocalizedDescriptionKey: "Could not find root view controller for Google Sign-In."])
+            return
+        }
+        
+        // The Web Client ID for your Supabase backend, which you provided.
+        let serverClientID = "457887251387-alkcktuepl7fsmuid8tdfgpsol96qqnb.apps.googleusercontent.com"
+        
+        // Set the serverClientID on the shared instance to get a token valid for your backend
+        GIDSignIn.sharedInstance.configuration = GIDConfiguration(clientID: GIDSignIn.sharedInstance.configuration!.clientID, serverClientID: serverClientID)
+        
+        Task {
+            do {
+                // Use the original sign-in method. The configuration is now handled automatically.
+                let gidSignInResult = try await GIDSignIn.sharedInstance.signIn(withPresenting: rootViewController)
+                
+                // Haptic feedback for success
+                let notification = UINotificationFeedbackGenerator()
+                notification.notificationOccurred(.success)
+                
+                guard let idToken = gidSignInResult.user.idToken?.tokenString else {
+                    self.authError = NSError(domain: "AuthError", code: 3, userInfo: [NSLocalizedDescriptionKey: "Could not retrieve Google ID token."])
+                    return
+                }
+                
+                try await SupabaseService.shared.signInWithGoogle(idToken: idToken)
+                
+                await MainActor.run {
+                    successMessage = "Successfully signed in with Google!"
+                    showingSuccessMessage = true
+                }
+            } catch {
+                await MainActor.run {
+                    // Don't show an error if the user cancelled the sign-in flow.
+                    if (error as NSError).code != GIDSignInError.canceled.rawValue {
+                        self.authError = error
+                    }
+                }
+            }
+        }
+    }
+    
+    // This function is unused, the one inside ForgotPasswordView is used instead.
+    // private func handleForgotPassword(email: String) {
+    //     Task {
+    //         do {
+    //             try await SupabaseService.shared.sendPasswordReset(for: email)
+    //             await MainActor.run {
+    //                 successMessage = "Password reset link sent to \(email). Please check your inbox."
+    //                 showingSuccessMessage = true
+    //             }
+    //         } catch {
+    //             await MainActor.run {
+    //                 self.authError = error
+    //             }
+    //         }
+    //     }
+    // }
+}
+
+// MARK: - Crypto Helpers for Apple Sign-In
+
+private func sha256(_ input: String) -> String {
+    let inputData = Data(input.utf8)
+    let hashedData = SHA256.hash(data: inputData)
+    let hashString = hashedData.compactMap {
+        return String(format: "%02x", $0)
+    }.joined()
+    
+    return hashString
+}
+
+private func randomNonceString(length: Int = 32) -> String {
+    precondition(length > 0)
+    let charset: [Character] =
+        Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
+    var result = ""
+    var remainingLength = length
+    
+    while remainingLength > 0 {
+        let randoms: [UInt8] = (0 ..< 16).map { _ in
+            var random: UInt8 = 0
+            let errorCode = SecRandomCopyBytes(kSecRandomDefault, 1, &random)
+            if errorCode != errSecSuccess {
+                fatalError("Unable to generate random bytes. SecRandomCopyBytes failed with OSStatus \(errorCode)")
+            }
+            return random
+        }
+        
+        for random in randoms {
+            if remainingLength == 0 {
+                break
+            }
+            
+            if random < charset.count {
+                result.append(charset[Int(random)])
+                remainingLength -= 1
+            }
+        }
+    }
+    
+    return result
+}
+
+// MARK: - Forgot Password View
+struct ForgotPasswordView: View {
+    @Binding var isPresented: Bool
+    @Binding var email: String
+    
+    var body: some View {
+        NavigationView {
+            VStack(spacing: 20) {
+                Text("Reset Password")
+                    .font(SteezFonts.medium(24))
+                
+                Text("Enter your email address and we'll send you a link to reset your password.")
+                    .font(SteezFonts.regular(16))
+                    .foregroundColor(SteezColors.textSecondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal)
+                
+                TextField("Email", text: $email)
+                    .textFieldStyle(ModernTextFieldStyle())
+                    .keyboardType(.emailAddress)
+                    .autocapitalization(.none)
+                
+                Button(action: {
+                    handleForgotPassword()
+                    isPresented = false
+                }) {
+                    Text("Send Reset Link")
+                }
+                .buttonStyle(PrimaryButtonStyle())
+                
+                Spacer()
+            }
+            .padding(32)
+            .navigationBarItems(trailing: Button("Cancel") {
+                isPresented = false
+            })
+        }
+    }
+    
+    private func handleForgotPassword() {
+        Task {
+            do {
+                try await SupabaseService.shared.sendPasswordReset(for: email)
+                // Optionally show a success message to the user
+            } catch {
+                // Optionally show an error message to the user
             }
         }
     }
@@ -457,6 +729,16 @@ struct ModernSuccessMessage: View {
 }
 
 // MARK: - Helper Extensions
+
+struct ScrollIndicatorModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(iOS 16.0, *) {
+            content.scrollIndicators(.hidden)
+        } else {
+            content
+        }
+    }
+}
 
 extension View {
     func apply<T: View>(@ViewBuilder _ transform: (Self) -> T) -> T {

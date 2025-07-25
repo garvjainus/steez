@@ -76,7 +76,7 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "API_BASE_URL"
-            value = "https://steez-backend.onrender.com"
+            value = "http://Steez-backend-env.eba-futcik3k.eu-north-1.elasticbeanstalk.com"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable

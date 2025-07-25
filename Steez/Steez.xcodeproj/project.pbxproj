@@ -11,6 +11,7 @@
 		295BAB0072CC24686271318D /* IBMPlexSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 97C20BBD008C152BC14939A8 /* IBMPlexSans-Regular.ttf */; };
 		2BE581B6340316C08B5E6529 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 737B8497C51BCFEFBBA681B2 /* Media.xcassets */; };
 		2D82ED7E8D696279367EF9F6 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = C04B9EEE00FB68806482BE0F /* Models.swift */; };
+		3254B5B72E2DB003003A1EAA /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3254B5B62E2DB003003A1EAA /* GoogleService-Info.plist */; };
 		3267D7182E2AC6D5007A7CEC /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3267D7162E2AC6D5007A7CEC /* ProfileView.swift */; };
 		3267D7192E2AC6D5007A7CEC /* ResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3267D7172E2AC6D5007A7CEC /* ResultsView.swift */; };
 		3267D71A2E2AC6D5007A7CEC /* DiscoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3267D7142E2AC6D5007A7CEC /* DiscoverView.swift */; };
@@ -23,7 +24,6 @@
 		5A1C47976ECF836654196F72 /* SupabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05FC55B4D50EFBA6A7849C38 /* SupabaseService.swift */; };
 		5D5F959C2BA09CE80DE93589 /* LandingPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7321C953047B57AA32152B7 /* LandingPageView.swift */; };
 		5EA647B0735AAEA22EFFB187 /* SteezShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0EB163960C0743200BBFFBFC /* SteezShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		6B7B279CB20A165DF5646076 /* Pods_Steez.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 727835EE73F11ED405FBCDF7 /* Pods_Steez.framework */; };
 		7149E4BA971C5AFB8A6692AB /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C66521C07E8FB02231DE665 /* ContentView.swift */; };
 		74A1630523704B2697C04B1C /* AuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 108CB2F3B021E992C3185863 /* AuthView.swift */; };
 		86F66E312CFF3746C1970380 /* SteezApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9D3506FA3A093B8734A6705 /* SteezApp.swift */; };
@@ -33,8 +33,10 @@
 		B3AB80AAE148409C9F480664 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A84D3588ED8F601142ED98D1 /* ImagePicker.swift */; };
 		BD9EE75AD8471B259A3851D0 /* UserPreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 560CAA4BF95ECD8B6E2A0B8B /* UserPreferencesView.swift */; };
 		D29C7A7A00D22E4C73E1068A /* steezlogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 59162FFFD5951FAD86F14652 /* steezlogo.png */; };
+		F069356DDB3D085F0AB5C118 /* Pods_SteezShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 746553DEE16443CA87332917 /* Pods_SteezShareExtension.framework */; };
 		F2825687B8D93B95FA71DF22 /* logo.svg in Resources */ = {isa = PBXBuildFile; fileRef = F83025313F2138A7B910BB44 /* logo.svg */; };
 		F4D306FFF0E76C621175273C /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D401135D5E0D7A8DA3032C5F /* NetworkService.swift */; };
+		F8B8A7B8C4EE121DC3C5BF2B /* Pods_Steez.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09F653F729B9C29E1F455369 /* Pods_Steez.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -63,12 +65,15 @@
 
 /* Begin PBXFileReference section */
 		05FC55B4D50EFBA6A7849C38 /* SupabaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseService.swift; sourceTree = "<group>"; };
+		09F653F729B9C29E1F455369 /* Pods_Steez.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Steez.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0C66521C07E8FB02231DE665 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		0EB163960C0743200BBFFBFC /* SteezShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SteezShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		0F678DAF5DFB62610B3D0A5C /* Pods-Steez-SteezShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Steez-SteezShareExtension.debug.xcconfig"; path = "../../Pods/Target Support Files/Pods-Steez-SteezShareExtension/Pods-Steez-SteezShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		108CB2F3B021E992C3185863 /* AuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthView.swift; sourceTree = "<group>"; };
 		17A4D7E7FB055C7D76101876 /* IBMPlexMono-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexMono-Medium.ttf"; sourceTree = "<group>"; };
 		1D491AC83DF69E307D0EE2E0 /* IBMPlexMono-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexMono-Regular.ttf"; sourceTree = "<group>"; };
-		23220E3C5A80B9DD6E19FF08 /* Pods-Steez.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Steez.debug.xcconfig"; path = "Target Support Files/Pods-Steez/Pods-Steez.debug.xcconfig"; sourceTree = "<group>"; };
+		31E5112F9DEFD1923FC342B1 /* Pods-SteezShareExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SteezShareExtension.release.xcconfig"; path = "../../Pods/Target Support Files/Pods-SteezShareExtension/Pods-SteezShareExtension.release.xcconfig"; sourceTree = "<group>"; };
+		3254B5B62E2DB003003A1EAA /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		3267D7122E2AC6D5007A7CEC /* CustomTabBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBarView.swift; sourceTree = "<group>"; };
 		3267D7132E2AC6D5007A7CEC /* DesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystem.swift; sourceTree = "<group>"; };
 		3267D7142E2AC6D5007A7CEC /* DiscoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverView.swift; sourceTree = "<group>"; };
@@ -79,17 +84,20 @@
 		32848A072E22EFC50056582A /* SteezShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SteezShareExtension.entitlements; sourceTree = "<group>"; };
 		32848A082E28898C0056582A /* FrameSelectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameSelectorView.swift; sourceTree = "<group>"; };
 		560CAA4BF95ECD8B6E2A0B8B /* UserPreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPreferencesView.swift; sourceTree = "<group>"; };
+		562EC0E0092BE16AA5AD32DD /* Pods-SteezShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SteezShareExtension.debug.xcconfig"; path = "../../Pods/Target Support Files/Pods-SteezShareExtension/Pods-SteezShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		59162FFFD5951FAD86F14652 /* steezlogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = steezlogo.png; sourceTree = "<group>"; };
 		6E96BF9392EBBFE64226ACFF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		727835EE73F11ED405FBCDF7 /* Pods_Steez.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Steez.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		72E990E0B3B7A81DC126DBBE /* Steez.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Steez.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		737B8497C51BCFEFBBA681B2 /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
-		8D7AD32DC6D8D9A9CAE1FA67 /* Pods-Steez.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Steez.release.xcconfig"; path = "Target Support Files/Pods-Steez/Pods-Steez.release.xcconfig"; sourceTree = "<group>"; };
+		746553DEE16443CA87332917 /* Pods_SteezShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SteezShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		97C20BBD008C152BC14939A8 /* IBMPlexSans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexSans-Regular.ttf"; sourceTree = "<group>"; };
+		97F66A857E91C3F26A188401 /* Pods-Steez.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Steez.debug.xcconfig"; path = "../../Pods/Target Support Files/Pods-Steez/Pods-Steez.debug.xcconfig"; sourceTree = "<group>"; };
 		9955329BE49A0D1B971D81A6 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
 		9CC517481687A45A7CCC0E3F /* IBMPlexSans-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexSans-Medium.ttf"; sourceTree = "<group>"; };
 		A84D3588ED8F601142ED98D1 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
+		A92F45749434101AF856229D /* Pods-Steez-SteezShareExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Steez-SteezShareExtension.release.xcconfig"; path = "../../Pods/Target Support Files/Pods-Steez-SteezShareExtension/Pods-Steez-SteezShareExtension.release.xcconfig"; sourceTree = "<group>"; };
 		C04B9EEE00FB68806482BE0F /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		C98FC99D20B3145966F909D8 /* Pods-Steez.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Steez.release.xcconfig"; path = "../../Pods/Target Support Files/Pods-Steez/Pods-Steez.release.xcconfig"; sourceTree = "<group>"; };
 		CFD1AAB411055DDE3228ED69 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		D401135D5E0D7A8DA3032C5F /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		D9D3506FA3A093B8734A6705 /* SteezApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SteezApp.swift; sourceTree = "<group>"; };
@@ -104,7 +112,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				8A0D776BB17922F6530E577E /* Supabase in Frameworks */,
-				6B7B279CB20A165DF5646076 /* Pods_Steez.framework in Frameworks */,
+				F8B8A7B8C4EE121DC3C5BF2B /* Pods_Steez.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F797848B41086BD1FD388479 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F069356DDB3D085F0AB5C118 /* Pods_SteezShareExtension.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -126,8 +142,12 @@
 		2393855C11D057DD0203CA1E /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				23220E3C5A80B9DD6E19FF08 /* Pods-Steez.debug.xcconfig */,
-				8D7AD32DC6D8D9A9CAE1FA67 /* Pods-Steez.release.xcconfig */,
+				97F66A857E91C3F26A188401 /* Pods-Steez.debug.xcconfig */,
+				C98FC99D20B3145966F909D8 /* Pods-Steez.release.xcconfig */,
+				0F678DAF5DFB62610B3D0A5C /* Pods-Steez-SteezShareExtension.debug.xcconfig */,
+				A92F45749434101AF856229D /* Pods-Steez-SteezShareExtension.release.xcconfig */,
+				562EC0E0092BE16AA5AD32DD /* Pods-SteezShareExtension.debug.xcconfig */,
+				31E5112F9DEFD1923FC342B1 /* Pods-SteezShareExtension.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -176,6 +196,7 @@
 		6558A0818D3DB15699E53585 /* App */ = {
 			isa = PBXGroup;
 			children = (
+				3254B5B62E2DB003003A1EAA /* GoogleService-Info.plist */,
 				6E96BF9392EBBFE64226ACFF /* Info.plist */,
 				D9D3506FA3A093B8734A6705 /* SteezApp.swift */,
 			);
@@ -212,14 +233,15 @@
 				228BE19DF033C7AA9D1BE85F /* Sources */,
 				41A65657ED393E56E88E682C /* Products */,
 				2393855C11D057DD0203CA1E /* Pods */,
-				EBDC601F986F2B8B21F5C2FC /* Frameworks */,
+				F5473714AE27D1DCE9D0FB38 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
-		EBDC601F986F2B8B21F5C2FC /* Frameworks */ = {
+		F5473714AE27D1DCE9D0FB38 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				727835EE73F11ED405FBCDF7 /* Pods_Steez.framework */,
+				09F653F729B9C29E1F455369 /* Pods_Steez.framework */,
+				746553DEE16443CA87332917 /* Pods_SteezShareExtension.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -231,7 +253,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 5F5C6D7DFA92AFFE75331461 /* Build configuration list for PBXNativeTarget "SteezShareExtension" */;
 			buildPhases = (
+				1A0258D4CAFB26382885E5F8 /* [CP] Check Pods Manifest.lock */,
 				64DE263DD04E76BE1B290E54 /* Sources */,
+				F797848B41086BD1FD388479 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -246,12 +270,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 9F621860A229FF49AC48BCF7 /* Build configuration list for PBXNativeTarget "Steez" */;
 			buildPhases = (
-				7454EE0C7829E849350248D6 /* [CP] Check Pods Manifest.lock */,
+				0B9F27BF448349BE653E672F /* [CP] Check Pods Manifest.lock */,
 				5FB9009410984C2BBCB28C21 /* Sources */,
 				B37FCE133B458062F7D6FCA1 /* Resources */,
 				C3748C40D8A49CB6CE2AA4A4 /* Frameworks */,
 				EF3B9A9B9CDAE802EA9F4738 /* Embed Foundation Extensions */,
-				7C562035F57E1F3E296299F0 /* [CP] Embed Pods Frameworks */,
+				6CD4B42CD784FB9153204552 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -304,6 +328,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				465087D4811FC2528C1CEDCE /* IBMPlexMono-Medium.ttf in Resources */,
+				3254B5B72E2DB003003A1EAA /* GoogleService-Info.plist in Resources */,
 				908F4FC553E480CA52815F36 /* IBMPlexMono-Regular.ttf in Resources */,
 				AE169F9CBF7CD65EDF309400 /* IBMPlexSans-Medium.ttf in Resources */,
 				295BAB0072CC24686271318D /* IBMPlexSans-Regular.ttf in Resources */,
@@ -316,7 +341,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		7454EE0C7829E849350248D6 /* [CP] Check Pods Manifest.lock */ = {
+		0B9F27BF448349BE653E672F /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -338,7 +363,29 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		7C562035F57E1F3E296299F0 /* [CP] Embed Pods Frameworks */ = {
+		1A0258D4CAFB26382885E5F8 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SteezShareExtension-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		6CD4B42CD784FB9153204552 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -526,6 +573,7 @@
 		};
 		69708C9EE4145489DAE4540D /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 562EC0E0092BE16AA5AD32DD /* Pods-SteezShareExtension.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = SteezShareExtension.entitlements;
 				DEVELOPMENT_TEAM = PF4MU983T9;
@@ -544,6 +592,7 @@
 		};
 		9AA0EB141BB0301F598C0E4F /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 31E5112F9DEFD1923FC342B1 /* Pods-SteezShareExtension.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = SteezShareExtension.entitlements;
 				DEVELOPMENT_TEAM = PF4MU983T9;
@@ -562,7 +611,7 @@
 		};
 		B70DA960908D9D3BA70D56B5 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8D7AD32DC6D8D9A9CAE1FA67 /* Pods-Steez.release.xcconfig */;
+			baseConfigurationReference = C98FC99D20B3145966F909D8 /* Pods-Steez.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Steez/Steez.entitlements;
@@ -581,7 +630,7 @@
 		};
 		BFE7EB8D6D21CD3214A8F3CC /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 23220E3C5A80B9DD6E19FF08 /* Pods-Steez.debug.xcconfig */;
+			baseConfigurationReference = 97F66A857E91C3F26A188401 /* Pods-Steez.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Steez/Steez.entitlements;

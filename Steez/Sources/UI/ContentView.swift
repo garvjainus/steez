@@ -21,7 +21,7 @@ struct ContentView: View {
                     // Main Content
             TabView(selection: $selectedTab) { // Uses Int binding
                         DiscoverView(selectedTab: $selectedTab) // Pass binding
-                            .tag(0)
+                    .tag(0)
                         
                         MainImportView()
                             .tag(1)
