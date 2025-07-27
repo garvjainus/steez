@@ -17,6 +17,7 @@ exports.GoogleLensController = void 0;
 const common_1 = require("@nestjs/common");
 const google_lens_service_1 = require("./google-lens.service");
 const dto_1 = require("./dto");
+const api_key_auth_guard_1 = require("../auth/guards/api-key-auth.guard");
 let GoogleLensController = GoogleLensController_1 = class GoogleLensController {
     constructor(googleLensService) {
         this.googleLensService = googleLensService;
@@ -30,6 +31,7 @@ let GoogleLensController = GoogleLensController_1 = class GoogleLensController {
 exports.GoogleLensController = GoogleLensController;
 __decorate([
     (0, common_1.Post)('analyze'),
+    (0, common_1.UseGuards)(api_key_auth_guard_1.ApiKeyAuthGuard),
     (0, common_1.UsePipes)(new common_1.ValidationPipe({ transform: true, whitelist: true })),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),

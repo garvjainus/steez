@@ -1,7 +1,7 @@
 # ---- Base Stage ----
 # Use an official Node.js image as the base for building the application.
 # Using a specific version ensures consistency.
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 
 # Set the working directory inside the container.
 WORKDIR /usr/src/app
@@ -9,6 +9,7 @@ WORKDIR /usr/src/app
 # Copy package.json and package-lock.json to leverage Docker's layer caching.
 # This step only re-runs if these files change.
 COPY package*.json ./
+COPY .npmrc ./
 
 # Install all production dependencies.
 RUN npm install
@@ -22,17 +23,21 @@ RUN npm run build
 # ---- Production Stage ----
 # Start a new, smaller image for the final production environment.
 # 'alpine' images are very lightweight, which improves security and performance.
-FROM node:18-alpine
+FROM node:20-alpine
 
 # Set the working directory again for the production stage.
 WORKDIR /usr/src/app
+
+COPY --from=builder /usr/src/app/package*.json ./
+COPY --from=builder /usr/src/app/.npmrc ./
+
+# Install production dependencies.
+RUN npm install --production
 
 # Copy only the necessary files from the 'builder' stage.
 # This includes the compiled code, node_modules, and package.json.
 # We don't need the source TypeScript files or devDependencies in production.
 COPY --from=builder /usr/src/app/dist ./dist
-COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY --from=builder /usr/src/app/package.json ./package.json
 
 # Expose the port that the NestJS application will run on.
 # Your main.ts file likely specifies port 3000.

@@ -18,6 +18,7 @@ const common_1 = require("@nestjs/common");
 const platform_express_1 = require("@nestjs/platform-express");
 const fs = require("fs");
 const upload_service_1 = require("./upload.service");
+const api_key_auth_guard_1 = require("../auth/guards/api-key-auth.guard");
 let UploadController = UploadController_1 = class UploadController {
     constructor(uploadService) {
         this.uploadService = uploadService;
@@ -87,6 +88,7 @@ let UploadController = UploadController_1 = class UploadController {
 exports.UploadController = UploadController;
 __decorate([
     (0, common_1.Post)('image'),
+    (0, common_1.UseGuards)(api_key_auth_guard_1.ApiKeyAuthGuard),
     (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('image')),
     __param(0, (0, common_1.UploadedFile)()),
     __param(1, (0, common_1.Body)('userId')),
@@ -98,6 +100,7 @@ __decorate([
 ], UploadController.prototype, "uploadImage", null);
 __decorate([
     (0, common_1.Post)('image-base64'),
+    (0, common_1.UseGuards)(api_key_auth_guard_1.ApiKeyAuthGuard),
     __param(0, (0, common_1.Body)('image')),
     __param(1, (0, common_1.Body)('userId')),
     __metadata("design:type", Function),

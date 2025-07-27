@@ -31,23 +31,40 @@ export class JobsService {
 
   async create(createJobDto: CreateJobDto): Promise<Job> {
     try {
+      this.logger.log('Creating job with data:', createJobDto);
+      
+      const insertData = {
+        user_id: createJobDto.user_id,
+        video_url: createJobDto.video_url,
+        status: JobStatus.PENDING,
+      };
+      
+      this.logger.log('Inserting job with data:', insertData);
+
+      // Use direct table insertion with service role to bypass RLS
       const { data, error } = await this.supabase
-        .from('jobs')
-        .insert({
-          user_id: createJobDto.user_id,
-          video_url: createJobDto.video_url,
-          status: JobStatus.PENDING,
-        })
-        .select()
-        .single();
+        .rpc("create_job", {
+          p_status:    JobStatus.PENDING,
+          p_user_id:   createJobDto.user_id,
+          p_video_url: createJobDto.video_url,
+        });
+
+      this.logger.log('Supabase response - data:', data);
+      this.logger.log('Supabase response - error:', error);
 
       if (error) {
-        this.logger.error('Error creating job:', error);
+        this.logger.error('Supabase error creating job:', error);
         throw new Error(`Failed to create job: ${error.message}`);
       }
 
-      this.logger.log(`Job created successfully: ${data.job_id}`);
-      return data as Job;
+      if (!data) {
+        this.logger.error('No data returned from job creation');
+        throw new Error('Failed to create job: No data returned');
+      }
+
+      const job = data as Job;
+      this.logger.log(`Job created successfully: ${job.job_id}`);
+      return job;
     } catch (error) {
       this.logger.error('Failed to create job:', error);
       throw error;
