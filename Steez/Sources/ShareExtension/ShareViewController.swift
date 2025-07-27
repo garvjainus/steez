@@ -12,8 +12,24 @@ extension String {
 class ShareViewController: UIViewController {
 
     // MARK: - Constants
-    // private let apiBaseURLString = "https://steez-backend-env.eba-futcik3k.eu-north-1.elasticbeanstalk.com" // Production HTTPS
-    private let apiBaseURLString = "http://steez-backend-env.eba-futcik3k.eu-north-1.elasticbeanstalk.com" // Development HTTP fallback
+
+    // Read the API URL from the bundle's Info.plist.
+    // This must be configured in the project settings for different build environments.
+    private var apiBaseURLString: String {
+        guard let url = Bundle.main.object(forInfoDictionaryKey: "API_BASE_URL") as? String, !url.isEmpty else {
+            fatalError("API_BASE_URL key not found or is empty in Info.plist for the Share Extension target.")
+        }
+        return url
+    }
+
+    // Read the API Token from the bundle's Info.plist.
+    private var apiTokenString: String {
+        guard let token = Bundle.main.object(forInfoDictionaryKey: "API_TOKEN") as? String, !token.isEmpty else {
+            fatalError("API_TOKEN key not found or is empty in Info.plist for the Share Extension target.")
+        }
+        return token
+    }
+
     private let appGroupId = "group.com.steez.app"
     private let latestJobIdKey = "latest_job_id"
 
@@ -134,7 +150,7 @@ class ShareViewController: UIViewController {
         var request = URLRequest(url: requestURL)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("8qRqrmyVQ5a08EBUvQaKxtV1SuKEZu1zpUA1YMFooi8=", forHTTPHeaderField: "x-api-key") // TODO: Replace with actual API key
+        request.setValue(apiTokenString, forHTTPHeaderField: "x-api-key")
 
         // 3. Create the payload with all required fields.
         let payload: [String: Any] = [

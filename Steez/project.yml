@@ -31,16 +31,68 @@ targets:
       configs:
         Debug: Configuration/Secrets.xcconfig
         Release: Configuration/Secrets.xcconfig
+      INFOPLIST_KEY_SUPABASE_URL: $(SUPABASE_URL)
+      INFOPLIST_KEY_SUPABASE_ANON_KEY: $(SUPABASE_ANON_KEY)
+      INFOPLIST_KEY_SUPABASE_SERVICE_ROLE_KEY: $(SUPABASE_SERVICE_ROLE_KEY)
+    buildRules:
+      - fileType: asset
+        action: copy
+    settings:
+      base:
+        TARGETED_DEVICE_FAMILY: 1,2
+        SWIFT_VERSION: "5.0"
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: ["UIInterfaceOrientationPortrait", "UIInterfaceOrientationLandscapeLeft", "UIInterfaceOrientationLandscapeRight"]
+        INFOPLIST_KEY_UILaunchStoryboardName: "LaunchScreen"
+        INFOPLIST_KEY_CFBundleDisplayName: "Steez"
+        INFOPLIST_KEY_CFBundleShortVersionString: "1.0"
+        INFOPLIST_KEY_CFBundleVersion: "1"
+        INFOPLIST_KEY_LSRequiresIPhoneOS: YES
+        PRODUCT_BUNDLE_IDENTIFIER: "com.steez.app"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        DEVELOPMENT_TEAM: "YOUR_TEAM_ID"
+        CODE_SIGN_STYLE: Automatic
+        CURRENT_PROJECT_VERSION: 1
+    sources:
+      - path: Sources/App
+      - path: Sources/Core
+      - path: Sources/UI
+      - path: Resources
+    dependencies:
+      - target: SteezCore
   SteezShareExtension:
     type: app-extension
     platform: iOS
-    sources:
-      - path: Sources/ShareExtension
+    info:
+      path: Sources/ShareExtension/Info.plist
+      properties:
+        CFBundleDisplayName: Steez Share
+        CFBundleShortVersionString: 1.0
+        CFBundleVersion: 1
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.share-services
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).ShareViewController
+          NSExtensionActivationRule:
+            NSExtensionActivationSupportsWebPageWithMaxCount: 1
     settings:
       base:
-        INFOPLIST_FILE: Sources/ShareExtension/Info.plist
-        PRODUCT_BUNDLE_IDENTIFIER: com.steez.app.share
-        SKIP_INSTALL: "YES"
+        TARGETED_DEVICE_FAMILY: 1,2
+        SWIFT_VERSION: "5.0"
+        PRODUCT_BUNDLE_IDENTIFIER: "com.steez.app.ShareExtension"
+        DEVELOPMENT_TEAM: "YOUR_TEAM_ID"
+        CODE_SIGN_STYLE: Automatic
+    sources:
+      - path: Sources/ShareExtension
+    dependencies:
+      - target: SteezCore
+  SteezCore:
+    type: framework
+    platform: iOS
+    settings:
+      base:
+        SWIFT_VERSION: "5.0"
+        PRODUCT_BUNDLE_IDENTIFIER: "com.steez.app.SteezCore"
+    sources:
+      - path: Sources/Core
 
 schemes:
   Steez:
@@ -49,10 +101,6 @@ schemes:
         Steez: all
         SteezShareExtension: all
     run:
-      environmentVariables:
-        API_BASE_URL: "http://141.23.179.179:3000"
-        SUPABASE_URL: "https://owbkldgydzokcdjhmvju.supabase.co"
-        SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93YmtsZGd5ZHpva2Nkamhtdmp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEyMzQ4NjgsImV4cCI6MjA2NjgxMDg2OH0.x6Q6R5QX3mtzMMGl42YKEXA8CD5VZ-lxARgHzDEjd90"
       config: Debug
     test:
       config: Debug
