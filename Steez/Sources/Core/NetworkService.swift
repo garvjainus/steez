@@ -121,7 +121,8 @@ class NetworkService {
         guard let baseURLString = ProcessInfo.processInfo.environment["API_BASE_URL"] else {
             fatalError("API_BASE_URL environment variable not set. Please set it in your Xcode scheme.")
         }
-        self.baseURL = baseURLString
+        let rawURL = baseURLString.trimmingCharacters(in: .whitespacesAndNewlines)
+        self.baseURL = rawURL
         
         setupCache()
         
@@ -247,9 +248,24 @@ class NetworkService {
             return
         }
         
+        // --- DETAILED LOGGING ---
+        print("--- NetworkService Request ---")
+        print("URL: \(urlRequest.url?.absoluteString ?? "N/A")")
+        print("Method: \(urlRequest.httpMethod ?? "N/A")")
+        print("Headers: \(urlRequest.allHTTPHeaderFields ?? [:])")
+        if let body = urlRequest.httpBody, let bodyString = String(data: body, encoding: .utf8) {
+            print("Body: \(bodyString)")
+        }
+        // --- END LOGGING ---
+        
         URLSession.shared.dataTask(with: urlRequest) { data, response, error in
             DispatchQueue.main.async {
                 if let error = error {
+                    // --- DETAILED LOGGING ---
+                    print("--- NetworkService Error ---")
+                    print("Error: \(error.localizedDescription)")
+                    // --- END LOGGING ---
+                    
                     // Handle error with retry logic
                     if retryCount < self.maxRetries {
                         // Exponential backoff
@@ -268,7 +284,7 @@ class NetworkService {
                         }
                     }
                     
-                        completion(.failure(.requestFailed(error)))
+                    completion(.failure(.requestFailed(error)))
                     return
                 }
                 
@@ -276,6 +292,15 @@ class NetworkService {
                     completion(.failure(.invalidData))
                     return
                 }
+                
+                // --- DETAILED LOGGING ---
+                print("--- NetworkService Response ---")
+                print("Status Code: \(httpResponse.statusCode)")
+                print("Headers: \(httpResponse.allHeaderFields)")
+                if let data = data, let bodyString = String(data: data, encoding: .utf8) {
+                    print("Body: \(bodyString)")
+                }
+                // --- END LOGGING ---
                 
                 guard 200..<300 ~= httpResponse.statusCode else {
                     let errorMessage = self.parseErrorMessage(from: data) ?? "Unknown server error"

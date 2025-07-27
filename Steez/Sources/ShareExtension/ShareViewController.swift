@@ -1,10 +1,19 @@
 import UIKit
 import UniformTypeIdentifiers
 
+// MARK: - String Helper
+extension String {
+    /// Returns a copy of the string with leading and trailing whitespace and newline characters removed.
+    var trimmed: String {
+        trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+}
+
 class ShareViewController: UIViewController {
 
     // MARK: - Constants
-    private let apiBaseURLString = "https://steez-backend.onrender.com" // TODO: Move to a config file
+    // private let apiBaseURLString = "https://steez-backend-env.eba-futcik3k.eu-north-1.elasticbeanstalk.com" // Production HTTPS
+    private let apiBaseURLString = "http://steez-backend-env.eba-futcik3k.eu-north-1.elasticbeanstalk.com" // Development HTTP fallback
     private let appGroupId = "group.com.steez.app"
     private let latestJobIdKey = "latest_job_id"
 
@@ -12,11 +21,25 @@ class ShareViewController: UIViewController {
     private let activityIndicator = UIActivityIndicatorView(style: .large)
     private let statusLabel = UILabel()
 
+    // MARK: - Initializers
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        print("--- Share Extension Log: init(coder:) ---")
+    }
+
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+        print("--- Share Extension Log: init(nibName:bundle:) ---")
+    }
+
     // MARK: - View Lifecycle
     override func viewDidLoad() {
+        print("--- Share Extension Log: viewDidLoad() - START ---")
         super.viewDidLoad()
         setupUI()
+        print("--- Share Extension Log: viewDidLoad() - setupUI() FINISHED ---")
         handleSharedItem()
+        print("--- Share Extension Log: viewDidLoad() - handleSharedItem() CALLED ---")
     }
 
     // MARK: - UI Setup
@@ -51,23 +74,52 @@ class ShareViewController: UIViewController {
 
     // MARK: - Core Logic
     private func handleSharedItem() {
+        print("--- Share Extension: handleSharedItem called ---")
         guard let extensionItem = extensionContext?.inputItems.first as? NSExtensionItem,
               let provider = extensionItem.attachments?.first else {
+            print("Error: No item found in extension context.")
             completeRequest(errorMessage: "No item found.")
             return
         }
+        
+        print("Item Provider: \(provider)")
+        print("Registered Type Identifiers: \(provider.registeredTypeIdentifiers)")
 
+        // 1️⃣ Try for an explicit URL
         if provider.hasItemConformingToTypeIdentifier(UTType.url.identifier) {
+            print("Item conforms to URL type. Loading item...")
             provider.loadItem(forTypeIdentifier: UTType.url.identifier, options: nil) { [weak self] item, _ in
-                guard let url = item as? URL else {
-                    self?.completeRequest(errorMessage: "Invalid URL shared.")
-                    return
-                }
-                // The network call should be on a background thread already, which is fine.
-                self?.processVideo(with: url)
+                print("Loaded item for URL type: \(String(describing: item))")
+                self?.guardAndProcess(item)
             }
+            return
+        }
+
+        // 2️⃣ Fallback: plain text that might contain a URL
+        if provider.hasItemConformingToTypeIdentifier(UTType.plainText.identifier) {
+            print("Item conforms to Plain Text type. Loading item...")
+            provider.loadItem(forTypeIdentifier: UTType.plainText.identifier, options: nil) { [weak self] item, _ in
+                print("Loaded item for Plain Text type: \(String(describing: item))")
+                self?.guardAndProcess(item)
+            }
+            return
+        }
+
+        print("Error: Unsupported share type. Identifiers: \(provider.registeredTypeIdentifiers)")
+        completeRequest(errorMessage: "Unsupported share type.")
+    }
+
+    private func guardAndProcess(_ item: NSSecureCoding?) {
+        print("--- Share Extension: guardAndProcess called with item: \(String(describing: item)) ---")
+        if let url = item as? URL {
+            print("Successfully processed as URL: \(url.absoluteString)")
+            processVideo(with: url)
+        } else if let text = item as? String, let url = URL(string: text.trimmed) {
+            print("Successfully processed as String and converted to URL: \(url.absoluteString)")
+            processVideo(with: url)
         } else {
-            completeRequest(errorMessage: "Please share a video URL.")
+            print("Error: Could not extract URL from item.")
+            completeRequest(errorMessage: "Could not extract URL.")
         }
     }
 
@@ -82,6 +134,7 @@ class ShareViewController: UIViewController {
         var request = URLRequest(url: requestURL)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("8qRqrmyVQ5a08EBUvQaKxtV1SuKEZu1zpUA1YMFooi8=", forHTTPHeaderField: "x-api-key") // TODO: Replace with actual API key
 
         // 3. Create the payload with all required fields.
         let payload: [String: Any] = [
@@ -101,13 +154,36 @@ class ShareViewController: UIViewController {
         let task = URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
             // Ensure we can handle the response.
             guard let self = self else { return }
-
+            
+            // --- DETAILED LOGGING ---
+            print("--- Share Extension Request ---")
+            print("URL: \(request.url?.absoluteString ?? "N/A")")
+            print("Method: \(request.httpMethod ?? "N/A")")
+            print("Headers: \(request.allHTTPHeaderFields ?? [:])")
+            if let body = request.httpBody, let bodyString = String(data: body, encoding: .utf8) {
+                print("Body: \(bodyString)")
+            }
+            
             if let error = error {
+                print("Error: \(error.localizedDescription)")
                 self.completeRequest(errorMessage: "Network request failed: \(error.localizedDescription)")
                 return
             }
 
-            guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
+            guard let httpResponse = response as? HTTPURLResponse else {
+                print("Response is not an HTTPURLResponse.")
+                self.completeRequest(errorMessage: "Invalid response from server.")
+                return
+            }
+
+            print("--- Share Extension Response ---")
+            print("Status Code: \(httpResponse.statusCode)")
+            print("Headers: \(httpResponse.allHeaderFields)")
+
+            guard (200...299).contains(httpResponse.statusCode) else {
+                if let data = data, let errorBody = String(data: data, encoding: .utf8) {
+                    print("Error Body: \(errorBody)")
+                }
                 self.completeRequest(errorMessage: "Backend returned an error.")
                 return
             }
@@ -115,6 +191,10 @@ class ShareViewController: UIViewController {
             guard let data = data else {
                 self.completeRequest(errorMessage: "No data received from backend.")
                 return
+            }
+            
+            if let responseBody = String(data: data, encoding: .utf8) {
+                print("Response Body: \(responseBody)")
             }
 
             // 5. Decode the response and save the job_id.

@@ -1,25 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1430"
-   version = "1.3">
+   LastUpgradeVersion = "1630"
+   wasCreatedForAppExtension = "YES"
+   version = "2.0">
    <BuildAction
       parallelizeBuildables = "YES"
-      buildImplicitDependencies = "YES">
+      buildImplicitDependencies = "YES"
+      buildArchitectures = "Automatic">
       <BuildActionEntries>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "EBA394659AC2B64F0E3FA78D"
-               BuildableName = "Steez.app"
-               BlueprintName = "Steez"
-               ReferencedContainer = "container:Steez.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
          <BuildActionEntry
             buildForTesting = "YES"
             buildForRunning = "YES"
@@ -34,13 +22,46 @@
                ReferencedContainer = "container:Steez.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "EBA394659AC2B64F0E3FA78D"
+               BuildableName = "Steez.app"
+               BlueprintName = "Steez"
+               ReferencedContainer = "container:Steez.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES">
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      shouldAutocreateTestPlan = "YES">
+   </TestAction>
+   <LaunchAction
+      buildConfiguration = "Debug"
+      selectedDebuggerIdentifier = ""
+      selectedLauncherIdentifier = "Xcode.IDEFoundation.Launcher.PosixSpawn"
+      launchStyle = "0"
+      askForAppToLaunch = "Yes"
+      useCustomWorkingDirectory = "NO"
+      ignoresPersistentStateOnLaunch = "NO"
+      debugDocumentVersioning = "YES"
+      debugServiceExtension = "internal"
+      allowLocationSimulation = "YES"
+      launchAutomaticallySubstyle = "2">
+      <RemoteRunnable
+         runnableDebuggingMode = "0"
+         BundleIdentifier = "com.steez.app"
+         RemotePath = "/var/containers/Bundle/Application/6203951D-F43D-4A3F-ACA3-451D84141E3E/Steez.app">
+      </RemoteRunnable>
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
@@ -50,38 +71,10 @@
             ReferencedContainer = "container:Steez.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
-      <Testables>
-      </Testables>
-   </TestAction>
-   <LaunchAction
-      buildConfiguration = "Debug"
-      selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
-      selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      launchStyle = "0"
-      useCustomWorkingDirectory = "NO"
-      ignoresPersistentStateOnLaunch = "NO"
-      debugDocumentVersioning = "YES"
-      debugServiceExtension = "internal"
-      allowLocationSimulation = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "EBA394659AC2B64F0E3FA78D"
-            BuildableName = "Steez.app"
-            BlueprintName = "Steez"
-            ReferencedContainer = "container:Steez.xcodeproj">
-         </BuildableReference>
-      </BuildableProductRunnable>
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "API_BASE_URL"
-            value = "http://steez-backend-env.eba-futcik3k.eu-north-1.elasticbeanstalk.com "
-            isEnabled = "YES">
-         </EnvironmentVariable>
-         <EnvironmentVariable
-            key = "SUPABASE_ANON_KEY"
-            value = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93YmtsZGd5ZHpva2Nkamhtdmp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEyMzQ4NjgsImV4cCI6MjA2NjgxMDg2OH0.x6Q6R5QX3mtzMMGl42YKEXA8CD5VZ-lxARgHzDEjd90"
+            value = "http://Steez-backend-env.eba-futcik3k.eu-north-1.elasticbeanstalk.com"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
@@ -90,8 +83,13 @@
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
-            key = "SUPABASE_SERIVCE_ROLE_KEY"
+            key = "SUPABASE_SERVICE_ROLE_KEY"
             value = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93YmtsZGd5ZHpva2Nkamhtdmp1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MTIzNDg2OCwiZXhwIjoyMDY2ODEwODY4fQ.7wo242WCbdXB3eQRmfSv05uZpBQs-7Kq2y6DUi9_RfA"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "SUPABASE_ANON_KEY"
+            value = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93YmtsZGd5ZHpva2Nkamhtdmp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEyMzQ4NjgsImV4cCI6MjA2NjgxMDg2OH0.x6Q6R5QX3mtzMMGl42YKEXA8CD5VZ-lxARgHzDEjd90"
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>
@@ -101,7 +99,9 @@
       shouldUseLaunchSchemeArgsEnv = "YES"
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
-      debugDocumentVersioning = "YES">
+      debugDocumentVersioning = "YES"
+      askForAppToLaunch = "Yes"
+      launchAutomaticallySubstyle = "2">
       <BuildableProductRunnable
          runnableDebuggingMode = "0">
          <BuildableReference
