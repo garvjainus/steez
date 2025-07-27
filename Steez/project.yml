@@ -62,20 +62,26 @@ targets:
   SteezShareExtension:
     type: app-extension
     platform: iOS
+    deploymentTarget: "15.0"
     info:
       path: Sources/ShareExtension/Info.plist
       properties:
         CFBundleDisplayName: Steez Share
-        CFBundleShortVersionString: 1.0
-        CFBundleVersion: 1
+        CFBundleShortVersionString: "1.0"
+        CFBundleVersion: "1"
         NSExtension:
           NSExtensionPointIdentifier: com.apple.share-services
           NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).ShareViewController
           NSExtensionActivationRule:
             NSExtensionActivationSupportsWebPageWithMaxCount: 1
     settings:
+      configs:
+          Debug: ../Configuration/Secrets.xcconfig
+          Release: ../Configuration/Secrets.xcconfig
       base:
-        TARGETED_DEVICE_FAMILY: 1,2
+        INFOPLIST_KEY_API_BASE_URL: $(API_BASE_URL)
+        INFOPLIST_KEY_API_TOKEN: $(API_TOKEN)
+        TARGETED_DEVICE_FAMILY: "1,2"
         SWIFT_VERSION: "5.0"
         PRODUCT_BUNDLE_IDENTIFIER: "com.steez.app.ShareExtension"
         DEVELOPMENT_TEAM: "YOUR_TEAM_ID"

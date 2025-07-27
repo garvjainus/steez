@@ -73,15 +73,33 @@
             ReferencedContainer = "container:Steez.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "E2224D2F2BEB32D10051B27B"
-            BuildableName = "Steez.app"
-            BlueprintName = "Steez"
-            ReferencedContainer = "container:Steez.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
+      <EnvironmentVariables>
+         <EnvironmentVariable
+            key = "API_BASE_URL"
+            value = "https://steez-backend.onrender.com"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "SUPABASE_ANON_KEY"
+            value = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93YmtsZGd5ZHpva2Nkamhtdmp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEyMzQ4NjgsImV4cCI6MjA2NjgxMDg2OH0.x6Q6R5QX3mtzMMGl42YKEXA8CD5VZ-lxARgHzDEjd90"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "SUPABASE_URL"
+            value = "https://owbkldgydzokcdjhmvju.supabase.co"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "SUPABASE_SERIVCE_ROLE_KEY"
+            value = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93YmtsZGd5ZHpva2Nkamhtdmp1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MTIzNDg2OCwiZXhwIjoyMDY2ODEwODY4fQ.7wo242WCbdXB3eQRmfSv05uZpBQs-7Kq2y6DUi9_RfA"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "API_TOKEN"
+            value = "8qRqrmyVQ5a08EBUvQaKxtV1SuKEZu1zpUA1YMFooi8="
+            isEnabled = "YES">
+         </EnvironmentVariable>
+      </EnvironmentVariables>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -93,7 +111,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "E2224D2F2BEB32D10051B27B"
+            BlueprintIdentifier = "EBA394659AC2B64F0E3FA78D"
             BuildableName = "Steez.app"
             BlueprintName = "Steez"
             ReferencedContainer = "container:Steez.xcodeproj">

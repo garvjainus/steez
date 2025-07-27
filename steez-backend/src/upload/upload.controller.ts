@@ -25,7 +25,19 @@ export class UploadController {
 
   @Post('image')
   @UseGuards(ApiKeyAuthGuard)
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(
+    FileInterceptor('image', {
+      limits: {
+        fileSize: 10 * 1024 * 1024, // 10 MB
+      },
+      fileFilter: (req, file, cb) => {
+        if (!file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
+          return cb(new HttpException('Only image files are allowed!', HttpStatus.BAD_REQUEST), false);
+        }
+        cb(null, true);
+      },
+    }),
+  )
   async uploadImage(
     @UploadedFile() file: Express.Multer.File,
     @Body('userId') userId: string,
