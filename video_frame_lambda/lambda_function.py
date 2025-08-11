@@ -68,6 +68,18 @@ def _download_video(url: str, tmp_dir: Path) -> Path:
     ffmpeg_exe = get_ffmpeg_exe()
     ffmpeg_dir = str(Path(ffmpeg_exe).parent)
 
+    # Prepare cookie file in writable /tmp to avoid read-only filesystem errors
+    cookie_src = Path(__file__).with_name("cookies.txt")
+    cookie_dst = tmp_dir / "cookies.txt"
+    if cookie_src.exists():
+        try:
+            shutil.copyfile(cookie_src, cookie_dst)
+        except Exception as copy_err:
+            print(f"Warning: failed to copy cookies.txt to tmp: {copy_err}")
+            cookie_dst = None
+    else:
+        cookie_dst = None
+
     ydl_opts = {
         "outtmpl": outtmpl,
         "quiet": True,
@@ -79,9 +91,11 @@ def _download_video(url: str, tmp_dir: Path) -> Path:
         "socket_timeout": 15,
         # Tell yt-dlp where ffmpeg lives (in case merging is still required)
         "ffmpeg_location": ffmpeg_dir,
-        # Use cookie file for sites like Instagram (must be valid and up to date)
-        "cookiefile": str(Path(__file__).with_name("cookies.txt")),
     }
+
+    # Only set cookiefile if we have one in a writable tmp path
+    if cookie_dst is not None:
+        ydl_opts["cookiefile"] = str(cookie_dst)
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(url, download=True)
