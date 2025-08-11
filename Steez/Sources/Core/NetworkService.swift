@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 // import Alamofire // Temporarily commented out
 // import Kingfisher // Temporarily commented out
-import CommonCrypto
+import CryptoKit
 
 // MARK: - Error Handling Enum
 enum NetworkError: Error {
@@ -103,11 +103,19 @@ struct LensProduct: Decodable, Identifiable { // ENSURE THIS IS THE ONLY DEFINIT
 }
 
 // MARK: - Network Service Class
-class NetworkService {
+class NetworkService: NSObject {
     static let shared = NetworkService()
     
     private let baseURL: String
     private let apiToken: String?
+    
+    // Dedicated session to report upload progress via delegate callbacks
+    private lazy var uploadSession: URLSession = {
+        let configuration = URLSessionConfiguration.default
+        configuration.timeoutIntervalForRequest = 60
+        configuration.timeoutIntervalForResource = 300
+        return URLSession(configuration: configuration, delegate: self, delegateQueue: nil)
+    }()
     
     // Cache configuration
     private let cache = NSCache<NSString, NSData>()
@@ -118,7 +126,7 @@ class NetworkService {
     private let maxRetries = 3
     private let retryDelay: TimeInterval = 2.0 // Initial delay in seconds
     
-    private init() {
+    private override init() {
         guard let baseURLString = ProcessInfo.processInfo.environment["API_BASE_URL"] else {
             fatalError("API_BASE_URL environment variable not set. Please set it in your Xcode scheme.")
         }
@@ -133,7 +141,7 @@ class NetworkService {
             self.apiToken = nil
             print("⚠️ API_TOKEN not found in environment or Info.plist. Guarded endpoints will fail without 'x-api-key'.")
         }
-        
+        super.init()
         setupCache()
         
         // Print the base URL for debugging
@@ -390,12 +398,12 @@ class NetworkService {
             cache.setObject(data as NSData, forKey: cacheKey as NSString)
             
             // Disk cache
-            let fileURL = diskCacheURL.appendingPathComponent(cacheKey.md5Hash)
+            let fileURL = diskCacheURL.appendingPathComponent(cacheKey.sha256Hex)
             try data.write(to: fileURL)
             
             // Store expiration time
             let expirationTime = Date().addingTimeInterval(cacheTTL)
-            UserDefaults.standard.set(expirationTime.timeIntervalSince1970, forKey: "cache_expiry_\(cacheKey.md5Hash)")
+            UserDefaults.standard.set(expirationTime.timeIntervalSince1970, forKey: "cache_expiry_\(cacheKey.sha256Hex)")
         } catch {
             print("Failed to cache response: \(error)")
         }
@@ -415,10 +423,10 @@ class NetworkService {
         }
         
         // Check disk cache
-        let fileURL = diskCacheURL.appendingPathComponent(cacheKey.md5Hash)
+        let fileURL = diskCacheURL.appendingPathComponent(cacheKey.sha256Hex)
         
         // Check if cached data is expired (fixing the optional binding issue)
-        if let expiryTimeDouble = UserDefaults.standard.object(forKey: "cache_expiry_\(cacheKey.md5Hash)") as? Double,
+        if let expiryTimeDouble = UserDefaults.standard.object(forKey: "cache_expiry_\(cacheKey.sha256Hex)") as? Double,
            Date(timeIntervalSince1970: expiryTimeDouble) > Date() {
             
             do {
@@ -502,9 +510,9 @@ class NetworkService {
             // Hint servers to validate headers before body is sent
             request.setValue("100-continue", forHTTPHeaderField: "Expect")
         }
-        request.httpBody = body
         
-        URLSession.shared.dataTask(with: request) { data, response, error in
+        // Use uploadTask so we get progress callbacks via delegate
+        let task = uploadSession.uploadTask(with: request, from: body) { data, response, error in
             DispatchQueue.main.async {
                 if let error = error {
                     completion(.failure(.requestFailed(error)))
@@ -538,7 +546,8 @@ class NetworkService {
                     completion(.failure(.decodingFailed(error)))
                     }
                 }
-        }.resume()
+        }
+        task.resume()
     }
     
     // MARK: - Google Lens Image Analysis (via Your Backend)
@@ -684,7 +693,12 @@ class NetworkService {
         
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        if let token = apiToken, !token.isEmpty {
+            request.setValue(token, forHTTPHeaderField: "x-api-key")
+        } else {
+            print("⚠️ API_TOKEN missing; GET /jobs/:id will fail auth")
+        }
         
         // This task does not need retry logic, as it will be called repeatedly by the poller.
         URLSession.shared.dataTask(with: request) { data, response, error in
@@ -738,17 +752,13 @@ class NetworkService {
     }
 }
 
-// MARK: - String extension for MD5 hash
+// MARK: - String extension for SHA256 hash (for cache keys)
 
 extension String {
-    var md5Hash: String {
-        let data = Data(self.utf8)
-        let hash = data.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) -> [UInt8] in
-            var hash = [UInt8](repeating: 0, count: Int(CC_MD5_DIGEST_LENGTH))
-            CC_MD5(bytes.baseAddress, CC_LONG(data.count), &hash)
-            return hash
-        }
-        return hash.map { String(format: "%02x", $0) }.joined()
+    var sha256Hex: String {
+        let data = Data(utf8)
+        let digest = SHA256.hash(data: data)
+        return digest.compactMap { String(format: "%02x", $0) }.joined()
     }
 }
 
@@ -778,3 +788,11 @@ extension Notification.Name {
     static let uploadProgressNotification = Notification.Name("uploadProgressNotification")
 } 
  
+ // MARK: - URLSessionTaskDelegate for upload progress
+ extension NetworkService: URLSessionTaskDelegate {
+     func urlSession(_ session: URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
+         guard session == uploadSession, totalBytesExpectedToSend > 0 else { return }
+         let progress = Float(totalBytesSent) / Float(totalBytesExpectedToSend)
+         notifyUploadProgress(min(max(progress, 0), 1))
+     }
+ }

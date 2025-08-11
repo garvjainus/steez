@@ -37,8 +37,12 @@
 	<dict>
 		<key>NSExtensionAttributes</key>
 		<dict>
-			<key>NSExtensionActivationRule</key>
-			<string>TRUEPREDICATE</string>
+    <key>NSExtensionActivationRule</key>
+    <dict>
+        <!-- Only allow URLs to be shared -->
+        <key>NSExtensionActivationSupportsWebURLWithMaxCount</key>
+        <integer>1</integer>
+    </dict>
 			<key>NSExtensionJavaScriptPreprocessingFile</key>
 			<string></string>
 		</dict>
