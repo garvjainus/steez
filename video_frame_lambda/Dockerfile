@@ -10,7 +10,12 @@ COPY requirements.txt .
 
 # Install dependencies using pip.
 # The --no-cache-dir option reduces the image size.
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt && \
+    echo "Verifying ffmpeg availability..." && \
+    python - <<'PY'
+from imageio_ffmpeg import get_ffmpeg_exe
+print('ffmpeg at', get_ffmpeg_exe())
+PY
 
 # Copy the rest of the function code and any assets into the container.
 # This includes your handler file and the cookies.txt file.

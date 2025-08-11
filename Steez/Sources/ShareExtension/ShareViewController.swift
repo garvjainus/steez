@@ -13,19 +13,24 @@ class ShareViewController: UIViewController {
 
     // MARK: - Constants
 
-    // Read the API URL from the bundle's Info.plist.
-    // This must be configured in the project settings for different build environments.
+    // Read the API URL, preferring Scheme environment, then Info.plist.
     private var apiBaseURLString: String {
+        if let envURL = ProcessInfo.processInfo.environment["API_BASE_URL"], !envURL.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return envURL
+        }
         guard let url = Bundle.main.object(forInfoDictionaryKey: "API_BASE_URL") as? String, !url.isEmpty else {
-            fatalError("API_BASE_URL key not found or is empty in Info.plist for the Share Extension target.")
+            fatalError("API_BASE_URL key not found or is empty for the Share Extension. Set it in the Run Scheme environment or Info.plist.")
         }
         return url
     }
 
-    // Read the API Token from the bundle's Info.plist.
+    // Read the API Token, preferring Scheme environment, then Info.plist.
     private var apiTokenString: String {
+        if let envToken = ProcessInfo.processInfo.environment["API_TOKEN"], !envToken.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return envToken
+        }
         guard let token = Bundle.main.object(forInfoDictionaryKey: "API_TOKEN") as? String, !token.isEmpty else {
-            fatalError("API_TOKEN key not found or is empty in Info.plist for the Share Extension target.")
+            fatalError("API_TOKEN not found or is empty for the Share Extension. Set it in the Run Scheme environment or Info.plist.")
         }
         return token
     }

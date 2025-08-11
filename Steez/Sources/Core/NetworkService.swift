@@ -107,6 +107,7 @@ class NetworkService {
     static let shared = NetworkService()
     
     private let baseURL: String
+    private let apiToken: String?
     
     // Cache configuration
     private let cache = NSCache<NSString, NSData>()
@@ -123,6 +124,15 @@ class NetworkService {
         }
         let rawURL = baseURLString.trimmingCharacters(in: .whitespacesAndNewlines)
         self.baseURL = rawURL
+        // Load API token (prefer environment for your Scheme-based workflow; fallback to Info.plist)
+        if let envToken = ProcessInfo.processInfo.environment["API_TOKEN"]?.trimmingCharacters(in: .whitespacesAndNewlines), !envToken.isEmpty {
+            self.apiToken = envToken
+        } else if let plistToken = Bundle.main.object(forInfoDictionaryKey: "API_TOKEN") as? String, !plistToken.isEmpty {
+            self.apiToken = plistToken
+        } else {
+            self.apiToken = nil
+            print("⚠️ API_TOKEN not found in environment or Info.plist. Guarded endpoints will fail without 'x-api-key'.")
+        }
         
         setupCache()
         
@@ -486,6 +496,12 @@ class NetworkService {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        if let token = apiToken {
+            request.setValue(token, forHTTPHeaderField: "x-api-key")
+            // Hint servers to validate headers before body is sent
+            request.setValue("100-continue", forHTTPHeaderField: "Expect")
+        }
         request.httpBody = body
         
         URLSession.shared.dataTask(with: request) { data, response, error in
@@ -536,6 +552,10 @@ class NetworkService {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        if let token = apiToken {
+            request.setValue(token, forHTTPHeaderField: "x-api-key")
+        }
         let parameters = ["filename": filename]
         do {
             request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: [])

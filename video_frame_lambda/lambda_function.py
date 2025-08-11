@@ -35,6 +35,22 @@ ALLOWED_VIDEO_DOMAINS = set(
 MAX_FILESIZE = _get_env("MAX_VIDEO_FILESIZE", "100M")
 
 
+def _parse_size_to_bytes(value: str | int) -> int:
+    """Convert '100M'/'2G'/int strings to bytes for yt-dlp 'max_filesize'."""
+    if isinstance(value, int):
+        return value
+    s = str(value).strip().upper()
+    try:
+        return int(s)
+    except ValueError:
+        pass
+    multipliers = {"K": 1024, "M": 1024**2, "G": 1024**3}
+    if s[-1] in multipliers:
+        return int(float(s[:-1]) * multipliers[s[-1]])
+    # Default: best effort
+    return int(float(s))
+
+
 def _download_video(url: str, tmp_dir: Path) -> Path:
     """Download remote video with yt-dlp and return the actual file Path."""
 
@@ -48,15 +64,23 @@ def _download_video(url: str, tmp_dir: Path) -> Path:
     # Save as video.<ext> inside tmp_dir, letting yt-dlp choose correct extension
     outtmpl = str(tmp_dir / "video.%(ext)s")
 
+    # Ensure yt-dlp can find ffmpeg if it needs to (merging, etc.)
+    ffmpeg_exe = get_ffmpeg_exe()
+    ffmpeg_dir = str(Path(ffmpeg_exe).parent)
+
     ydl_opts = {
         "outtmpl": outtmpl,
         "quiet": True,
         "no_warnings": True,
-        "format": "bestvideo+bestaudio/best",
-        "max_filesize": MAX_FILESIZE,  # Abort downloads larger than this
+        # Prefer a single-file format to avoid merging when possible
+        "format": "best",
+        # Abort downloads larger than this (bytes)
+        "max_filesize": _parse_size_to_bytes(MAX_FILESIZE),
         "socket_timeout": 15,
-        # optional cookies support
-        "cookies": str(Path(__file__).with_name("cookies.txt")),
+        # Tell yt-dlp where ffmpeg lives (in case merging is still required)
+        "ffmpeg_location": ffmpeg_dir,
+        # Use cookie file for sites like Instagram (must be valid and up to date)
+        "cookiefile": str(Path(__file__).with_name("cookies.txt")),
     }
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
