@@ -1,0 +1,76 @@
+{
+  "identifier": "08AB8B83",
+  "nonRenewingSubscriptions": [],
+  "products": [],
+  "settings": {
+    "_failTransactionsEnabled": false,
+    "_locale": "en_US",
+    "_storefront": "USA",
+    "_storeKitErrors": [
+      { "name": "Load Products", "enabled": false, "current": null },
+      { "name": "Purchase", "enabled": false, "current": null },
+      { "name": "Verification", "enabled": false, "current": null },
+      { "name": "App Store Sync", "enabled": false, "current": null },
+      { "name": "Subscription Status", "enabled": false, "current": null },
+      { "name": "App Transaction", "enabled": false, "current": null },
+      { "name": "Manage Subscriptions Sheet", "enabled": false, "current": null },
+      { "name": "Refund Request Sheet", "enabled": false, "current": null },
+      { "name": "Offer Code Redeem Sheet", "enabled": false, "current": null }
+    ]
+  },
+  "subscriptionGroups": [
+    {
+      "id": "21482867",
+      "name": "Steez Pro",
+      "localizations": [],
+      "subscriptions": [
+        {
+          "adHocOffers": [],
+          "codeOffers": [],
+          "displayPrice": "4.99",
+          "familyShareable": false,
+          "groupNumber": 1,
+          "internalID": "6670280273",
+          "introductoryOffer": null,
+          "localizations": [
+            {
+              "description": "Unlimited uploads and shares with premium features",
+              "displayName": "Steez Pro Monthly",
+              "locale": "en_US"
+            }
+          ],
+          "productID": "sub001",
+          "recurringSubscriptionPeriod": "P1M",
+          "referenceName": "Steez Pro Monthly",
+          "subscriptionGroupID": "21482867",
+          "type": "RecurringSubscription"
+        },
+        {
+          "adHocOffers": [],
+          "codeOffers": [],
+          "displayPrice": "19.99",
+          "familyShareable": false,
+          "groupNumber": 1,
+          "internalID": "6670280274",
+          "introductoryOffer": null,
+          "localizations": [
+            {
+              "description": "Unlimited uploads and shares with premium features (yearly plan)",
+              "displayName": "Steez Pro Yearly",
+              "locale": "en_US"
+            }
+          ],
+          "productID": "sub002",
+          "recurringSubscriptionPeriod": "P1Y",
+          "referenceName": "Steez Pro Yearly",
+          "subscriptionGroupID": "21482867",
+          "type": "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version": {
+    "major": 3,
+    "minor": 0
+  }
+}

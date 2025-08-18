@@ -525,6 +525,13 @@ class NetworkService: NSObject {
                     return
                 }
                 
+                // Validate HTTP status code
+                guard 200...299 ~= httpResponse.statusCode else {
+                    print("❌ HTTP Error: \(httpResponse.statusCode)")
+                    completion(.failure(.requestFailed(NSError(domain: "HTTPError", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Server returned status code \(httpResponse.statusCode)"]))))
+                    return
+                }
+                
                 guard let data = data else {
                     completion(.failure(.invalidData))
                     return
@@ -674,7 +681,7 @@ class NetworkService: NSObject {
     func getNetworkDiagnostics() -> String {
         let backendUrl = baseURL
         
-        var diagnostics = """
+        let diagnostics = """
         Network Diagnostics:
         - Backend URL: \(backendUrl)
         """

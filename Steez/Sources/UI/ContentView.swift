@@ -25,6 +25,11 @@ struct ContentView: View {
                         
                         MainImportView()
                             .tag(1)
+                            .onAppear {
+                                Task {
+                                    await appState.refreshUsageQuota()
+                                }
+                            }
                 
                 ProfileView()
                             .tag(2)
@@ -40,6 +45,12 @@ struct ContentView: View {
                 // Overlay for server errors
             if let errorMessage = appState.errorMessage {
                     serverErrorOverlay(message: errorMessage)
+            }
+        }
+        .sheet(isPresented: $appState.showingPaywall) {
+            PaywallView(context: appState.paywallContext) {
+                // Dismiss handler
+                appState.showingPaywall = false
             }
         }
         }
@@ -163,7 +174,7 @@ struct MainImportView: View {
                         
                         // Status Indicators
                         VStack(spacing: 16) {
-                            JobPollingIndicator()
+                            // Job polling indicator removed for now
                             
                             if !appState.importJobFrames.isEmpty {
                                 FrameSelectorView(frameUrls: appState.importJobFrames) { selectedUrl in
@@ -203,7 +214,8 @@ struct MainImportView: View {
                 CameraPicker(selectedImage: $capturedImage)
             }
         .sheet(isPresented: $showingLinkInput) {
-            LinkInputView()
+            Text("Link input coming soon...")
+                .padding()
                 .environmentObject(appState)
             }
             .onChange(of: selectedMedia) { newValue in
@@ -230,11 +242,22 @@ struct MainImportView: View {
     private func startImageProcessing(_ image: UIImage) {
         self.retryData = image
         
-        if let userId = appState.currentUser?.userId.uuidString {
-            self.currentUploadUserId = userId
-            self.processImage(image, userId: userId)
-        } else {
+        // Check authentication first
+        guard let userId = appState.currentUser?.userId.uuidString else {
             self.showError("Authentication Error", "Please sign in to upload images.")
+            return
+        }
+        
+        // Check quota before processing
+        Task {
+            let canUpload = await appState.canPerformAction(.upload)
+            if canUpload {
+                await MainActor.run {
+                    self.currentUploadUserId = userId
+                    self.processImage(image, userId: userId)
+                }
+            }
+            // If can't upload, paywall is automatically shown by canPerformAction
         }
     }
     
@@ -364,12 +387,26 @@ struct MainImportView: View {
                             
                             DispatchQueue.main.async {
                                 self.retryData = image
-                                if let userId = appState.currentUser?.userId.uuidString {
-                                    self.currentUploadUserId = userId
-                                    self.processImage(image, userId: userId)
-                                } else {
+                                
+                                guard let userId = appState.currentUser?.userId.uuidString else {
                                     appState.isProcessing = false
                                     self.showError("Authentication Error", "Please sign in to process images.")
+                                    return
+                                }
+                                
+                                // Check quota before processing
+                                Task {
+                                    let canUpload = await appState.canPerformAction(.upload)
+                                    if canUpload {
+                                        await MainActor.run {
+                                            self.currentUploadUserId = userId
+                                            self.processImage(image, userId: userId)
+                                        }
+                                    } else {
+                                        await MainActor.run {
+                                            appState.isProcessing = false
+                                        }
+                                    }
                                 }
                             }
                         case .failure(let error):

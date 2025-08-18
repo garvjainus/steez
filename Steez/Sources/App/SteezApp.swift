@@ -43,6 +43,10 @@ struct SteezApp: SwiftUI.App {
                         .environmentObject(appState)
                 }
             }
+            .sheet(isPresented: $appState.showingPaywall) {
+                PaywallModalView()
+                    .environmentObject(appState)
+            }
             .onOpenURL { url in
                 handleDeepLink(url: url)
             }
@@ -126,6 +130,12 @@ class AppState: ObservableObject {
     @Published var wardrobeItems: [WardrobeItem] = []
     @Published var isLoadingWardrobe: Bool = false
     @Published var wardrobeError: String?
+    
+    // Subscription and usage state
+    @Published var isPro: Bool = false
+    @Published var currentUsageQuota: UsageQuota?
+    @Published var showingPaywall: Bool = false
+    @Published var paywallContext: PaywallContext = .upload
     
     private let appGroupId = "group.com.steez.app"
     private let latestJobIdKey = "latest_job_id"
@@ -212,16 +222,120 @@ class AppState: ObservableObject {
         await WardrobeService.shared.clearAllData()
     }
     
-    /// Save a new wardrobe item
+    /// Save a new wardrobe item (with quota checking)
     func saveWardrobeItem(imageUrl: URL, results: SegmentedResults) async {
         do {
+            // Check quota before saving
+            try await UsageTrackingService.shared.recordUpload()
+            
+            // If quota check passes, save the item
             try await WardrobeService.shared.saveNewItem(imageUrl: imageUrl, results: results)
-            // Refresh the wardrobe after saving
+            
+            // Refresh the wardrobe and quota after saving
             await fetchWardrobeItems()
+            await refreshUsageQuota()
+        } catch SubscriptionError.quotaExceeded {
+            // Show paywall for upload quota exceeded
+            await showPaywall(for: .upload)
         } catch {
             await MainActor.run {
                 self.wardrobeError = error.localizedDescription
             }
+        }
+    }
+    
+    /// Initialize all user data when signing in
+    private func initializeUserData() async {
+        await fetchWardrobeItems()
+        await fetchSubscriptionData()
+        await refreshUsageQuota()
+    }
+    
+    /// Clear all user data when signing out
+    private func clearAllUserData() async {
+        await clearWardrobeData()
+        await clearSubscriptionData()
+    }
+    
+    // MARK: - Subscription Management
+    
+    /// Fetch subscription data and update state
+    func fetchSubscriptionData() async {
+        do {
+            let subscription = try await SubscriptionService.shared.fetchSubscription()
+            await MainActor.run {
+                self.isPro = subscription?.isPro ?? false
+            }
+        } catch {
+            print("❌ Failed to fetch subscription data: \(error)")
+        }
+    }
+    
+    /// Clear subscription data
+    private func clearSubscriptionData() async {
+        await SubscriptionService.shared.clearAllData()
+        await UsageTrackingService.shared.clearAllData()
+        await MainActor.run {
+            self.isPro = false
+            self.currentUsageQuota = nil
+            self.showingPaywall = false
+        }
+    }
+    
+    /// Refresh usage quota
+    func refreshUsageQuota() async {
+        do {
+            let quota = try await UsageTrackingService.shared.getUsageStats()
+            await MainActor.run {
+                self.currentUsageQuota = quota
+            }
+        } catch {
+            print("❌ Failed to refresh usage quota: \(error)")
+        }
+    }
+    
+    /// Show paywall for specific context
+    func showPaywall(for context: PaywallContext) async {
+        await MainActor.run {
+            self.paywallContext = context
+            self.showingPaywall = true
+        }
+    }
+    
+    /// Hide paywall
+    func hidePaywall() async {
+        await MainActor.run {
+            self.showingPaywall = false
+        }
+    }
+    
+    /// Check if user can perform an action (returns false and shows paywall if not)
+    func canPerformAction(_ actionType: UsageActionType) async -> Bool {
+        do {
+            return try await UsageTrackingService.shared.canPerformAction(actionType)
+        } catch SubscriptionError.quotaExceeded {
+            let context: PaywallContext = actionType == .upload ? .upload : .share
+            await showPaywall(for: context)
+            return false
+        } catch {
+            print("❌ Error checking action permission: \(error)")
+            return false
+        }
+    }
+    
+    /// Record an action (upload/share) with quota checking
+    func recordAction(_ actionType: UsageActionType) async -> Bool {
+        do {
+            try await UsageTrackingService.shared.performAction(actionType)
+            await refreshUsageQuota()
+            return true
+        } catch SubscriptionError.quotaExceeded {
+            let context: PaywallContext = actionType == .upload ? .upload : .share
+            await showPaywall(for: context)
+            return false
+        } catch {
+            print("❌ Error recording action: \(error)")
+            return false
         }
     }
 
@@ -324,18 +438,18 @@ class AppState: ObservableObject {
                             self.currentUser = LocalUser(userId: supa.id, email: supa.email ?? "", plan: .free)
                             self.isAuthenticated = true
                             
-                            // Fetch wardrobe items when user signs in
+                            // Initialize user data when signed in
                             Task {
-                                await self.fetchWardrobeItems()
+                                await self.initializeUserData()
                             }
                         }
                     case .signedOut:
                         self.currentUser = nil
                         self.isAuthenticated = false
                         
-                        // Clear wardrobe data when user signs out
+                        // Clear all user data when user signs out
                         Task {
-                            await self.clearWardrobeData()
+                            await self.clearAllUserData()
                         }
                     case .passwordRecovery, .tokenRefreshed, .userUpdated:
                         break
