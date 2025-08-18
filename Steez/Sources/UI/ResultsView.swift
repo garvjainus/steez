@@ -5,9 +5,10 @@ import SwiftUI
 // MARK: - Segmented Results Display
 struct SegmentedResultsDisplay: View {
     @EnvironmentObject var appState: AppState
+    let segmentedResults: SegmentedResults
     
     var body: some View {
-        if let segmentedResults = appState.segmentedResults, !segmentedResults.segments.isEmpty {
+        if !segmentedResults.segments.isEmpty {
             VStack(alignment: .leading, spacing: 20) {
                 Text("Detected Items")
                     .font(SteezFonts.medium(20))
@@ -37,6 +38,15 @@ struct SegmentedResultsDisplay: View {
                     let selectedSegment = segmentedResults.segments[appState.selectedSegmentIndex]
                     SegmentDetailView(segment: selectedSegment)
                 }
+                
+                // Start New Import Button
+                Button("Start New Import") {
+                    withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                        appState.fullReset()
+                    }
+                }
+                .buttonStyle(PrimaryButtonStyle())
+                .padding(.top, 16)
             }
             .padding(20)
             .background(
@@ -129,16 +139,17 @@ struct SegmentDetailView: View {
 // MARK: - Lens Results Display
 struct LensResultsDisplay: View {
     @EnvironmentObject var appState: AppState
+    let lensProducts: [LensProduct]
     
     var body: some View {
-        if !appState.lensProducts.isEmpty {
+        if !lensProducts.isEmpty {
             VStack(alignment: .leading, spacing: 16) {
                 Text("Similar Items")
                     .font(SteezFonts.medium(20))
                     .foregroundColor(SteezColors.textPrimary)
                 
                 LazyVStack(spacing: 12) {
-                    ForEach(appState.lensProducts) { product in
+                    ForEach(lensProducts) { product in
                         LensProductRow(product: product)
                     }
                 }

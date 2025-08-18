@@ -3,6 +3,7 @@ import UserNotifications
 import Foundation
 import Supabase
 import FirebaseCore
+import RealmSwift
 
 class AppDelegate: NSObject, UIApplicationDelegate {
   func application(_ application: UIApplication,
@@ -13,7 +14,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 }
 
 @main
-struct SteezApp: App {
+struct SteezApp: SwiftUI.App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @StateObject private var appState = AppState()
     
@@ -104,6 +105,20 @@ class AppState: ObservableObject {
     @Published var pollingJobId: String? = nil
     @Published var jobErrorMessage: String? = nil
     @Published var jobFrames: [URL] = []
+
+    // For photo uploads, to be reset
+    @Published var uploadedFilename: String? = nil
+    @Published var uploadedImageUrl: URL? = nil
+    
+    // State for the active import session
+    @Published var importUploadedImageUrl: URL? = nil
+    @Published var importSegmentedResults: SegmentedResults?
+    @Published var importLensProducts: [LensProduct] = []
+    @Published var importJobFrames: [URL] = []
+    
+    // Wardrobe state
+    @Published var wardrobeItems: [WardrobeItem] = []
+    private var wardrobeToken: NotificationToken?
     
     private let appGroupId = "group.com.steez.app"
     private let latestJobIdKey = "latest_job_id"
@@ -136,12 +151,26 @@ class AppState: ObservableObject {
             name: UIScene.didActivateNotification,
             object: nil
         )
+        
+        // Fetch initial wardrobe items
+        fetchWardrobeItems()
     }
     
     deinit {
         authStateTask?.cancel()
         pollingTimer?.invalidate()
         NotificationCenter.default.removeObserver(self)
+        wardrobeToken?.invalidate()
+    }
+
+    // MARK: - Wardrobe
+    
+    private func fetchWardrobeItems() {
+        let results = WardrobeService.shared.fetchAllItems()
+        self.wardrobeToken = results.observe { [weak self] (changes: RealmCollectionChange) in
+            guard let self = self else { return }
+            self.wardrobeItems = Array(results)
+        }
     }
 
     // MARK: - Job Polling Logic
@@ -191,6 +220,7 @@ class AppState: ObservableObject {
                     // Success case! Frames are ready.
                     if let frameUrls = response.selected_frame_urls, !frameUrls.isEmpty {
                         self.jobFrames = frameUrls
+                        self.importJobFrames = frameUrls
                         self.stopPolling()
                     }
                     // If URLs are missing, we keep polling, maybe they're not saved yet.
@@ -297,11 +327,34 @@ class AppState: ObservableObject {
         resetPollingState()
     }
 
+    // MARK: - Centralized Reset for UI State
+
+    func fullReset() {
+        // This function provides a single point to reset the temporary state
+        // for the import screen, without clearing the main wardrobe/recent activity.
+        importUploadedImageUrl = nil
+        importSegmentedResults = nil
+        importLensProducts = []
+        importJobFrames = []
+        
+        // Also reset polling state for the import view
+        resetPollingState()
+    }
+
     // MARK: - Helper used by UI to reset analysis results
     func clearResults() {
-        lensProducts = []
         segmentedResults = nil
+        lensProducts = []
         selectedSegmentIndex = 0
+        uploadedFilename = nil
+        uploadedImageUrl = nil
+        
+        // Also clear the import-specific state
+        importUploadedImageUrl = nil
+        importSegmentedResults = nil
+        importLensProducts = []
+        importJobFrames = []
+
         resetPollingState()
     }
 

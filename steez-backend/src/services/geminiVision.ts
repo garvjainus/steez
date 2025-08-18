@@ -1,9 +1,14 @@
 import {
   GoogleGenerativeAI,
+  HarmCategory,
+  HarmBlockThreshold,
+  GenerationConfig,
+  Content,
+  Part,
   SchemaType,
   FunctionCallingMode,
 } from '@google/generative-ai';
-import { searchEbay, MatchResult } from './ebay';
+import { MatchResult, searchEbay } from './ebay';
 
 // Helper to lazily initialize Gemini client after environment variables are loaded
 function getGenAI(): GoogleGenerativeAI {
@@ -25,6 +30,7 @@ interface ExtractedItem {
   phrase: string;
   itemType: string;
   confidence?: number;
+  category?: 'top' | 'bottom' | 'outerwear' | 'shoes' | 'accessories' | 'other';
 }
 
 interface ExtractionResult {
@@ -32,9 +38,10 @@ interface ExtractionResult {
 }
 
 export interface ClothingSegment {
-  itemType: string;
-  phrase: string;
+  itemType: string; // e.g., "jacket", "jeans"
+  phrase: string; // e.g., "black leather biker jacket"
   confidence: number;
+  category: 'top' | 'bottom' | 'outerwear' | 'shoes' | 'accessories' | 'other';
   ebayResults: MatchResult[];
 }
 
@@ -43,8 +50,61 @@ export interface SegmentedResults {
   totalItems: number;
 }
 
+const Preamble = `
+You are an expert fashion stylist. Given an image, your task is to identify every individual article of clothing, provide a detailed description of each, and then generate highly specific search phrases for each item to find exact matches on platforms like eBay, StockX, or Vestiaire Collective.
+`;
+
+const FewShotExamples = `
+For each identified clothing item, provide the following:
+1.  **itemType**: A simple, one-word description of the clothing item (e.g., "jacket", "jeans", "sneakers").
+2.  **phrase**: A detailed, 3-5 word search phrase. Include brand, model, color, and material if identifiable.
+3.  **confidence**: Your confidence in the match, from 0.0 to 1.0.
+4.  **category**: Classify the item into one of the following categories: 'top', 'bottom', 'outerwear', 'shoes', 'accessories', 'other'.
+
+Here are some examples of the expected output format:
+- For a black leather jacket: {"itemType": "jacket", "phrase": "black leather biker jacket", "confidence": 0.85, "category": "outerwear"}
+- For blue jeans: {"itemType": "jeans", "phrase": "blue skinny denim jeans", "confidence": 0.9, "category": "bottom"}
+- For an accessory: {"itemType": "bag", "phrase": "black leather shoulder bag", "confidence": 0.8, "category": "accessories"}
+`;
+
+const JsonSchema = {
+  type: SchemaType.OBJECT,
+  properties: {
+    segmentedResults: {
+      type: SchemaType.OBJECT,
+      properties: {
+        segments: {
+          type: SchemaType.ARRAY,
+          items: {
+            type: SchemaType.OBJECT,
+            properties: {
+              itemType: { type: SchemaType.STRING },
+              phrase: { type: SchemaType.STRING },
+              confidence: { type: SchemaType.NUMBER },
+              category: {
+                type: SchemaType.STRING,
+                enum: [
+                  'top',
+                  'bottom',
+                  'outerwear',
+                  'shoes',
+                  'accessories',
+                  'other',
+                ],
+              },
+            },
+            required: ['itemType', 'phrase', 'confidence', 'category'],
+          },
+        },
+      },
+      required: ['segments'],
+    },
+  },
+  required: ['segmentedResults'],
+};
+
 export async function extractAndMatch(
-  base64: string,
+  base64Image: string,
   userSize: string,
   country: string,
 ): Promise<SegmentedResults> {
@@ -80,8 +140,14 @@ export async function extractAndMatch(
                         type: SchemaType.NUMBER,
                         description: 'Confidence level between 0 and 1',
                       },
+                      category: {
+                        type: SchemaType.STRING,
+                        description: 'Clothing category',
+                        format: 'enum' as const,
+                        enum: ['top', 'bottom', 'outerwear', 'shoes', 'accessories', 'other'],
+                      },
                     },
-                    required: ['phrase', 'itemType', 'confidence'],
+                    required: ['phrase', 'itemType', 'confidence', 'category'],
                   },
                 },
               },
@@ -100,80 +166,99 @@ export async function extractAndMatch(
   });
 
   const prompt =
-    'Analyze this image and identify each distinct clothing item or accessory. For each item, provide:\n' +
-    '1. A descriptive phrase (color + item + distinctive features)\n' +
-    "2. The item type/category (e.g., 'jacket', 'jeans', 'sneakers', 'hat', 'dress', etc.)\n" +
-    '3. Your confidence level (0-1)\n\n' +
-    'Examples:\n' +
-    "- phrase: 'black leather biker jacket', itemType: 'jacket', confidence: 0.9\n" +
-    "- phrase: 'blue skinny denim jeans', itemType: 'jeans', confidence: 0.85\n" +
-    "- phrase: 'white canvas sneakers', itemType: 'sneakers', confidence: 0.8";
+    Preamble +
+    FewShotExamples +
+    'Analyze this image and identify each distinct clothing item or accessory. ' +
+    `The user is in ${country} and their size is ${userSize}. Please keep this in mind when generating search phrases. ` +
+    'Present the output as a single, minified JSON object that adheres to the provided schema. Do not include any markdown formatting like ```json.';
 
-  const imageData = {
+  const image = {
     inlineData: {
-      data: base64,
+      data: base64Image.replace(/^data:image\/[a-z]+;base64,/, ''),
       mimeType: 'image/jpeg',
     },
   };
 
-  const result = await model.generateContent([prompt, imageData]);
+  const parts: Part[] = [
+    { text: prompt },
+    image,
+  ];
 
-  // Debug: Log the full response to see what Gemini actually returned
-  console.log('🔍 Gemini Response Debug:');
-  console.dir(result.response, { depth: null });
+  // Rest of the function remains the same...
+  const generationConfig: GenerationConfig = {
+    temperature: 0.2,
+    topK: 1,
+    topP: 1,
+    maxOutputTokens: 2048,
+  };
 
-  // Get function call from the correct location in the response
-  const candidate = result.response.candidates?.[0];
-  const functionCall = candidate?.content?.parts?.[0]?.functionCall;
+  try {
+    const result = await model.generateContent({
+      contents: [{ role: 'user', parts }],
+      generationConfig,
+    });
 
-  if (!functionCall) {
-    throw new Error('No function call received from Gemini');
-  }
+    // Debug: Log the full response to see what Gemini actually returned
+    console.log('🔍 Gemini Response Debug:');
+    console.dir(result.response, { depth: null });
 
-  if (functionCall.name !== 'extract_garments') {
-    throw new Error('Unexpected function call from Gemini');
-  }
+    // Get function call from the correct location in the response
+    const candidate = result.response.candidates?.[0];
+    const functionCall = candidate?.content?.parts?.[0]?.functionCall;
 
-  const payload: ExtractionResult = functionCall.args as ExtractionResult;
-  const segments: ClothingSegment[] = [];
-
-  // Process each identified clothing item
-  for (const item of payload.items) {
-    const { phrase, itemType, confidence = 0 } = item;
-
-    // Skip items with low confidence
-    if (confidence < 0.5) continue;
-
-    // Search eBay for this specific item
-    const ebayResults: MatchResult[] = [];
-
-    try {
-      // Try up to 3 eBay searches with slight variations
-      const searchVariations = [phrase, `${phrase} ${userSize}`, itemType];
-
-      for (const searchTerm of searchVariations) {
-        const results = await searchEbay(searchTerm, userSize, country);
-        if (results.length > 0) {
-          ebayResults.push(...results);
-          break; // Found results, stop trying other variations
-        }
-      }
-    } catch (error) {
-      console.error(`Error searching eBay for "${phrase}":`, error);
+    if (!functionCall) {
+      throw new Error('No function call received from Gemini');
     }
 
-    segments.push({
-      itemType,
-      phrase,
-      confidence,
-      ebayResults,
-    });
-  }
+    if (functionCall.name !== 'extract_garments') {
+      throw new Error('Unexpected function call from Gemini');
+    }
 
-  return {
-    segments,
-    totalItems: segments.length,
-  };
+    const payload: ExtractionResult = functionCall.args as ExtractionResult;
+    const segments: ClothingSegment[] = [];
+
+    // Process each identified clothing item
+    for (const item of payload.items) {
+      const { phrase, itemType, confidence = 0, category = 'other' } = item;
+
+      // Skip items with low confidence
+      if (confidence < 0.5) continue;
+
+      // Search eBay for this specific item
+      const ebayResults: MatchResult[] = [];
+
+      try {
+        // Try up to 3 eBay searches with slight variations
+        const searchVariations = [phrase, `${phrase} ${userSize}`, itemType];
+
+        for (const searchTerm of searchVariations) {
+          const results = await searchEbay(searchTerm, userSize, country);
+          if (results.length > 0) {
+            ebayResults.push(...results);
+            break; // Found results, stop trying other variations
+          }
+        }
+      } catch (error) {
+        console.error(`Error searching eBay for "${phrase}":`, error);
+      }
+
+      segments.push({
+        itemType,
+        phrase,
+        confidence,
+        category,
+        ebayResults,
+      });
+    }
+
+    return {
+      segments,
+      totalItems: segments.length,
+    };
+  } catch (error) {
+    console.error('Error in extractAndMatch:', error);
+    throw error;
+  }
 }
 
 export type { MatchResult };

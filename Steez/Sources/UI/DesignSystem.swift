@@ -15,6 +15,9 @@ struct SteezColors {
 }
 
 struct SteezFonts {
+    static let title = Font.custom("IBMPlexSans-Medium", size: 28)
+    static let body = Font.custom("IBMPlexSans-Regular", size: 16)
+    
     static func regular(_ size: CGFloat) -> Font {
         .custom("IBMPlexSans-Regular", size: size)
     }

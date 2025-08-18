@@ -50,10 +50,11 @@ struct ClothingSegment: Decodable, Identifiable {
     let itemType: String
     let phrase: String
     let confidence: Double
+    let category: String
     let ebayResults: [EbayMatch]
     
     enum CodingKeys: String, CodingKey {
-        case itemType, phrase, confidence, ebayResults
+        case itemType, phrase, confidence, category, ebayResults
     }
 }
 

@@ -5,6 +5,7 @@ import Kingfisher
 // MARK: - Import Options View
 struct ImportOptionsView: View {
     let onCameraAction: () -> Void
+    let onPhotoLibraryAction: () -> Void
     let onLinkAction: () -> Void
     
     var body: some View {
@@ -22,7 +23,7 @@ struct ImportOptionsView: View {
                 title: "Choose from Photos",
                 subtitle: "Select from your photo library",
                 primaryAction: false,
-                action: onCameraAction // Same action for now
+                action: onPhotoLibraryAction
             )
             
             ImportOptionCard(
@@ -353,9 +354,10 @@ struct UploadedImageView: View {
                     case .success(let image):
                         image
                             .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(height: 200)
-                            .clipShape(RoundedRectangle(cornerRadius: 16))
+                            .scaledToFill() // fill, not fit
+                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                            .clipped() // crop overflow to screen bounds
+                            .ignoresSafeArea()
                     case .failure:
                         RoundedRectangle(cornerRadius: 16)
                             .fill(SteezColors.textSecondary.opacity(0.1))
@@ -397,50 +399,59 @@ struct UploadedImageView: View {
 struct FullScreenImageView: View {
     @Environment(\.dismiss) private var dismiss
     let imageUrl: URL
-    
+
     var body: some View {
         ZStack {
-            Color.black
-                .ignoresSafeArea()
-            
-            // Image view centered in the ZStack
+            Color.black.ignoresSafeArea()
+
+            // Fill the entire screen
             AsyncImage(url: imageUrl) { phase in
                 switch phase {
                 case .success(let image):
                     image
                         .resizable()
-                        .aspectRatio(contentMode: .fit)
+                        .scaledToFill() // fill, not fit
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                        .clipped() // crop overflow to screen bounds
+                        .ignoresSafeArea()
                 case .failure:
-                    VStack {
+                    VStack(spacing: 12) {
                         Image(systemName: "exclamationmark.triangle.fill")
                             .font(.largeTitle)
                             .foregroundColor(.yellow)
                         Text("Failed to load image")
                             .foregroundColor(.white)
                     }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color.black.ignoresSafeArea())
                 default:
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                        .scaleEffect(2)
+                        .scaleEffect(1.6)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .background(Color.black.ignoresSafeArea())
                 }
             }
-            .padding()
+            // ❌ Remove .padding() — that was shrinking it
 
-            // Close button in an overlay for precise positioning
+            // Close button
             VStack {
                 HStack {
                     Spacer()
-                    Button(action: {
+                    Button {
                         dismiss()
-                    }) {
+                    } label: {
                         Image(systemName: "xmark.circle.fill")
-                            .font(.largeTitle)
-                            .foregroundColor(.white.opacity(0.8))
+                            .font(.system(size: 30, weight: .semibold))
+                            .foregroundColor(.white.opacity(0.9))
+                            .shadow(radius: 4)
                     }
-                    .padding()
+                    .padding(.top, 8)
+                    .padding(.trailing, 8)
                 }
                 Spacer()
             }
+            .ignoresSafeArea() // keep it reachable under notches
         }
     }
-} 
+}

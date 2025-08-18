@@ -14,7 +14,6 @@
 		3254B5B72E2DB003003A1EAA /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3254B5B62E2DB003003A1EAA /* GoogleService-Info.plist */; };
 		3267D7182E2AC6D5007A7CEC /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3267D7162E2AC6D5007A7CEC /* ProfileView.swift */; };
 		3267D7192E2AC6D5007A7CEC /* ResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3267D7172E2AC6D5007A7CEC /* ResultsView.swift */; };
-		3267D71A2E2AC6D5007A7CEC /* DiscoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3267D7142E2AC6D5007A7CEC /* DiscoverView.swift */; };
 		3267D71B2E2AC6D5007A7CEC /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3267D7132E2AC6D5007A7CEC /* DesignSystem.swift */; };
 		3267D71C2E2AC6D5007A7CEC /* CustomTabBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3267D7122E2AC6D5007A7CEC /* CustomTabBarView.swift */; };
 		3267D71D2E2AC6D5007A7CEC /* ImportComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3267D7152E2AC6D5007A7CEC /* ImportComponents.swift */; };
@@ -23,6 +22,9 @@
 		32AE66A42E3401C300AED93E /* TermsOfServiceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32AE66A32E3401C300AED93E /* TermsOfServiceView.swift */; };
 		32AE66A52E3401C300AED93E /* DeleteAccountConfirmationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32AE66A12E3401C300AED93E /* DeleteAccountConfirmationView.swift */; };
 		32AE66A62E3401C300AED93E /* PrivacyPolicyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32AE66A22E3401C300AED93E /* PrivacyPolicyView.swift */; };
+		32F246B62E52AE6200FCD96D /* CameraPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32F246B52E52AE6200FCD96D /* CameraPicker.swift */; };
+		32F246B92E52B27300FCD96D /* WardrobeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32F246B82E52B27300FCD96D /* WardrobeService.swift */; };
+		32F246BC2E52B53500FCD96D /* WardrobeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32F246BB2E52B53500FCD96D /* WardrobeView.swift */; };
 		42E49683975DE74088410301 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9955329BE49A0D1B971D81A6 /* ShareViewController.swift */; };
 		465087D4811FC2528C1CEDCE /* IBMPlexMono-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 17A4D7E7FB055C7D76101876 /* IBMPlexMono-Medium.ttf */; };
 		5A1C47976ECF836654196F72 /* SupabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05FC55B4D50EFBA6A7849C38 /* SupabaseService.swift */; };
@@ -80,7 +82,6 @@
 		3254B5B62E2DB003003A1EAA /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		3267D7122E2AC6D5007A7CEC /* CustomTabBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBarView.swift; sourceTree = "<group>"; };
 		3267D7132E2AC6D5007A7CEC /* DesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystem.swift; sourceTree = "<group>"; };
-		3267D7142E2AC6D5007A7CEC /* DiscoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverView.swift; sourceTree = "<group>"; };
 		3267D7152E2AC6D5007A7CEC /* ImportComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportComponents.swift; sourceTree = "<group>"; };
 		3267D7162E2AC6D5007A7CEC /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		3267D7172E2AC6D5007A7CEC /* ResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultsView.swift; sourceTree = "<group>"; };
@@ -91,6 +92,9 @@
 		32AE66A12E3401C300AED93E /* DeleteAccountConfirmationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteAccountConfirmationView.swift; sourceTree = "<group>"; };
 		32AE66A22E3401C300AED93E /* PrivacyPolicyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyPolicyView.swift; sourceTree = "<group>"; };
 		32AE66A32E3401C300AED93E /* TermsOfServiceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsOfServiceView.swift; sourceTree = "<group>"; };
+		32F246B52E52AE6200FCD96D /* CameraPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPicker.swift; sourceTree = "<group>"; };
+		32F246B82E52B27300FCD96D /* WardrobeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WardrobeService.swift; sourceTree = "<group>"; };
+		32F246BB2E52B53500FCD96D /* WardrobeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WardrobeView.swift; sourceTree = "<group>"; };
 		560CAA4BF95ECD8B6E2A0B8B /* UserPreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPreferencesView.swift; sourceTree = "<group>"; };
 		562EC0E0092BE16AA5AD32DD /* Pods-SteezShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SteezShareExtension.debug.xcconfig"; path = "../../Pods/Target Support Files/Pods-SteezShareExtension/Pods-SteezShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		59162FFFD5951FAD86F14652 /* steezlogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = steezlogo.png; sourceTree = "<group>"; };
@@ -163,12 +167,13 @@
 		3C009CF2A0E990ADA785595F /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				32F246BB2E52B53500FCD96D /* WardrobeView.swift */,
+				32F246B52E52AE6200FCD96D /* CameraPicker.swift */,
 				32AE66A12E3401C300AED93E /* DeleteAccountConfirmationView.swift */,
 				32AE66A22E3401C300AED93E /* PrivacyPolicyView.swift */,
 				32AE66A32E3401C300AED93E /* TermsOfServiceView.swift */,
 				3267D7122E2AC6D5007A7CEC /* CustomTabBarView.swift */,
 				3267D7132E2AC6D5007A7CEC /* DesignSystem.swift */,
-				3267D7142E2AC6D5007A7CEC /* DiscoverView.swift */,
 				3267D7152E2AC6D5007A7CEC /* ImportComponents.swift */,
 				3267D7162E2AC6D5007A7CEC /* ProfileView.swift */,
 				3267D7172E2AC6D5007A7CEC /* ResultsView.swift */,
@@ -228,6 +233,7 @@
 		A31495225D435C9D1D5D006A /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				32F246B82E52B27300FCD96D /* WardrobeService.swift */,
 				CFD1AAB411055DDE3228ED69 /* LocationService.swift */,
 				C04B9EEE00FB68806482BE0F /* Models.swift */,
 				D401135D5E0D7A8DA3032C5F /* NetworkService.swift */,
@@ -433,11 +439,12 @@
 				5D5F959C2BA09CE80DE93589 /* LandingPageView.swift in Sources */,
 				3267D7182E2AC6D5007A7CEC /* ProfileView.swift in Sources */,
 				3267D7192E2AC6D5007A7CEC /* ResultsView.swift in Sources */,
-				3267D71A2E2AC6D5007A7CEC /* DiscoverView.swift in Sources */,
 				3267D71B2E2AC6D5007A7CEC /* DesignSystem.swift in Sources */,
 				3267D71C2E2AC6D5007A7CEC /* CustomTabBarView.swift in Sources */,
+				32F246B62E52AE6200FCD96D /* CameraPicker.swift in Sources */,
 				3267D71D2E2AC6D5007A7CEC /* ImportComponents.swift in Sources */,
 				030626C62FCD23D47B862184 /* LocationService.swift in Sources */,
+				32F246BC2E52B53500FCD96D /* WardrobeView.swift in Sources */,
 				32AE66A42E3401C300AED93E /* TermsOfServiceView.swift in Sources */,
 				32AE66A52E3401C300AED93E /* DeleteAccountConfirmationView.swift in Sources */,
 				32AE66A62E3401C300AED93E /* PrivacyPolicyView.swift in Sources */,
@@ -445,6 +452,7 @@
 				F4D306FFF0E76C621175273C /* NetworkService.swift in Sources */,
 				86F66E312CFF3746C1970380 /* SteezApp.swift in Sources */,
 				5A1C47976ECF836654196F72 /* SupabaseService.swift in Sources */,
+				32F246B92E52B27300FCD96D /* WardrobeService.swift in Sources */,
 				BD9EE75AD8471B259A3851D0 /* UserPreferencesView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

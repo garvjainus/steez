@@ -20,7 +20,7 @@ struct ContentView: View {
                 VStack(spacing: 0) {
                     // Main Content
             TabView(selection: $selectedTab) { // Uses Int binding
-                        DiscoverView(selectedTab: $selectedTab) // Pass binding
+                        WardrobeView(selectedTab: $selectedTab) // Pass binding
                     .tag(0)
                         
                         MainImportView()
@@ -101,8 +101,10 @@ struct ContentView: View {
 struct MainImportView: View {
     @EnvironmentObject var appState: AppState
     @State private var showingImagePicker = false
+    @State private var showingCamera = false
     @State private var showingLinkInput = false
     @State private var selectedMedia: [PHPickerResult]?
+    @State private var capturedImage: UIImage?
     @State private var showingAlert = false
     @State private var alertTitle = ""
     @State private var alertMessage = ""
@@ -110,8 +112,6 @@ struct MainImportView: View {
     @State private var isUploading = false
     @State private var retryData: UIImage? = nil
     @State private var retryAttempts = 0
-    @State private var uploadedFilename: String?
-    @State private var uploadedImageUrl: URL?
     @State private var currentUploadUserId: String?
     @State private var animateContent = false
     
@@ -142,7 +142,7 @@ struct MainImportView: View {
                                 isUploading: isUploading,
                                 uploadProgress: uploadProgress
                             )
-                        } else if let retryData = retryData, uploadedFilename == nil {
+                        } else if let retryData = retryData, appState.uploadedFilename == nil {
                             RetryUploadView(
                                 image: retryData,
                                 onRetry: {
@@ -151,11 +151,12 @@ struct MainImportView: View {
                                     }
                                 }
                             )
-                        } else if let imageUrl = uploadedImageUrl {
+                        } else if let imageUrl = appState.importUploadedImageUrl {
                             UploadedImageView(imageUrl: imageUrl)
                         } else {
                             ImportOptionsView(
-                                onCameraAction: { showingImagePicker = true },
+                                onCameraAction: { showingCamera = true },
+                                onPhotoLibraryAction: { showingImagePicker = true },
                                 onLinkAction: { showingLinkInput = true }
                             )
                         }
@@ -163,13 +164,23 @@ struct MainImportView: View {
                         // Status Indicators
                         VStack(spacing: 16) {
                             JobPollingIndicator()
-                        frameSelector
+                            
+                            if !appState.importJobFrames.isEmpty {
+                                FrameSelectorView(frameUrls: appState.importJobFrames) { selectedUrl in
+                                    // Handle frame selection here
+                                }
+                            }
                         }
                         
                         // Results
                         VStack(spacing: 24) {
-                            SegmentedResultsDisplay()
-                            LensResultsDisplay()
+                            if let segmentedResults = appState.importSegmentedResults {
+                                SegmentedResultsDisplay(segmentedResults: segmentedResults)
+                            }
+                            
+                            if !appState.importLensProducts.isEmpty {
+                                LensResultsDisplay(lensProducts: appState.importLensProducts)
+                            }
                         }
                 }
                     .padding(.horizontal, 24)
@@ -188,6 +199,9 @@ struct MainImportView: View {
             .sheet(isPresented: $showingImagePicker) {
                 ImagePicker(selectedMedia: $selectedMedia)
             }
+            .fullScreenCover(isPresented: $showingCamera) {
+                CameraPicker(selectedImage: $capturedImage)
+            }
         .sheet(isPresented: $showingLinkInput) {
             LinkInputView()
                 .environmentObject(appState)
@@ -195,6 +209,11 @@ struct MainImportView: View {
             .onChange(of: selectedMedia) { newValue in
                 if let results = newValue, !results.isEmpty {
                     processSelectedMedia(results)
+                }
+            }
+            .onChange(of: capturedImage) { newImage in
+                if let image = newImage {
+                    startImageProcessing(image)
                 }
             }
             .alert(isPresented: $showingAlert) {
@@ -207,6 +226,18 @@ struct MainImportView: View {
     }
     
     // MARK: - Processing Methods
+    
+    private func startImageProcessing(_ image: UIImage) {
+        self.retryData = image
+        
+        if let userId = appState.currentUser?.userId.uuidString {
+            self.currentUploadUserId = userId
+            self.processImage(image, userId: userId)
+        } else {
+            self.showError("Authentication Error", "Please sign in to upload images.")
+        }
+    }
+    
     private func processSelectedMedia(_ results: [PHPickerResult]) {
         guard let result = results.first else { return }
         
@@ -222,16 +253,9 @@ struct MainImportView: View {
                     return
                 }
                 
-                self.retryData = image
-                
-                if let userId = appState.currentUser?.userId.uuidString {
-                    self.currentUploadUserId = userId
-                    self.processImage(image, userId: userId)
-                } else {
-                    self.showError("Authentication Error", "Please sign in to upload images.")
+                startImageProcessing(image)
             }
         }
-    }
     
         self.selectedMedia = nil
     }
@@ -251,8 +275,6 @@ struct MainImportView: View {
         appState.isProcessing = true
         self.isUploading = true
         self.retryAttempts = 0
-        self.uploadedFilename = nil
-        self.uploadedImageUrl = nil
         appState.clearResults()
 
         NetworkService.shared.processImage(image, userId: userId, userSize: appState.userSize, userCountry: appState.userCountry) { result in
@@ -266,17 +288,26 @@ struct MainImportView: View {
                 switch result {
                 case .success(let uploadResponse):
                     print("✅ Image uploaded via ContentView.")
-                    self.uploadedFilename = uploadResponse.data.filename
-                    self.uploadedImageUrl = uploadResponse.data.imageUrl
+                    // Save to main wardrobe
+                    appState.uploadedFilename = uploadResponse.data.filename
+                    appState.uploadedImageUrl = uploadResponse.data.imageUrl
                     
-                    if let segmentedResults = uploadResponse.data.segmentedResults {
+                    // Also set the temporary import state to show results on the current screen
+                    appState.importUploadedImageUrl = uploadResponse.data.imageUrl
+
+                    if let segmentedResults = uploadResponse.data.segmentedResults, let imageUrl = uploadResponse.data.imageUrl {
+                        // Save the new item to the wardrobe
+                        WardrobeService.shared.saveNewItem(imageUrl: imageUrl, results: segmentedResults)
+                        
                         appState.segmentedResults = segmentedResults
+                        appState.importSegmentedResults = segmentedResults
                         appState.selectedSegmentIndex = 0
                         print("✅ Loaded \(segmentedResults.totalItems) clothing segments from upload response")
                     }
                     
                     if let products = uploadResponse.data.products {
                         appState.lensProducts = products
+                        appState.importLensProducts = products
                         print("✅ Loaded \(products.count) lens products from upload response")
                     }
                     

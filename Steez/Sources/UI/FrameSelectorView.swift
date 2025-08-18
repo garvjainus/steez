@@ -5,6 +5,7 @@ struct FrameSelectorView: View {
     let frameUrls: [URL]
     let onFrameSelected: (URL) -> Void
     @State private var selectedFrameIndex: Int? = nil
+    @EnvironmentObject var appState: AppState
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -56,6 +57,15 @@ struct FrameSelectorView: View {
                     .foregroundColor(SteezColors.textSecondary)
                     .opacity(0.8)
             }
+            
+            // Start New Import Button
+            Button("Start New Import") {
+                withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                    appState.fullReset()
+                }
+            }
+            .buttonStyle(PrimaryButtonStyle())
+            .padding(.top, 16)
         }
     }
 }
