@@ -135,6 +135,8 @@ struct AuthView: View {
                             if authType == .signIn {
                                 forgotPasswordButton
                             }
+                            
+
                         }
                         .padding(.horizontal, 32)
                         .padding(.top, 32)
@@ -158,6 +160,13 @@ struct AuthView: View {
                                     insertion: .scale.combined(with: .opacity),
                                     removal: .opacity
                                 ))
+                        }
+                        
+                        // Legal Consent (only for signup)
+                        if authType == .signUp {
+                            LegalConsentView()
+                                .padding(.horizontal, 32)
+                                .padding(.top, 8)
                         }
                         
                         // Action Button
@@ -319,6 +328,9 @@ struct AuthView: View {
                 case .signUp:
                     try await SupabaseService.shared.signUp(email: email, password: password)
                     await MainActor.run {
+                        // Save consent when signup succeeds
+                        appState.acceptTermsAndPrivacy()
+                        
                         successMessage = "Account created! Check your email to get started. 📧"
                         showingSuccessMessage = true
                         // Success haptic

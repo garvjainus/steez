@@ -2,13 +2,13 @@ import SwiftUI
 
 // MARK: - Tab Bar Types
 enum MainTab: String, CaseIterable {
-    case discover = "Discover"
+    case wardrobe = "Wardrobe"
     case importTab = "Import"
     case profile = "Profile"
     
     var icon: String {
         switch self {
-        case .discover: return "sparkles"
+        case .wardrobe: return "tshirt"
         case .importTab: return "plus.circle.fill"
         case .profile: return "person.circle"
         }
@@ -16,7 +16,7 @@ enum MainTab: String, CaseIterable {
     
     var fillIcon: String {
         switch self {
-        case .discover: return "sparkles"
+        case .wardrobe: return "tshirt.fill"
         case .importTab: return "plus.circle.fill"
         case .profile: return "person.circle.fill"
         }

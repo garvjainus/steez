@@ -11,8 +11,7 @@ target 'Steez' do
   # Image Loading
   pod 'Kingfisher', '~> 7.0'
   
-  # Local Storage
-  pod 'RealmSwift', '~> 10.0'
+  # Local Storage removed - now using cloud-only storage
   
   # UI Components
   pod 'SnapKit', '~> 5.6'
@@ -31,8 +30,7 @@ end
   # Only include extension-safe dependencies
     pod 'Alamofire', '~> 5.6'
     pod 'Kingfisher', '~> 7.0'
-  pod 'RealmSwift', '~> 10.0'
-  pod 'SnapKit', '~> 5.6'
+    pod 'SnapKit', '~> 5.6'
   # Exclude: AppAuth, GTMAppAuth, GoogleSignIn, Firebase (not App Extension safe)
 end
 

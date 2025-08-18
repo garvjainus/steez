@@ -8,7 +8,7 @@ import Kingfisher
 // MARK: - Main ContentView
 struct ContentView: View {
     @EnvironmentObject var appState: AppState
-    @State private var selectedTab: Int = 0 // Changed to Int
+    @State private var selectedTab: Int = 1 // Start with Import tab (index 1)
     @State private var tabBarOffset: CGFloat = 0
     
     var body: some View {
@@ -296,8 +296,10 @@ struct MainImportView: View {
                     appState.importUploadedImageUrl = uploadResponse.data.imageUrl
 
                     if let segmentedResults = uploadResponse.data.segmentedResults, let imageUrl = uploadResponse.data.imageUrl {
-                        // Save the new item to the wardrobe
-                        WardrobeService.shared.saveNewItem(imageUrl: imageUrl, results: segmentedResults)
+                        // Save the new item to the wardrobe (async)
+                        Task {
+                            await appState.saveWardrobeItem(imageUrl: imageUrl, results: segmentedResults)
+                        }
                         
                         appState.segmentedResults = segmentedResults
                         appState.importSegmentedResults = segmentedResults

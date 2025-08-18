@@ -91,11 +91,11 @@ struct ProfileView: View {
                         
                         ProfileSection(title: "Legal") {
                             NavigationLink(destination: PrivacyPolicyView()) {
-                                ProfileActionRow(icon: "lock.shield", title: "Privacy Policy", showChevron: false, action: {})
+                                ProfileActionRow(icon: "lock.shield", title: "Privacy Policy")
                             }
                             
                             NavigationLink(destination: TermsOfServiceView()) {
-                                ProfileActionRow(icon: "doc.text", title: "Terms of Service", showChevron: false, action: {})
+                                ProfileActionRow(icon: "doc.text", title: "Terms of Service")
                             }
                         }
 
@@ -248,39 +248,53 @@ struct ProfileActionRow: View {
     let title: String
     let destructive: Bool
     let showChevron: Bool
-    let action: () -> Void
+    let action: (() -> Void)?
+    let isNavigationRow: Bool
     
-    init(icon: String, title: String, destructive: Bool = false, showChevron: Bool = true, action: @escaping () -> Void) {
+    init(
+        icon: String, 
+        title: String, 
+        destructive: Bool = false, 
+        showChevron: Bool = true, 
+        action: (() -> Void)? = nil
+    ) {
         self.icon = icon
         self.title = title
         self.destructive = destructive
         self.showChevron = showChevron
         self.action = action
+        self.isNavigationRow = action == nil
     }
     
     var body: some View {
-        Button(action: action) {
-            HStack(spacing: 16) {
-                Image(systemName: icon)
-                    .font(.system(size: 18))
-                    .foregroundColor(destructive ? SteezColors.error : SteezColors.primary)
-                    .frame(width: 24)
-                
-                Text(title)
-                    .font(SteezFonts.medium(16))
-                    .foregroundColor(destructive ? SteezColors.error : SteezColors.textPrimary)
-                
-                Spacer()
-                
-                if showChevron {
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(SteezColors.textSecondary)
-                }
+        let content = HStack(spacing: 16) {
+            Image(systemName: icon)
+                .font(.system(size: 18))
+                .foregroundColor(destructive ? SteezColors.error : SteezColors.primary)
+                .frame(width: 24)
+            
+            Text(title)
+                .font(SteezFonts.medium(16))
+                .foregroundColor(destructive ? SteezColors.error : SteezColors.textPrimary)
+            
+            Spacer()
+            
+            if showChevron {
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(SteezColors.textSecondary)
             }
-            .padding(16)
         }
-        .buttonStyle(PlainButtonStyle())
+        .padding(16)
+        
+        if let action = action {
+            Button(action: action) {
+                content
+            }
+            .buttonStyle(PlainButtonStyle())
+        } else {
+            content
+        }
     }
 }
 

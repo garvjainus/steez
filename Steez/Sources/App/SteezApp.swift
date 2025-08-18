@@ -3,7 +3,6 @@ import UserNotifications
 import Foundation
 import Supabase
 import FirebaseCore
-import RealmSwift
 
 class AppDelegate: NSObject, UIApplicationDelegate {
   func application(_ application: UIApplication,
@@ -85,6 +84,13 @@ class AppState: ObservableObject {
     @Published var isAuthenticated: Bool = false
     @Published var hasSetPreferences: Bool = false
     
+    // Legal Consent State
+    @Published var hasAcceptedTerms: Bool = false
+    @Published var hasAcceptedPrivacy: Bool = false
+    @Published var termsAcceptedDate: Date?
+    @Published var privacyAcceptedDate: Date?
+    @Published var consentVersion: String = "1.0"
+    
     // Combined state for main view logic
     @Published var hasCompletedOnboarding: Bool = false
 
@@ -116,9 +122,10 @@ class AppState: ObservableObject {
     @Published var importLensProducts: [LensProduct] = []
     @Published var importJobFrames: [URL] = []
     
-    // Wardrobe state
+    // Wardrobe state (now managed by WardrobeService)
     @Published var wardrobeItems: [WardrobeItem] = []
-    private var wardrobeToken: NotificationToken?
+    @Published var isLoadingWardrobe: Bool = false
+    @Published var wardrobeError: String?
     
     private let appGroupId = "group.com.steez.app"
     private let latestJobIdKey = "latest_job_id"
@@ -141,6 +148,9 @@ class AppState: ObservableObject {
             self.locationPermissionGranted = UserDefaults.standard.bool(forKey: "locationPermissionGranted")
         }
         
+        // Load consent state
+        loadConsentState()
+        
         // Check server first
         checkServerAvailability()
         
@@ -152,24 +162,66 @@ class AppState: ObservableObject {
             object: nil
         )
         
-        // Fetch initial wardrobe items
-        fetchWardrobeItems()
+        // Don't fetch wardrobe items initially - wait for authentication
     }
     
     deinit {
         authStateTask?.cancel()
         pollingTimer?.invalidate()
         NotificationCenter.default.removeObserver(self)
-        wardrobeToken?.invalidate()
     }
 
     // MARK: - Wardrobe
     
-    private func fetchWardrobeItems() {
-        let results = WardrobeService.shared.fetchAllItems()
-        self.wardrobeToken = results.observe { [weak self] (changes: RealmCollectionChange) in
-            guard let self = self else { return }
-            self.wardrobeItems = Array(results)
+    /// Fetch wardrobe items from cloud storage (requires authentication)
+    func fetchWardrobeItems() async {
+        guard isAuthenticated else {
+            await MainActor.run {
+                wardrobeItems = []
+                wardrobeError = nil
+            }
+            return
+        }
+        
+        await MainActor.run {
+            isLoadingWardrobe = true
+            wardrobeError = nil
+        }
+        
+        do {
+            let items = try await WardrobeService.shared.fetchAllItems()
+            await MainActor.run {
+                self.wardrobeItems = items
+                self.isLoadingWardrobe = false
+            }
+        } catch {
+            await MainActor.run {
+                self.wardrobeError = error.localizedDescription
+                self.isLoadingWardrobe = false
+            }
+        }
+    }
+    
+    /// Clear wardrobe data (called on sign out)
+    func clearWardrobeData() async {
+        await MainActor.run {
+            wardrobeItems = []
+            wardrobeError = nil
+            isLoadingWardrobe = false
+        }
+        await WardrobeService.shared.clearAllData()
+    }
+    
+    /// Save a new wardrobe item
+    func saveWardrobeItem(imageUrl: URL, results: SegmentedResults) async {
+        do {
+            try await WardrobeService.shared.saveNewItem(imageUrl: imageUrl, results: results)
+            // Refresh the wardrobe after saving
+            await fetchWardrobeItems()
+        } catch {
+            await MainActor.run {
+                self.wardrobeError = error.localizedDescription
+            }
         }
     }
 
@@ -271,10 +323,20 @@ class AppState: ObservableObject {
                         if let supa = session?.user {
                             self.currentUser = LocalUser(userId: supa.id, email: supa.email ?? "", plan: .free)
                             self.isAuthenticated = true
+                            
+                            // Fetch wardrobe items when user signs in
+                            Task {
+                                await self.fetchWardrobeItems()
+                            }
                         }
                     case .signedOut:
                         self.currentUser = nil
                         self.isAuthenticated = false
+                        
+                        // Clear wardrobe data when user signs out
+                        Task {
+                            await self.clearWardrobeData()
+                        }
                     case .passwordRecovery, .tokenRefreshed, .userUpdated:
                         break
                     default:
@@ -299,6 +361,53 @@ class AppState: ObservableObject {
         UserDefaults.standard.set(userCountry, forKey: "userCountry")
         UserDefaults.standard.set(locationPermissionGranted, forKey: "locationPermissionGranted")
         updateOnboardingCompletion()
+    }
+    
+    // MARK: - Legal Consent Management
+    
+    func acceptTermsAndPrivacy() {
+        let now = Date()
+        hasAcceptedTerms = true
+        hasAcceptedPrivacy = true
+        termsAcceptedDate = now
+        privacyAcceptedDate = now
+        
+        // Save to UserDefaults
+        UserDefaults.standard.set(true, forKey: "hasAcceptedTerms")
+        UserDefaults.standard.set(true, forKey: "hasAcceptedPrivacy")
+        UserDefaults.standard.set(now, forKey: "termsAcceptedDate")
+        UserDefaults.standard.set(now, forKey: "privacyAcceptedDate")
+        UserDefaults.standard.set(consentVersion, forKey: "consentVersion")
+    }
+    
+    private func loadConsentState() {
+        hasAcceptedTerms = UserDefaults.standard.bool(forKey: "hasAcceptedTerms")
+        hasAcceptedPrivacy = UserDefaults.standard.bool(forKey: "hasAcceptedPrivacy")
+        termsAcceptedDate = UserDefaults.standard.object(forKey: "termsAcceptedDate") as? Date
+        privacyAcceptedDate = UserDefaults.standard.object(forKey: "privacyAcceptedDate") as? Date
+        
+        // Check if consent version has changed
+        let savedVersion = UserDefaults.standard.string(forKey: "consentVersion") ?? "0.0"
+        if savedVersion != consentVersion {
+            // Reset consent if version changed
+            resetConsentState()
+        }
+    }
+    
+    private func resetConsentState() {
+        hasAcceptedTerms = false
+        hasAcceptedPrivacy = false
+        termsAcceptedDate = nil
+        privacyAcceptedDate = nil
+        
+        UserDefaults.standard.removeObject(forKey: "hasAcceptedTerms")
+        UserDefaults.standard.removeObject(forKey: "hasAcceptedPrivacy")
+        UserDefaults.standard.removeObject(forKey: "termsAcceptedDate")
+        UserDefaults.standard.removeObject(forKey: "privacyAcceptedDate")
+    }
+    
+    var hasValidConsent: Bool {
+        return hasAcceptedTerms && hasAcceptedPrivacy
     }
     
     func resetOnboarding() {
