@@ -2,139 +2,7 @@ import SwiftUI
 
 // MARK: - Results Display Components
 
-// MARK: - Segmented Results Display
-struct SegmentedResultsDisplay: View {
-    @EnvironmentObject var appState: AppState
-    let segmentedResults: SegmentedResults
-    
-    var body: some View {
-        if !segmentedResults.segments.isEmpty {
-            VStack(alignment: .leading, spacing: 20) {
-                Text("Detected Items")
-                    .font(SteezFonts.medium(20))
-                    .foregroundColor(SteezColors.textPrimary)
-                
-                if segmentedResults.segments.count > 1 {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 12) {
-                            ForEach(Array(segmentedResults.segments.enumerated()), id: \.offset) { index, segment in
-                                SegmentButton(
-                                    segment: segment,
-                                    isSelected: appState.selectedSegmentIndex == index,
-                                    action: {
-                                        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                                            appState.selectedSegmentIndex = index
-                                        }
-                                    }
-                                )
-                            }
-                        }
-                        .padding(.horizontal, 24)
-                    }
-                }
-                
-                if appState.selectedSegmentIndex < segmentedResults.segments.count,
-                   appState.selectedSegmentIndex >= 0 {
-                    let selectedSegment = segmentedResults.segments[appState.selectedSegmentIndex]
-                    SegmentDetailView(segment: selectedSegment)
-                }
-                
-                // Start New Import Button
-                Button("Start New Import") {
-                    withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
-                        appState.fullReset()
-                    }
-                }
-                .buttonStyle(PrimaryButtonStyle())
-                .padding(.top, 16)
-            }
-            .padding(20)
-            .background(
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(SteezColors.cardBackground)
-                    .shadow(color: .black.opacity(0.05), radius: 10, x: 0, y: 2)
-            )
-        }
-    }
-}
-
-struct SegmentButton: View {
-    let segment: ClothingSegment
-    let isSelected: Bool
-    let action: () -> Void
-    
-    var body: some View {
-        Button(action: action) {
-            VStack(spacing: 8) {
-                Text(segment.itemType.capitalized)
-                    .font(SteezFonts.medium(14))
-                    .foregroundColor(isSelected ? .white : SteezColors.textPrimary)
-                
-                Text(String(format: "%.0f%%", segment.confidence * 100))
-                    .font(SteezFonts.regular(12))
-                    .foregroundColor(isSelected ? .white : SteezColors.textSecondary)
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(isSelected ? 
-                        LinearGradient(
-                            colors: [SteezColors.primary, SteezColors.primaryLight],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ) :
-                        LinearGradient(
-                            colors: [SteezColors.cardBackground, SteezColors.cardBackground],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(isSelected ? Color.clear : SteezColors.textSecondary.opacity(0.2), lineWidth: 1)
-                    )
-            )
-            .scaleEffect(isSelected ? 1.02 : 1.0)
-        }
-        .buttonStyle(PlainButtonStyle())
-        .animation(.spring(response: 0.3, dampingFraction: 0.8), value: isSelected)
-    }
-}
-
-struct SegmentDetailView: View {
-    let segment: ClothingSegment
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(segment.phrase)
-                        .font(SteezFonts.medium(16))
-                        .foregroundColor(SteezColors.textPrimary)
-                    
-                    Text("\(String(format: "%.0f", segment.confidence * 100))% confident")
-                        .font(SteezFonts.regular(12))
-                        .foregroundColor(SteezColors.textSecondary)
-                }
-                
-                Spacer()
-                
-                Text("\(segment.ebayResults.count) matches")
-                    .font(SteezFonts.regular(12))
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
-                    .background(
-                        RoundedRectangle(cornerRadius: 8)
-                            .fill(SteezColors.primary.opacity(0.1))
-                    )
-                    .foregroundColor(SteezColors.primary)
-            }
-            
-            EbayMatchesView(matches: segment.ebayResults)
-        }
-    }
-}
+// Segmented results UI removed (segmentation disabled)
 
 // MARK: - Lens Results Display
 struct LensResultsDisplay: View {
@@ -247,9 +115,7 @@ struct LensProductRow: View {
 
             // View Original Image button
             if let _ = product.imageUrl {
-                Button(action: {
-                    showingOriginalImage = true
-                }) {
+                Button(action: { showingOriginalImage = true }) {
                     HStack(spacing: 8) {
                         Image(systemName: "photo")
                             .font(.system(size: 12))
@@ -306,9 +172,7 @@ struct OriginalImageView: View {
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
-                        Button("Done") {
-                            dismiss()
-                        }
+                        Button("Done") { dismiss() }
                     }
                 }
             }
@@ -316,48 +180,4 @@ struct OriginalImageView: View {
     }
 }
 
-// MARK: - eBay Matches View
-struct EbayMatchesView: View {
-    let matches: [EbayMatch]
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            if matches.isEmpty {
-                Text("No matches found")
-                    .font(SteezFonts.regular(14))
-                    .foregroundColor(SteezColors.textSecondary)
-                    .italic()
-            } else {
-                ForEach(matches) { match in
-                    Link(destination: match.link) {
-                        HStack(spacing: 12) {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(match.phrase)
-                                    .font(SteezFonts.medium(14))
-                                    .foregroundColor(SteezColors.textPrimary)
-                                    .lineLimit(2)
-                                
-                                Text(match.link.absoluteString)
-                                    .font(SteezFonts.regular(12))
-                                    .foregroundColor(SteezColors.primary)
-                                    .lineLimit(1)
-                                    .truncationMode(.middle)
-                            }
-                            
-                            Spacer()
-                            
-                            Image(systemName: "arrow.up.right.square")
-                                .foregroundColor(SteezColors.primary)
-                                .font(.system(size: 16))
-                        }
-                        .padding(12)
-                        .background(
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(SteezColors.textSecondary.opacity(0.05))
-                        )
-                    }
-                }
-            }
-        }
-    }
-} 
+// Legacy eBay view removed

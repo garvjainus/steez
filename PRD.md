@@ -32,7 +32,7 @@ Send any fashion image or video to **Steez**; it instantly spots every garment, 
 4. **Price Refresh Job (v1.3)** – nightly Cloud Run cron re-queries sellers, pushes cheaper price alerts.
 
 ## 5. Feature List (Roadmap)
-• Google Gemini Vision garment segmentation & attributes.  
+• YOLO segmentation + Google Lens product links.  
 • Dynamic eBay seller search with OAuth 2 token cache.  
 • Size & country preferences onboarding (Core Location).  
 • Multiple seller cards UI (horizontal scroll).  
@@ -46,7 +46,7 @@ Send any fashion image or video to **Steez**; it instantly spots every garment, 
 `iOS App` ⇄ `Supabase PostgREST / Realtime` & `Storage`  
 ⇅ auth via **Supabase Auth (JWT, Apple Sign-in)**  
 ⬆ image/video multipart to `Supabase Storage (uploads bucket)`  
-➡ heavy compute to `Gemini Vision` & `eBay Match` microservices (NestJS) which persist results back to Supabase.
+➡ heavy compute to `YOLO Segmentation` & `Google Lens` microservices (NestJS) which persist results back to Supabase.
 
 ### 6.2 iOS Front-end
 • Swift 5.10, SwiftUI, MVVM-C.  
@@ -57,8 +57,8 @@ Send any fashion image or video to **Steez**; it instantly spots every garment, 
 ### 6.3 Backend (Node 18 / NestJS)
 Modules:
 1. **UploadModule** – POST `/upload` multipart image/video; streams file directly to **Supabase Storage** `uploads/` bucket and returns the public URL.
-2. **GeminiVisionService** – lazy-loads env, calls Google AI Gemini Vision 1.5 Flash function calling; persists <ClothingSegment[]> rows into `clothing_segments` table.
-3. **EbayService** – runtime endpoint (sandbox/prod); 2-hour in-mem OAuth token cache; `searchEbay(phrase, size, country) → MatchResult[]` (≤5) and bulk insert into `ebay_matches` table.
+2. **SegmentationService** – orchestrates YOLO segmentation + Google Lens product link extraction; returns `NewSegmentedResults` with per-item `productLinks`.
+3. (Removed) EbayService / GeminiVisionService – replaced by Google Lens flow.
 4. **ImportJobModule** (phase 2) – orchestrates video download, frame sampling, Vision calls; writes status rows in `import_jobs`.
 5. **CronModule** – nightly price refresh (implemented as **Supabase Edge Function (Deno)** scheduled via the Supabase dashboard).
 

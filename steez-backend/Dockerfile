@@ -1,47 +1,52 @@
-# ---- Base Stage ----
-# Use an official Node.js image as the base for building the application.
-# Using a specific version ensures consistency.
-FROM node:20-alpine AS builder
+# NestJS Backend Dockerfile with Segmentation Pipeline Support
 
-# Set the working directory inside the container.
-WORKDIR /usr/src/app
+FROM node:18-alpine AS builder
 
-# Copy package.json and package-lock.json to leverage Docker's layer caching.
-# This step only re-runs if these files change.
+# Set working directory
+WORKDIR /app
+
+# Copy package files
 COPY package*.json ./
-COPY .npmrc ./
 
-# Install all production dependencies.
-RUN npm install
+# Install dependencies
+RUN npm ci --only=production && npm cache clean --force
 
-# Copy the rest of your application source code into the container.
+# Copy source code
 COPY . .
 
-# Build the NestJS application. This will create a 'dist' folder with the compiled JavaScript.
+# Build the application
 RUN npm run build
 
-# ---- Production Stage ----
-# Start a new, smaller image for the final production environment.
-# 'alpine' images are very lightweight, which improves security and performance.
-FROM node:20-alpine
+# Production stage
+FROM node:18-alpine AS production
 
-# Set the working directory again for the production stage.
-WORKDIR /usr/src/app
+# Install curl for health checks
+RUN apk add --no-cache curl
 
-COPY --from=builder /usr/src/app/package*.json ./
-COPY --from=builder /usr/src/app/.npmrc ./
+# Create app directory
+WORKDIR /app
 
-# Install production dependencies.
-RUN npm install --production
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nestjs -u 1001
 
-# Copy only the necessary files from the 'builder' stage.
-# This includes the compiled code, node_modules, and package.json.
-# We don't need the source TypeScript files or devDependencies in production.
-COPY --from=builder /usr/src/app/dist ./dist
+# Copy built application from builder stage
+COPY --from=builder --chown=nestjs:nodejs /app/dist ./dist
+COPY --from=builder --chown=nestjs:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=nestjs:nodejs /app/package*.json ./
 
-# Expose the port that the NestJS application will run on.
-# Your main.ts file likely specifies port 3000.
+# Create uploads directory
+RUN mkdir -p uploads && chown nestjs:nodejs uploads
+
+# Switch to non-root user
+USER nestjs
+
+# Expose port
 EXPOSE 3000
 
-# The command to start the application when the container launches.
-CMD ["node", "dist/main"] 
+# Health check
+HEALTHCHECK --interval=30s --timeout=30s --start-period=30s --retries=3 \
+  CMD curl -f http://localhost:3000/health || exit 1
+
+# Start the application
+CMD ["node", "dist/main.js"]

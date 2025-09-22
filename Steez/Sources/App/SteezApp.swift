@@ -106,8 +106,8 @@ class AppState: ObservableObject {
     // For Google Lens Analysis (backward compatibility)
     @Published var lensProducts: [LensProduct] = []
     
-    // For new segmented results
-    @Published var segmentedResults: SegmentedResults?
+    // For new segmented results (disabled)
+    // @Published var segmentedResults: SegmentedResults?
     @Published var selectedSegmentIndex: Int = 0
     
     // For job polling from Share Extension
@@ -545,7 +545,7 @@ class AppState: ObservableObject {
     private func updateOnboardingCompletion() {
         hasCompletedOnboarding = hasSeenOnboarding && isAuthenticated && hasSetPreferences
         lensProducts = []
-        segmentedResults = nil
+        // segmentedResults = nil
         selectedSegmentIndex = 0
         resetPollingState()
     }
@@ -566,7 +566,7 @@ class AppState: ObservableObject {
 
     // MARK: - Helper used by UI to reset analysis results
     func clearResults() {
-        segmentedResults = nil
+        // segmentedResults = nil
         lensProducts = []
         selectedSegmentIndex = 0
         uploadedFilename = nil
@@ -574,10 +574,10 @@ class AppState: ObservableObject {
         
         // Also clear the import-specific state
         importUploadedImageUrl = nil
-        importSegmentedResults = nil
+        // importSegmentedResults = nil
         importLensProducts = []
         importJobFrames = []
-
+        
         resetPollingState()
     }
 

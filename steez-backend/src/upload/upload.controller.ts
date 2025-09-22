@@ -1,6 +1,7 @@
 import {
   Controller,
   Post,
+  Get,
   UseInterceptors,
   UploadedFile,
   Body,
@@ -14,7 +15,7 @@ import { Express } from 'express';
 import * as fs from 'fs';
 import { UploadService } from './upload.service';
 import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
-import { MatchResult } from '../services/geminiVision';
+// Gemini pipeline fully removed; using segmentation + Google Lens exclusively
 import { ApiKeyAuthGuard } from '../auth/guards/api-key-auth.guard';
 
 @Controller('upload')
@@ -132,6 +133,34 @@ export class UploadController {
         error.message || 'Failed to process base64 image',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
+    }
+  }
+
+  // Segmentation upload endpoint disabled for now
+
+  // Legacy endpoint removed to prevent accidental use of Gemini path
+
+  /**
+   * Health check endpoint for segmentation service
+   */
+  @Get('health/segmentation')
+  @UseGuards(ApiKeyAuthGuard)
+  async checkSegmentationHealth() {
+    try {
+      const isHealthy = await this.uploadService.checkSegmentationServiceHealth();
+      return {
+        success: true,
+        segmentationService: isHealthy ? 'healthy' : 'unhealthy',
+        message: isHealthy 
+          ? 'Segmentation service is responsive' 
+          : 'Segmentation service is not responding',
+      };
+    } catch (error) {
+      return {
+        success: false,
+        segmentationService: 'error',
+        message: `Error checking segmentation service: ${error.message}`,
+      };
     }
   }
 }

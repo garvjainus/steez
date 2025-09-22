@@ -23,18 +23,17 @@ struct WardrobeClothingPiece: Identifiable {
     let phrase: String
     let confidence: Double
     let category: String
-    let matches: [WardrobeEbayMatch]
     
-    init(id: String = UUID().uuidString, itemType: String, phrase: String, confidence: Double, category: String, matches: [WardrobeEbayMatch] = []) {
+    init(id: String = UUID().uuidString, itemType: String, phrase: String, confidence: Double, category: String) {
         self.id = id
         self.itemType = itemType
         self.phrase = phrase
         self.confidence = confidence
         self.category = category
-        self.matches = matches
     }
 }
 
+// Legacy eBay model retained for backward compatibility if older data exists
 struct WardrobeEbayMatch: Identifiable {
     let id: String
     let phrase: String

@@ -15,6 +15,8 @@ const jobs_module_1 = require("./jobs/jobs.module");
 const health_controller_1 = require("./health.controller");
 const video_processing_controller_1 = require("./services/video-processing.controller");
 const video_processing_service_1 = require("./services/video-processing.service");
+const google_lens_module_1 = require("./google-lens/google-lens.module");
+const segmentation_module_1 = require("./segmentation/segmentation.module");
 const multer_1 = require("multer");
 const uuid_1 = require("uuid");
 const path = require("path");
@@ -39,6 +41,8 @@ exports.AppModule = AppModule = __decorate([
             }),
             upload_module_1.UploadModule,
             jobs_module_1.JobsModule,
+            google_lens_module_1.GoogleLensModule,
+            segmentation_module_1.SegmentationModule,
         ],
         controllers: [health_controller_1.HealthController, video_processing_controller_1.VideoProcessingController],
         providers: [video_processing_service_1.VideoProcessingService],

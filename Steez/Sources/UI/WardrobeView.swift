@@ -199,9 +199,7 @@ struct WardrobeItemCard: View {
                     .foregroundColor(SteezColors.textPrimary)
                     .lineLimit(2)
                 
-                Text("\(piece.matches.count) match\(piece.matches.count == 1 ? "" : "es")")
-                    .font(SteezFonts.regular(11))
-                    .foregroundColor(SteezColors.textSecondary)
+                // Matches removed in new pipeline; showing category only
                 
                 // Confidence indicator
                 HStack(spacing: 4) {
@@ -278,35 +276,7 @@ struct WardrobeDetailView: View {
                     }
                 }
                 
-                // Shopping Matches
-                if !piece.matches.isEmpty {
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text("Shopping Matches")
-                            .font(SteezFonts.medium(20))
-                            .foregroundColor(SteezColors.textPrimary)
-                        
-                        ForEach(piece.matches) { match in
-                            ShoppingMatchCard(match: match)
-                        }
-                    }
-                } else {
-                    VStack(spacing: 12) {
-                        Image(systemName: "magnifyingglass")
-                            .font(.system(size: 32))
-                            .foregroundColor(SteezColors.textSecondary.opacity(0.6))
-                        
-                        Text("No shopping matches found")
-                            .font(SteezFonts.medium(16))
-                            .foregroundColor(SteezColors.textSecondary)
-                        
-                        Text("Try searching manually or check back later")
-                            .font(SteezFonts.regular(14))
-                            .foregroundColor(SteezColors.textSecondary.opacity(0.8))
-                            .multilineTextAlignment(.center)
-                    }
-                    .padding(.vertical, 32)
-                    .frame(maxWidth: .infinity)
-                }
+                // Product links are now shown inline in import flow; wardrobe detail focuses on metadata
             }
             .padding()
         }
@@ -316,48 +286,7 @@ struct WardrobeDetailView: View {
     }
 }
 
-struct ShoppingMatchCard: View {
-    let match: WardrobeEbayMatch
-    
-    var body: some View {
-        Button(action: {
-            if let url = URL(string: match.link) {
-                UIApplication.shared.open(url)
-            }
-        }) {
-            HStack(spacing: 12) {
-                Image(systemName: "bag.fill")
-                    .font(.system(size: 20))
-                    .foregroundColor(SteezColors.primary)
-                    .frame(width: 32, height: 32)
-                    .background(SteezColors.primary.opacity(0.1))
-                    .cornerRadius(8)
-                
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(match.phrase)
-                        .font(SteezFonts.medium(14))
-                        .foregroundColor(SteezColors.textPrimary)
-                        .multilineTextAlignment(.leading)
-                    
-                    Text("Tap to view on eBay")
-                        .font(SteezFonts.regular(12))
-                        .foregroundColor(SteezColors.textSecondary)
-                }
-                
-                Spacer()
-                
-                Image(systemName: "arrow.up.right")
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(SteezColors.textSecondary)
-            }
-            .padding()
-            .background(SteezColors.cardBackground)
-            .cornerRadius(12)
-            .shadow(color: .black.opacity(0.05), radius: 3, x: 0, y: 2)
-        }
-        .buttonStyle(PlainButtonStyle())
-    }
-}
+// Legacy eBay UI removed
 
 struct EmptyWardrobeView: View {
     var body: some View {

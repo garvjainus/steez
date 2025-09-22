@@ -53,12 +53,15 @@ class WardrobeService: ObservableObject {
                 throw WardrobeError.saveFailed("Failed to create wardrobe item")
             }
             
-            // Insert clothing pieces
+            // Insert clothing pieces (mapped from new segmentation model)
             for segment in results.segments {
+                let derivedItemType = (segment.className?.lowercased()) ?? segment.category.lowercased()
+                let derivedPhrase = segment.productLinks.first?.title ?? (segment.className ?? segment.category.capitalized)
+
                 let pieceRequest = WardrobeClothingPieceRequest(
                     wardrobeItemId: wardrobeItem.id,
-                    itemType: segment.itemType,
-                    phrase: segment.phrase,
+                    itemType: derivedItemType,
+                    phrase: derivedPhrase,
                     confidence: segment.confidence,
                     category: segment.category
                 )
@@ -70,23 +73,7 @@ class WardrobeService: ObservableObject {
                     .execute()
                     .value
                 
-                // Insert eBay matches for this clothing piece
-                if let clothingPiece = clothingPieceResponses.first, !segment.ebayResults.isEmpty {
-                    let matchRequests = segment.ebayResults.map { match in
-                        WardrobeEbayMatchRequest(
-                            clothingPieceId: clothingPiece.id,
-                            phrase: match.phrase,
-                            link: match.link.absoluteString
-                        )
-                    }
-                    
-                    let _: [WardrobeEbayMatchResponse] = try await supabase
-                        .from("wardrobe_ebay_matches")
-                        .insert(matchRequests)
-                        .select()
-                        .execute()
-                        .value
-                }
+                // Legacy: previously inserted eBay matches per clothing piece. Now product links are shown inline from Google Lens.
             }
             
             await refreshItems()
@@ -133,29 +120,12 @@ class WardrobeService: ObservableObject {
                 var clothingPieces: [WardrobeClothingPiece] = []
                 
                 for pieceResponse in clothingPieceResponses {
-                    // Fetch eBay matches for this piece
-                    let matchResponses: [WardrobeEbayMatchResponse] = try await supabase
-                        .from("wardrobe_ebay_matches")
-                        .select()
-                        .eq("clothing_piece_id", value: pieceResponse.id)
-                        .execute()
-                        .value
-                    
-                    let matches = matchResponses.map { match in
-                        WardrobeEbayMatch(
-                            id: match.id,
-                            phrase: match.phrase,
-                            link: match.link
-                        )
-                    }
-                    
                     let clothingPiece = WardrobeClothingPiece(
                         id: pieceResponse.id,
                         itemType: pieceResponse.itemType,
                         phrase: pieceResponse.phrase,
                         confidence: pieceResponse.confidence,
-                        category: pieceResponse.category,
-                        matches: matches
+                        category: pieceResponse.category
                     )
                     
                     clothingPieces.append(clothingPiece)
@@ -340,17 +310,7 @@ private struct WardrobeClothingPieceRequest: Codable {
     }
 }
 
-private struct WardrobeEbayMatchRequest: Codable {
-    let clothingPieceId: String
-    let phrase: String
-    let link: String
-    
-    enum CodingKeys: String, CodingKey {
-        case clothingPieceId = "clothing_piece_id"
-        case phrase
-        case link
-    }
-}
+// Legacy eBay models removed
 
 // Response Models (for receiving data from Supabase)
 private struct WardrobeItemResponse: Codable {
@@ -389,21 +349,7 @@ private struct WardrobeClothingPieceResponse: Codable {
     }
 }
 
-private struct WardrobeEbayMatchResponse: Codable {
-    let id: String
-    let clothingPieceId: String
-    let phrase: String
-    let link: String
-    let createdAt: String
-    
-    enum CodingKeys: String, CodingKey {
-        case id
-        case clothingPieceId = "clothing_piece_id"
-        case phrase
-        case link
-        case createdAt = "created_at"
-    }
-}
+// Legacy eBay models removed
 
 // MARK: - Extension for UI Compatibility
 

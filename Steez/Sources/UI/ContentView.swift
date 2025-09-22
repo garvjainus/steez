@@ -185,10 +185,7 @@ struct MainImportView: View {
                         
                         // Results
                         VStack(spacing: 24) {
-                            if let segmentedResults = appState.importSegmentedResults {
-                                SegmentedResultsDisplay(segmentedResults: segmentedResults)
-                            }
-                            
+                            // Segmented results disabled
                             if !appState.importLensProducts.isEmpty {
                                 LensResultsDisplay(lensProducts: appState.importLensProducts)
                             }
@@ -318,22 +315,24 @@ struct MainImportView: View {
                     // Also set the temporary import state to show results on the current screen
                     appState.importUploadedImageUrl = uploadResponse.data.imageUrl
 
-                    if let segmentedResults = uploadResponse.data.segmentedResults, let imageUrl = uploadResponse.data.imageUrl {
-                        // Save the new item to the wardrobe (async)
-                        Task {
-                            await appState.saveWardrobeItem(imageUrl: imageUrl, results: segmentedResults)
-                        }
-                        
-                        appState.segmentedResults = segmentedResults
-                        appState.importSegmentedResults = segmentedResults
-                        appState.selectedSegmentIndex = 0
-                        print("✅ Loaded \(segmentedResults.totalItems) clothing segments from upload response")
-                    }
-                    
-                    if let products = uploadResponse.data.products {
+                    if let products = uploadResponse.data.products, !products.isEmpty {
                         appState.lensProducts = products
                         appState.importLensProducts = products
                         print("✅ Loaded \(products.count) lens products from upload response")
+                    } else if let filename = uploadResponse.data.filename {
+                        // Fallback: call Lens directly by filename if upload response had no products
+                        NetworkService.shared.analyzeImageWithLens(filename: filename) { result in
+                            DispatchQueue.main.async {
+                                switch result {
+                                case .success(let products):
+                                    appState.lensProducts = products
+                                    appState.importLensProducts = products
+                                    print("✅ Loaded \(products.count) lens products via fallback analyze endpoint")
+                                case .failure(let error):
+                                    print("❌ Fallback Lens analyze failed: \(error)")
+                                }
+                            }
+                        }
                     }
                     
                     self.showSuccess("Upload Complete", "Image uploaded and analyzed successfully!")

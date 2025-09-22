@@ -40,9 +40,9 @@ export class GoogleLensService {
    * Analyse an uploaded image with a single SerpApi call
    */
   async analyzeUploadedImage(filename: string): Promise<ProductLinkDto[]> {
-    /* 🔒 TEMP-DISABLED (Google Lens)
     if (!this.serpApiKey) {
-      throw new InternalServerErrorException('Google Lens API key is not configured.');
+      this.logger.warn('Google Lens API key is not configured - returning empty results');
+      return [];
     }
 
     const imagePath = path.join(this.uploadsDir, filename);
@@ -89,11 +89,6 @@ export class GoogleLensService {
     } catch (err) {
       this.handleApiError(err);
     }
-    */
-
-    // Temporary return empty array while Google Lens is disabled
-    this.logger.log('Google Lens is temporarily disabled');
-    return [];
   }
 
   /** GET with exponential back-off retry **only** on 5xx (SerpApi won't bill 429-retries now) */

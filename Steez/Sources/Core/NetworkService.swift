@@ -36,26 +36,27 @@ struct UploadResponseData: Decodable {
     let size: Int?
     let imageUrl: URL?
     let products: [LensProduct]?
-    let segmentedResults: SegmentedResults?
 }
 
 // New data structures for segmented clothing analysis
 struct SegmentedResults: Decodable {
     let segments: [ClothingSegment]
     let totalItems: Int
+    let totalProcessingTimeMs: Int?
+    let segmentationTimeMs: Int?
+    let googleLensTimeMs: Int?
 }
 
 struct ClothingSegment: Decodable, Identifiable {
-    let id = UUID()
-    let itemType: String
-    let phrase: String
-    let confidence: Double
+    let id: String
     let category: String
-    let ebayResults: [EbayMatch]
-    
-    enum CodingKeys: String, CodingKey {
-        case itemType, phrase, confidence, category, ebayResults
-    }
+    let confidence: Double
+    let bbox: [Double]?
+    let cropImageBase64: String?
+    let productLinks: [LensProduct]
+    let maskArea: Int?
+    let className: String?
+    let processingTimeMs: Int?
 }
 
 // For checking the status of a job from the /jobs/:id endpoint
@@ -74,15 +75,9 @@ enum JobStatus: String, Decodable {
     case FAILED
 }
 
-struct EbayMatch: Decodable, Identifiable {
-    let id = UUID()
-    let phrase: String
-    let link: URL
-    
-    enum CodingKeys: String, CodingKey {
-        case phrase, link
-    }
-}
+// Removed legacy eBay match model; Google Lens productLinks are used instead
+
+// No legacy support: backend must return products
 
 // For results from your backend's /google-lens/analyze endpoint
 struct LensProduct: Decodable, Identifiable { // ENSURE THIS IS THE ONLY DEFINITION
@@ -508,52 +503,22 @@ class NetworkService: NSObject {
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         if let token = apiToken {
             request.setValue(token, forHTTPHeaderField: "x-api-key")
-            // Hint servers to validate headers before body is sent
-            request.setValue("100-continue", forHTTPHeaderField: "Expect")
         }
         
-        // Use uploadTask so we get progress callbacks via delegate
         let task = uploadSession.uploadTask(with: request, from: body) { data, response, error in
             DispatchQueue.main.async {
-                if let error = error {
-                    completion(.failure(.requestFailed(error)))
-                    return
+                if let error = error { completion(.failure(.requestFailed(error))); return }
+                guard let httpResponse = response as? HTTPURLResponse, 200...299 ~= httpResponse.statusCode else {
+                    completion(.failure(.invalidData)); return
                 }
-                
-                guard let httpResponse = response as? HTTPURLResponse else {
-                    completion(.failure(.invalidData))
-                    return
-                }
-                
-                // Validate HTTP status code
-                guard 200...299 ~= httpResponse.statusCode else {
-                    print("❌ HTTP Error: \(httpResponse.statusCode)")
-                    completion(.failure(.requestFailed(NSError(domain: "HTTPError", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Server returned status code \(httpResponse.statusCode)"]))))
-                    return
-                }
-                
-                guard let data = data else {
-                    completion(.failure(.invalidData))
-                    return
-                }
-                
+                guard let data = data else { completion(.failure(.invalidData)); return }
                 do {
                     let uploadResponse = try self.createDecoder().decode(ImageUploadResponse.self, from: data)
-                    if uploadResponse.success {
-                        print("✅ Image uploaded successfully. Message: \(uploadResponse.message)")
-                        completion(.success(uploadResponse))
-                    } else {
-                        print("❌ Image upload reported as not successful by backend: \(uploadResponse.message)")
-                        completion(.failure(.responseError(uploadResponse.message)))
-                    }
+                    if uploadResponse.success { completion(.success(uploadResponse)) } else { completion(.failure(.responseError(uploadResponse.message))) }
                 } catch {
-                    print("❌ Error decoding upload response: \(error)")
-                    if let responseString = String(data: data, encoding: .utf8) {
-                        print("Response: \(responseString)")
-                    }
                     completion(.failure(.decodingFailed(error)))
-                    }
                 }
+            }
         }
         task.resume()
     }

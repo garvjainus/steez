@@ -346,7 +346,7 @@ public:
 
     /// Get the current base URL for the AppServices server used for http requests and sync
     /// connections.
-    /// If an update_base_url() operation is currently in progress, this value will not be
+    /// If an update_() operation is currently in progress, this value will not be
     /// updated with the new value until that operation is complete.
     /// @return String containing the current base url value
     std::string get_base_url() const REQUIRES(!m_route_mutex);

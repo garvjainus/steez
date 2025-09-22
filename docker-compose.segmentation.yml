@@ -1,0 +1,76 @@
+# Docker Compose configuration for the new segmentation pipeline
+# This includes both the YOLO segmentation service and the main backend
+
+version: '3.8'
+
+services:
+  # YOLO Segmentation Service
+  yolo-segmentation:
+    build:
+      context: ./image-segmentation-service
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+    environment:
+      - LOG_LEVEL=info
+    volumes:
+      - yolo_models:/root/.cache/ultralytics  # Cache YOLO models
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 2G
+    restart: unless-stopped
+
+  # Main NestJS Backend (with new segmentation pipeline)
+  steez-backend:
+    build:
+      context: ./steez-backend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - BASE_URL=http://localhost:3000
+      - SEGMENTATION_SERVICE_URL=http://yolo-segmentation:8001
+      - GOOGLE_LENS_API=${GOOGLE_LENS_API}
+      # Gemini/eBay removed in favor of Google Lens segmentation pipeline
+      - API_KEY=${API_KEY}
+    volumes:
+      - ./steez-backend/uploads:/app/uploads
+    depends_on:
+      yolo-segmentation:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+
+  # Optional: Redis for caching (future enhancement)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+volumes:
+  yolo_models:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  default:
+    name: steez-segmentation-network

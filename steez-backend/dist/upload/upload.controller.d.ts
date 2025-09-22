@@ -13,4 +13,11 @@ export declare class UploadController {
             uploadedAt: string;
         };
     }>;
+    uploadImageWithSegmentation(file: Express.Multer.File, userId: string, userSize?: string, userCountry?: string): Promise<import("./upload.service").ProcessResult>;
+    uploadImageLegacy(file: Express.Multer.File, userId: string, userSize?: string, userCountry?: string): Promise<import("./upload.service").ProcessResult>;
+    checkSegmentationHealth(): Promise<{
+        success: boolean;
+        segmentationService: string;
+        message: string;
+    }>;
 }

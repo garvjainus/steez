@@ -84,12 +84,75 @@ let UploadController = UploadController_1 = class UploadController {
             throw new common_1.HttpException(error.message || 'Failed to process base64 image', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    async uploadImageWithSegmentation(file, userId, userSize, userCountry) {
+        this.logger.debug(`[uploadImageWithSegmentation] File received: ${file ? 'Yes' : 'No'}`);
+        if (!file) {
+            this.logger.error('[uploadImageWithSegmentation] No file received in request');
+            throw new common_1.HttpException('Image file is required', common_1.HttpStatus.BAD_REQUEST);
+        }
+        this.logger.debug(`[uploadImageWithSegmentation] File details:
+      - originalname: ${file.originalname}
+      - filename: ${file.filename || 'UNDEFINED'}
+      - mimetype: ${file.mimetype}
+      - size: ${file.size}
+      - path: ${file.path || 'UNDEFINED'}
+      - buffer: ${file.buffer ? 'Available' : 'Not Available'}
+    `);
+        if (!userId) {
+            this.logger.error('[uploadImageWithSegmentation] No userId received in request');
+            throw new common_1.HttpException('User ID is required', common_1.HttpStatus.BAD_REQUEST);
+        }
+        try {
+            const user = userSize || userCountry
+                ? { size: userSize || 'M', country: userCountry || 'US' }
+                : undefined;
+            const result = await this.uploadService.processUploadedImageWithSegmentation(file, userId, user);
+            this.logger.debug(`[uploadImageWithSegmentation] Image processed successfully with ${result.data.newSegmentedResults?.totalItems || 0} items found`);
+            return result;
+        }
+        catch (error) {
+            this.logger.error(`[uploadImageWithSegmentation] Error processing upload: ${error.message}`, error.stack);
+            throw new common_1.HttpException(error.message || 'Failed to upload image with segmentation', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    async uploadImageLegacy(file, userId, userSize, userCountry) {
+        return this.uploadImage(file, userId, userSize, userCountry);
+    }
+    async checkSegmentationHealth() {
+        try {
+            const isHealthy = await this.uploadService.checkSegmentationServiceHealth();
+            return {
+                success: true,
+                segmentationService: isHealthy ? 'healthy' : 'unhealthy',
+                message: isHealthy
+                    ? 'Segmentation service is responsive'
+                    : 'Segmentation service is not responding',
+            };
+        }
+        catch (error) {
+            return {
+                success: false,
+                segmentationService: 'error',
+                message: `Error checking segmentation service: ${error.message}`,
+            };
+        }
+    }
 };
 exports.UploadController = UploadController;
 __decorate([
     (0, common_1.Post)('image'),
     (0, common_1.UseGuards)(api_key_auth_guard_1.ApiKeyAuthGuard),
-    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('image')),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('image', {
+        limits: {
+            fileSize: 10 * 1024 * 1024,
+        },
+        fileFilter: (req, file, cb) => {
+            if (!file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
+                return cb(new common_1.HttpException('Only image files are allowed!', common_1.HttpStatus.BAD_REQUEST), false);
+            }
+            cb(null, true);
+        },
+    })),
     __param(0, (0, common_1.UploadedFile)()),
     __param(1, (0, common_1.Body)('userId')),
     __param(2, (0, common_1.Body)('userSize')),
@@ -107,6 +170,56 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], UploadController.prototype, "uploadBase64Image", null);
+__decorate([
+    (0, common_1.Post)('image-segmentation'),
+    (0, common_1.UseGuards)(api_key_auth_guard_1.ApiKeyAuthGuard),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('image', {
+        limits: {
+            fileSize: 10 * 1024 * 1024,
+        },
+        fileFilter: (req, file, cb) => {
+            if (!file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
+                return cb(new common_1.HttpException('Only image files are allowed!', common_1.HttpStatus.BAD_REQUEST), false);
+            }
+            cb(null, true);
+        },
+    })),
+    __param(0, (0, common_1.UploadedFile)()),
+    __param(1, (0, common_1.Body)('userId')),
+    __param(2, (0, common_1.Body)('userSize')),
+    __param(3, (0, common_1.Body)('userCountry')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String, String, String]),
+    __metadata("design:returntype", Promise)
+], UploadController.prototype, "uploadImageWithSegmentation", null);
+__decorate([
+    (0, common_1.Post)('image-legacy'),
+    (0, common_1.UseGuards)(api_key_auth_guard_1.ApiKeyAuthGuard),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('image', {
+        limits: {
+            fileSize: 10 * 1024 * 1024,
+        },
+        fileFilter: (req, file, cb) => {
+            if (!file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
+                return cb(new common_1.HttpException('Only image files are allowed!', common_1.HttpStatus.BAD_REQUEST), false);
+            }
+            cb(null, true);
+        },
+    })),
+    __param(0, (0, common_1.UploadedFile)()),
+    __param(1, (0, common_1.Body)('userId')),
+    __param(2, (0, common_1.Body)('userSize')),
+    __param(3, (0, common_1.Body)('userCountry')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String, String, String]),
+    __metadata("design:returntype", Promise)
+], UploadController.prototype, "uploadImageLegacy", null);
+__decorate([
+    (0, common_1.Get)('health/segmentation'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], UploadController.prototype, "checkSegmentationHealth", null);
 exports.UploadController = UploadController = UploadController_1 = __decorate([
     (0, common_1.Controller)('upload'),
     __metadata("design:paramtypes", [upload_service_1.UploadService])

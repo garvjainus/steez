@@ -79,7 +79,7 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "SUPABASE_URL"
-            value = "https://owbkldgydzokcdjhmvju.supabase.co"
+            value = "https://ecuevkfybvackxlhiuuz.supabase.co"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable

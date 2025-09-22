@@ -6,7 +6,8 @@ import { JobsModule } from './jobs/jobs.module';
 import { HealthController } from './health.controller';
 import { VideoProcessingController } from './services/video-processing.controller';
 import { VideoProcessingService } from './services/video-processing.service';
-// import { GoogleLensModule } from './google-lens/google-lens.module'; // 🔒 TEMP-DISABLED (Google Lens)
+import { GoogleLensModule } from './google-lens/google-lens.module'; // Re-enabled for new segmentation pipeline
+import { SegmentationModule } from './segmentation/segmentation.module'; // New segmentation pipeline
 import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import * as path from 'path';
@@ -28,7 +29,8 @@ import * as path from 'path';
     }),
     UploadModule,
     JobsModule,
-    // GoogleLensModule, // 🔒 TEMP-DISABLED (Google Lens)
+    GoogleLensModule,
+    SegmentationModule,
   ],
   controllers: [HealthController, VideoProcessingController],
   providers: [VideoProcessingService],
