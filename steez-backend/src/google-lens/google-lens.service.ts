@@ -79,12 +79,19 @@ export class GoogleLensService {
         return [];
       }
 
-      // Filter and map the results
-      const results = visualMatches
-        .filter((item: any) => this.isApparelLike(item))
-        .map((item: any) => this.mapToProductDto(item, filename, imageUrl));
+      // Rank by SerpAPI's position (lower is more relevant), then filter apparel-like, then map
+      const rankedMatches = [...visualMatches].sort((a: any, b: any) => {
+        const pa = typeof a.position === 'number' ? a.position : Number.MAX_SAFE_INTEGER;
+        const pb = typeof b.position === 'number' ? b.position : Number.MAX_SAFE_INTEGER;
+        return pa - pb;
+      });
 
-      this.logger.debug(`Returning ${results.length} fashion-related products`);
+      const results = rankedMatches
+        .filter((item: any) => this.isApparelLike(item))
+        .map((item: any) => this.mapToProductDto(item, filename, imageUrl))
+        .slice(0, 5); // limit to top 5 most probable/ressemblant items
+
+      this.logger.debug(`Returning ${results.length} fashion-related products (limited to top 5)`);
       return results;
     } catch (err) {
       this.handleApiError(err);
