@@ -74,6 +74,14 @@ struct SteezApp: SwiftUI.App {
                 // The auth state listener in AppState will automatically handle the session
             }
         }
+        // Handle share extension completion
+        else if url.scheme == "steez" && url.host == "share-extension-complete" {
+            print("Share extension completed, checking for pending job...")
+            // Give a small delay to ensure the share extension has finished writing to UserDefaults
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.appState.checkForPendingJob()
+            }
+        }
     }
 }
 
@@ -181,6 +189,8 @@ class AppState: ObservableObject {
         NotificationCenter.default.removeObserver(self)
     }
 
+    
+    
     // MARK: - Wardrobe
     
     /// Fetch wardrobe items from cloud storage (requires authentication)
@@ -342,8 +352,9 @@ class AppState: ObservableObject {
     // MARK: - Job Polling Logic
     
     @objc func checkForPendingJob() {
+        print("Checking for pending job...")
         guard let userDefaults = UserDefaults(suiteName: appGroupId) else {
-            print("Could not access shared UserDefaults.")
+            print("Could not access shared UserDefaults with suite name: \(appGroupId)")
             return
         }
         

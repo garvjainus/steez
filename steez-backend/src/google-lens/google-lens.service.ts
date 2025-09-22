@@ -10,6 +10,10 @@ import { firstValueFrom } from 'rxjs';
 import * as fs from 'fs';
 import * as path from 'path';
 import { ProductLinkDto } from './dto';
+import {
+  normalizeCandidates,
+  scoreFashionRelevance,
+} from './filters';
 
 @Injectable()
 export class GoogleLensService {
@@ -70,26 +74,36 @@ export class GoogleLensService {
         return [];
       }
 
-      // Get visual matches - this contains all the product data
+      // Gather both visual_matches and shopping_results for broader coverage
       const visualMatches = lensResponse.visual_matches ?? [];
-      this.logger.debug(`Found ${visualMatches.length} visual matches`);
-      
-      if (!visualMatches.length) {
-        this.logger.debug(`No visual matches found. Full response: ${JSON.stringify(lensResponse, null, 2)}`);
+      const shoppingResults = lensResponse.shopping_results ?? [];
+      this.logger.debug(
+        `Found ${visualMatches.length} visual matches, ${shoppingResults.length} shopping results`,
+      );
+
+      const candidates = normalizeCandidates(visualMatches, shoppingResults);
+      if (!candidates.length) {
+        this.logger.debug(
+          `No candidates found. Full response: ${JSON.stringify(lensResponse, null, 2)}`,
+        );
         return [];
       }
 
-      // Rank by SerpAPI's position (lower is more relevant), then filter apparel-like, then map
-      const rankedMatches = [...visualMatches].sort((a: any, b: any) => {
-        const pa = typeof a.position === 'number' ? a.position : Number.MAX_SAFE_INTEGER;
-        const pb = typeof b.position === 'number' ? b.position : Number.MAX_SAFE_INTEGER;
-        return pa - pb;
+      // Score for apparel relevance, then combine with Serp 'position' to prefer top-ranked items
+      const scored = candidates.map((item: any) => {
+        const score = scoreFashionRelevance(item);
+        const position = typeof item.position === 'number' ? item.position : 9999;
+        return { item, score, position };
       });
 
-      const results = rankedMatches
-        .filter((item: any) => this.isApparelLike(item))
-        .map((item: any) => this.mapToProductDto(item, filename, imageUrl))
-        .slice(0, 5); // limit to top 5 most probable/ressemblant items
+      // Keep items with positive score; sort primarily by score desc, then by position asc
+      const filtered = scored
+        .filter((x) => x.score > 0)
+        .sort((a, b) => (b.score - a.score) || (a.position - b.position))
+        .map((x) => x.item);
+
+      const top = filtered.slice(0, 5);
+      const results = top.map((item: any) => this.mapToProductDto(item, filename, imageUrl));
 
       this.logger.debug(`Returning ${results.length} fashion-related products (limited to top 5)`);
       return results;
@@ -121,33 +135,7 @@ export class GoogleLensService {
     }
   }
 
-  /** Clothing-ish heuristic */
-  private isApparelLike(item: any): boolean {
-    const haystack =
-      `${item.title || ''} ${item.category || ''} ${item.source || ''}`.toLowerCase();
-
-    // More inclusive pattern for fashion items
-    const fashionKeywords =
-      /(shirt|t[- ]?shirt|tee|jersey|jacket|hoodie|jeans|pants|skirt|dress|sweater|coat|blazer|suit|sock|hat|cap|shoe|sneaker|boot|sandal|shorts|scarf|glove|underwear|bra|lingerie|belt|apparel|clothing|fashion|wear|outfit|style|designer|luxury|brand|vuitton|gucci|prada|nike|adidas|supreme|vintage|streetwear)/;
-
-    // Less restrictive - allow more items through
-    const isLikelyFashion = fashionKeywords.test(haystack);
-
-    // If it's from a known fashion retailer, include it
-    const fashionSources =
-      /(therealreal|stockx|grailed|vestiaire|poshmark|ebay|dhgate|alibaba|farfetch|ssense|end|mrporter|matchesfashion|net-a-porter|saks|nordstrom|barneys|bloomingdales)/i;
-    const isFromFashionSource = fashionSources.test(item.source || '');
-
-    const shouldInclude = isLikelyFashion || isFromFashionSource;
-
-    if (!shouldInclude) {
-      this.logger.debug(
-        `Filtered out: "${item.title}" from ${item.source} - not fashion-related`,
-      );
-    }
-
-    return shouldInclude;
-  }
+  // Deprecated: replaced by score-based filter in filters.ts
 
   /** Map SerpApi item → DTO */
   private mapToProductDto(

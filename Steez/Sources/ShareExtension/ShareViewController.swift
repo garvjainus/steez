@@ -245,6 +245,8 @@ class ShareViewController: UIViewController {
         return "123e4567-e89b-12d3-a456-426614174000"
     }
 
+    // Removed auto-open logic per UX decision
+
     /// Saves the received job ID into the shared App Group UserDefaults.
     private func saveJobIdForMainApp(_ jobId: String) {
         guard let userDefaults = UserDefaults(suiteName: appGroupId) else {
@@ -252,7 +254,10 @@ class ShareViewController: UIViewController {
             return
         }
         userDefaults.set(jobId, forKey: latestJobIdKey)
-        print("Saved job ID \(jobId) to shared UserDefaults.")
+        print("Saved job ID \(jobId) to shared UserDefaults with key: \(latestJobIdKey)")
+        
+        // Also log what's currently in UserDefaults for debugging
+        print("Current UserDefaults contents: \(userDefaults.dictionaryRepresentation())")
     }
 
     /// Completes the share request and closes the extension, showing a message first.
@@ -263,8 +268,8 @@ class ShareViewController: UIViewController {
             if let successMessage = successMessage {
                 self.statusLabel.text = successMessage
                 
-                // Dismiss after a short delay to allow user to see the message.
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                // Dismiss after a short delay
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                     self.extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
                 }
             } else if let errorMessage = errorMessage {

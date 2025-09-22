@@ -162,6 +162,25 @@ struct MainImportView: View {
                                     }
                                 }
                             )
+                        } else if !appState.importJobFrames.isEmpty {
+                            // Video frames from share extension - show as primary UI
+                            VStack(alignment: .leading, spacing: 16) {
+                                Text("Select Frame to Analyze")
+                                    .font(SteezFonts.medium(18))
+                                    .foregroundColor(SteezColors.textPrimary)
+                                
+                                FrameSelectorView(frameUrls: appState.importJobFrames) { selectedUrl in
+                                    // Hide frames immediately for a cleaner transition to results
+                                    appState.importJobFrames = []
+                                    handleFrameSelection(selectedUrl)
+                                }
+                            }
+                            .padding(20)
+                            .background(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .fill(SteezColors.cardBackground)
+                                    .shadow(color: .black.opacity(0.05), radius: 10, x: 0, y: 2)
+                            )
                         } else if let imageUrl = appState.importUploadedImageUrl {
                             UploadedImageView(imageUrl: imageUrl)
                         } else {
@@ -170,17 +189,6 @@ struct MainImportView: View {
                                 onPhotoLibraryAction: { showingImagePicker = true },
                                 onLinkAction: { showingLinkInput = true }
                             )
-                        }
-                        
-                        // Status Indicators
-                        VStack(spacing: 16) {
-                            // Job polling indicator removed for now
-                            
-                            if !appState.importJobFrames.isEmpty {
-                                FrameSelectorView(frameUrls: appState.importJobFrames) { selectedUrl in
-                                    // Handle frame selection here
-                                }
-                            }
                         }
                         
                         // Results
@@ -241,6 +249,51 @@ struct MainImportView: View {
     }
     
     // MARK: - Processing Methods
+    
+    private func handleFrameSelection(_ selectedUrl: URL) {
+        print("User selected frame URL: \(selectedUrl)")
+        appState.isProcessing = true
+        
+        // Download the frame image and process it through the normal pipeline
+        KingfisherManager.shared.retrieveImage(with: selectedUrl) { result in
+            switch result {
+            case .success(let value):
+                print("Successfully downloaded selected frame as UIImage.")
+                let image = value.image
+                
+                DispatchQueue.main.async {
+                    self.retryData = image
+                    
+                    guard let userId = appState.currentUser?.userId.uuidString else {
+                        appState.isProcessing = false
+                        self.showError("Authentication Error", "Please sign in to process images.")
+                        return
+                    }
+                    
+                    // Check quota before processing
+                    Task {
+                        let canUpload = await appState.canPerformAction(.upload)
+                        if canUpload {
+                            await MainActor.run {
+                                self.currentUploadUserId = userId
+                                self.processImage(image, userId: userId)
+                            }
+                        } else {
+                            await MainActor.run {
+                                appState.isProcessing = false
+                            }
+                        }
+                    }
+                }
+            case .failure(let error):
+                DispatchQueue.main.async {
+                    appState.isProcessing = false
+                    print("Error downloading selected frame: \(error)")
+                    self.showError("Download Error", "Failed to download the selected frame. Please try again.")
+                }
+            }
+        }
+    }
     
     private func startImageProcessing(_ image: UIImage) {
         self.retryData = image
@@ -372,66 +425,6 @@ struct MainImportView: View {
         showingAlert = true
     }
     
-    @ViewBuilder
-    private var frameSelector: some View {
-        if !appState.jobFrames.isEmpty {
-            VStack(alignment: .leading, spacing: 16) {
-                Text("Select Frame")
-                    .font(SteezFonts.medium(18))
-                    .foregroundColor(SteezColors.textPrimary)
-                
-                FrameSelectorView(frameUrls: appState.jobFrames) { selectedUrl in
-                    print("User selected frame URL: \(selectedUrl)")
-                    appState.isProcessing = true
-                    
-                    KingfisherManager.shared.retrieveImage(with: selectedUrl) { result in
-                        switch result {
-                        case .success(let value):
-                            print("Successfully downloaded selected frame as UIImage.")
-                            let image = value.image
-                            
-                            DispatchQueue.main.async {
-                                self.retryData = image
-                                
-                                guard let userId = appState.currentUser?.userId.uuidString else {
-                                    appState.isProcessing = false
-                                    self.showError("Authentication Error", "Please sign in to process images.")
-                                    return
-                                }
-                                
-                                // Check quota before processing
-                                Task {
-                                    let canUpload = await appState.canPerformAction(.upload)
-                                    if canUpload {
-                                        await MainActor.run {
-                                            self.currentUploadUserId = userId
-                                            self.processImage(image, userId: userId)
-                                        }
-                                    } else {
-                                        await MainActor.run {
-                                            appState.isProcessing = false
-                                        }
-                                    }
-                                }
-                            }
-                        case .failure(let error):
-                            DispatchQueue.main.async {
-                                appState.isProcessing = false
-                                print("Error downloading selected frame: \(error)")
-                                self.showError("Download Error", "Failed to download the selected frame. Please try again.")
-                            }
-                        }
-                    }
-                }
-            }
-            .padding(20)
-            .background(
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(SteezColors.cardBackground)
-                    .shadow(color: .black.opacity(0.05), radius: 10, x: 0, y: 2)
-            )
-        }
-    }
 }
 
 // MARK: - Import Options View
