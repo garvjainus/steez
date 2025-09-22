@@ -185,8 +185,14 @@ struct MainImportView: View {
                         
                         // Results
                         VStack(spacing: 24) {
-                            // Segmented results disabled
                             if !appState.importLensProducts.isEmpty {
+                                Button("Start New Analysis") {
+                                    withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                                        appState.fullReset()
+                                    }
+                                }
+                                .buttonStyle(PrimaryButtonStyle())
+                                .padding(.top, 8)
                                 LensResultsDisplay(lensProducts: appState.importLensProducts)
                             }
                         }

@@ -14,7 +14,7 @@ struct WardrobeView: View {
         !appState.wardrobeItems.isEmpty
     }
     
-    private let categories = ["top", "bottom", "outerwear", "shoes", "accessories", "other"]
+    private let categories = ["torso", "bottom", "outerwear", "shoes", "accessory", "other"]
     
     var body: some View {
         NavigationView {
@@ -277,6 +277,13 @@ struct WardrobeDetailView: View {
                 }
                 
                 // Product links are now shown inline in import flow; wardrobe detail focuses on metadata
+                if let parent = parentItem, let url = URL(string: parent.imageUrl) {
+                    Button("View Related Products") {
+                        // Basic deep-link to import tab with image retained
+                        // In a more advanced flow, we could re-run Lens on demand here
+                    }
+                    .buttonStyle(SecondaryButtonStyle())
+                }
             }
             .padding()
         }

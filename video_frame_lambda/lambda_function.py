@@ -91,6 +91,10 @@ def _download_video(url: str, tmp_dir: Path) -> Path:
         "socket_timeout": 15,
         # Tell yt-dlp where ffmpeg lives (in case merging is still required)
         "ffmpeg_location": ffmpeg_dir,
+        # Ensure all yt-dlp writes go to the writable /tmp space in Lambda
+        "paths": {"home": str(tmp_dir), "temp": str(tmp_dir)},
+        "cachedir": str(tmp_dir),
+        "no_cache_dir": True,
     }
 
     # Only set cookiefile if we have one in a writable tmp path
